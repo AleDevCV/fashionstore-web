@@ -1,0 +1,193 @@
+/* =============================================================================
+   FASHIONSTORE - ESTILOS DE LA GESTIÓN DE USUARIOS (CU02)
+   La tabla, los distintivos y el modal viven en styles.scss por ser
+   reutilizables; aquí solo el encabezado, los indicadores y el buscador.
+   ========================================================================== */
+
+.usuarios {
+  max-width: 1180px;
+}
+
+/* -----------------------------------------------------------------------------
+   CABECERA
+   -------------------------------------------------------------------------- */
+.usuarios__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--fs-space-5);
+  margin-bottom: var(--fs-space-6);
+}
+
+.usuarios__titulo {
+  margin-top: var(--fs-space-2);
+  font-size: 30px;
+}
+
+.usuarios__lead {
+  margin-top: var(--fs-space-2);
+  max-width: 58ch;
+  font-size: 13.5px;
+  color: var(--fs-ink-soft);
+}
+
+/* -----------------------------------------------------------------------------
+   INDICADORES Y BUSCADOR
+   -------------------------------------------------------------------------- */
+.usuarios__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-6);
+  padding: var(--fs-space-4) var(--fs-space-5);
+  margin-bottom: var(--fs-space-4);
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+}
+
+.usuarios__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1;
+}
+
+/* Cifra en la serif de marca: el contraste con las versalitas de abajo es lo
+   que da el aire editorial en vez de tarjeta de dashboard genérica. */
+.usuarios__stat-cifra {
+  font-family: var(--fs-font-display);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.05;
+  color: var(--fs-ink);
+}
+
+.usuarios__stat-cifra--activo {
+  color: var(--fs-emerald);
+}
+
+.usuarios__stat-cifra--inactivo {
+  color: var(--fs-danger);
+}
+
+/* El buscador se empuja al extremo derecho de la barra */
+.usuarios__buscador {
+  position: relative;
+  flex: 1;
+  max-width: 320px;
+  margin-left: auto;
+}
+
+/* Se anula la "x" nativa de los campos de tipo search para usar la propia */
+.usuarios__buscador input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.usuarios__limpiar {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--fs-ink-muted);
+  cursor: pointer;
+  transition: color var(--fs-transition);
+}
+
+.usuarios__limpiar:hover {
+  color: var(--fs-ink);
+}
+
+/* -----------------------------------------------------------------------------
+   ESTADOS DE CARGA Y ERROR
+   -------------------------------------------------------------------------- */
+.usuarios__estado {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-3);
+  padding: var(--fs-space-7);
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+  font-size: 13px;
+  color: var(--fs-ink-soft);
+}
+
+.usuarios__alert-mark {
+  flex-shrink: 0;
+  width: 3px;
+  height: 3px;
+  margin-top: 8px;
+  background-color: var(--fs-danger);
+  transform: rotate(45deg);
+}
+
+/* -----------------------------------------------------------------------------
+   COLUMNAS DE LA TABLA
+   -------------------------------------------------------------------------- */
+.usuarios__col-id {
+  width: 56px;
+}
+
+.usuarios__col-acciones {
+  width: 172px;
+}
+
+.usuarios__nombre {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Distintivo que señala la fila del administrador conectado */
+.usuarios__yo {
+  display: inline-block;
+  margin-left: var(--fs-space-2);
+  padding: 1px 6px;
+  background-color: var(--fs-surface-alt);
+  border: 1px solid var(--fs-border);
+  border-radius: 2px;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+}
+
+.usuarios__correo {
+  color: var(--fs-ink-soft);
+}
+
+.usuarios__acciones {
+  display: flex;
+  gap: var(--fs-space-4);
+}
+
+.usuarios__pie {
+  margin-top: var(--fs-space-3);
+  font-size: 11.5px;
+  color: var(--fs-ink-muted);
+}
+
+/* -----------------------------------------------------------------------------
+   ADAPTACIÓN RESPONSIVA (RNF05)
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .usuarios__head {
+    flex-direction: column;
+  }
+
+  .usuarios__stats {
+    flex-wrap: wrap;
+    gap: var(--fs-space-5);
+  }
+
+  .usuarios__buscador {
+    max-width: none;
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+}

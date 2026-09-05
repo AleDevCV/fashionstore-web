@@ -1,60 +1,42 @@
 <!--
-  Panel provisional: confirma visualmente que el token JWT se guardó y se
+  Pantalla de inicio del panel: confirma que el token JWT se guardó y se
   decodificó correctamente tras completar el CU01.
 -->
-<div class="panel">
-  <!-- Barra superior con logotipo y acción de cierre de sesión -->
-  <header class="panel__bar">
-    <span class="fs-wordmark panel__brand">Fashion<em>Store</em></span>
+<section class="panel">
+  <span class="fs-eyebrow">Sesión verificada</span>
+  <h1 class="panel__title">Bienvenido al panel</h1>
+  <p class="panel__lead">
+    El token JWT se almacenó correctamente y su contenido fue decodificado por
+    el servicio de autenticación. Use el menú lateral para acceder a los módulos
+    de la Iteración 1.
+  </p>
 
-    <div class="panel__bar-right">
-      @if (usuario(); as u) {
-        <span class="panel__user">
-          {{ u.nombre }}
-          <span class="panel__role">{{ u.rol }}</span>
-        </span>
-      }
-      <button type="button" class="fs-btn fs-btn--ghost" (click)="cerrarSesion()">
-        Cerrar sesión
-      </button>
+  @if (usuario(); as u) {
+    <!-- Ficha con los datos extraídos del token -->
+    <div class="panel__card">
+      <h2 class="panel__card-title">Carga útil del token</h2>
+      <dl class="panel__data">
+        <div class="panel__row">
+          <dt class="fs-eyebrow">ID de usuario</dt>
+          <dd>{{ u.id_usuario }}</dd>
+        </div>
+        <div class="panel__row">
+          <dt class="fs-eyebrow">Nombre</dt>
+          <dd>{{ u.nombre }}</dd>
+        </div>
+        <div class="panel__row">
+          <dt class="fs-eyebrow">Correo</dt>
+          <dd>{{ u.correo }}</dd>
+        </div>
+        <div class="panel__row">
+          <dt class="fs-eyebrow">Rol jerárquico</dt>
+          <dd>{{ u.rol }}</dd>
+        </div>
+        <div class="panel__row">
+          <dt class="fs-eyebrow">Expira</dt>
+          <dd>{{ formatearExpiracion(u.exp) }}</dd>
+        </div>
+      </dl>
     </div>
-  </header>
-
-  <main class="panel__body">
-    <span class="fs-eyebrow">Sesión verificada</span>
-    <h1 class="panel__title">Bienvenido al panel</h1>
-    <p class="panel__lead">
-      El token JWT se almacenó correctamente y su contenido fue decodificado
-      por el servicio de autenticación.
-    </p>
-
-    <!-- Ficha de datos extraídos del token, con la densidad de una tabla de gestión -->
-    @if (usuario(); as u) {
-      <section class="panel__card">
-        <h2 class="panel__card-title">Carga útil del token</h2>
-        <dl class="panel__data">
-          <div class="panel__row">
-            <dt class="fs-eyebrow">ID de usuario</dt>
-            <dd>{{ u.id_usuario }}</dd>
-          </div>
-          <div class="panel__row">
-            <dt class="fs-eyebrow">Nombre</dt>
-            <dd>{{ u.nombre }}</dd>
-          </div>
-          <div class="panel__row">
-            <dt class="fs-eyebrow">Correo</dt>
-            <dd>{{ u.correo }}</dd>
-          </div>
-          <div class="panel__row">
-            <dt class="fs-eyebrow">Rol jerárquico</dt>
-            <dd>{{ u.rol }}</dd>
-          </div>
-          <div class="panel__row">
-            <dt class="fs-eyebrow">Expira</dt>
-            <dd>{{ formatearExpiracion(u.exp) }}</dd>
-          </div>
-        </dl>
-      </section>
-    }
-  </main>
-</div>
+  }
+</section>

@@ -1,18 +1,18 @@
 /**
  * =============================================================================
- * FASHIONSTORE - PANEL PROVISIONAL POSTERIOR AL LOGIN (CU01)
+ * FASHIONSTORE - PANTALLA DE INICIO DEL PANEL
  * -----------------------------------------------------------------------------
- * Vista mínima a la que se redirige tras un inicio de sesión exitoso. Su único
- * propósito en esta etapa es demostrar el cierre del CU01: mostrar los datos
- * decodificados del token JWT y permitir cerrar la sesión.
+ * Vista de bienvenida a la que se llega tras iniciar sesión. Muestra los datos
+ * decodificados del token JWT, lo que sirve de comprobación visual del CU01.
  *
- * Será reemplazada por el dashboard gerencial definitivo (CU24) y por el
- * layout con sidebar del panel administrativo.
+ * La cabecera y el cierre de sesión los aporta el LayoutComponent, por lo que
+ * este componente solo se ocupa de su contenido.
+ *
+ * Será reemplazada por el dashboard gerencial con KPIs del CU24.
  * =============================================================================
  */
 
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 
@@ -24,21 +24,9 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class Panel {
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
 
   /** Señal con el payload del JWT del usuario autenticado. */
   readonly usuario = this.authService.usuarioActual;
-
-  /**
-   * Cierra la sesión y devuelve al usuario a la pantalla de acceso.
-   * Corresponde al paso 10 del flujo principal del CU01.
-   *
-   * @returns void
-   */
-  cerrarSesion(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
 
   /**
    * Convierte el claim `exp` del JWT en una fecha legible.

@@ -1,0 +1,104 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - ESTRUCTURA DEL PANEL ADMINISTRATIVO
+  -----------------------------------------------------------------------------
+  Rejilla de dos columnas: sidebar fijo en negro carbón y área de contenido con
+  cabecera propia. El <router-outlet> recibe la vista de cada caso de uso.
+  =============================================================================
+-->
+<div class="admin">
+  <!-- ========================= SIDEBAR ========================= -->
+  <aside class="admin__sidebar">
+    <!-- Logotipo de marca -->
+    <div class="admin__brand">
+      <span class="fs-wordmark admin__brand-name">Fashion<em>Store</em></span>
+      <span class="admin__brand-tag">Panel administrativo</span>
+    </div>
+
+    <!-- Navegación principal -->
+    <nav class="admin__nav">
+      <span class="admin__nav-title">Iteración 1</span>
+
+      <ul class="admin__nav-list">
+        @for (item of menu(); track item.etiqueta) {
+          <li>
+            @if (item.ruta) {
+              <!-- Sección disponible: enlace real del enrutador -->
+              <a
+                class="admin__link"
+                [routerLink]="item.ruta"
+                routerLinkActive="admin__link--activo"
+              >
+                <span class="admin__link-texto">{{ item.etiqueta }}</span>
+                @if (item.caso) {
+                  <span class="admin__link-caso">{{ item.caso }}</span>
+                }
+              </a>
+            } @else {
+              <!-- Sección pendiente de construir: se muestra deshabilitada
+                   en lugar de enlazar a una pantalla inexistente. -->
+              <span class="admin__link admin__link--pendiente" title="Próximamente">
+                <span class="admin__link-texto">{{ item.etiqueta }}</span>
+                <span class="admin__link-caso">{{ item.caso }}</span>
+              </span>
+            }
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <!-- Pie del sidebar -->
+    <div class="admin__sidebar-foot">
+      <span class="admin__version">FashionStore · v0.1.0</span>
+    </div>
+  </aside>
+
+  <!-- ==================== ÁREA DE CONTENIDO ==================== -->
+  <div class="admin__main">
+    <!-- Cabecera superior -->
+    <header class="admin__header">
+      <div class="admin__header-left">
+        <span class="fs-eyebrow">Sistema de gestión</span>
+      </div>
+
+      <div class="admin__header-right">
+        @if (usuario(); as u) {
+          <!-- Distintivo con las iniciales del usuario -->
+          <span class="admin__avatar" aria-hidden="true">{{ iniciales() }}</span>
+
+          <span class="admin__perfil">
+            <span class="admin__perfil-nombre">{{ u.nombre }}</span>
+            <span class="admin__perfil-rol">{{ u.rol }}</span>
+          </span>
+        }
+
+        <button type="button" class="fs-btn fs-btn--ghost" (click)="cerrarSesion()">
+          Cerrar sesión
+        </button>
+      </div>
+    </header>
+
+    <!-- Vista activa del enrutador -->
+    <main class="admin__contenido">
+      <router-outlet />
+    </main>
+  </div>
+
+  <!-- ================== NOTIFICACIONES EMERGENTES ================== -->
+  <!-- Se renderizan aquí para estar disponibles en cualquier sección. -->
+  <div class="admin__avisos" role="status" aria-live="polite">
+    @for (aviso of avisos(); track aviso.id) {
+      <div class="admin__aviso" [class]="'admin__aviso--' + aviso.tipo">
+        <span class="admin__aviso-texto">{{ aviso.mensaje }}</span>
+        <button
+          type="button"
+          class="admin__aviso-cerrar"
+          (click)="cerrarAviso(aviso.id)"
+          aria-label="Cerrar aviso"
+        >
+          ×
+        </button>
+      </div>
+    }
+  </div>
+</div>

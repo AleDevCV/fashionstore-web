@@ -1,0 +1,218 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - GESTIÓN DE USUARIOS Y ROLES (CU02)
+  -----------------------------------------------------------------------------
+  Cabecera con título e indicadores, barra de búsqueda y tabla de alta densidad.
+  =============================================================================
+-->
+<section class="usuarios">
+  <!-- ========================= CABECERA ========================= -->
+  <header class="usuarios__head">
+    <div>
+      <span class="fs-eyebrow">Módulo de seguridad · CU02</span>
+      <h1 class="usuarios__titulo">Usuarios y Roles</h1>
+      <p class="usuarios__lead">
+        Administre las cuentas del personal y asigne los roles jerárquicos que
+        delimitan sus funciones en la plataforma.
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--primary" (click)="abrirAlta()">
+      + Agregar usuario
+    </button>
+  </header>
+
+  <!-- ==================== INDICADORES COMPACTOS ==================== -->
+  <!-- Cifras en Playfair para dar el contraste editorial de la marca -->
+  <div class="usuarios__stats">
+    <div class="usuarios__stat">
+      <span class="usuarios__stat-cifra">{{ total() }}</span>
+      <span class="fs-eyebrow">Total</span>
+    </div>
+
+    <div class="usuarios__stat">
+      <span class="usuarios__stat-cifra usuarios__stat-cifra--activo">
+        {{ activos() }}
+      </span>
+      <span class="fs-eyebrow">Activos</span>
+    </div>
+
+    <div class="usuarios__stat">
+      <span class="usuarios__stat-cifra usuarios__stat-cifra--inactivo">
+        {{ inactivos() }}
+      </span>
+      <span class="fs-eyebrow">Inactivos</span>
+    </div>
+
+    <!-- Buscador rápido por nombre o correo -->
+    <div class="usuarios__buscador">
+      <input
+        type="search"
+        class="fs-input"
+        placeholder="Buscar por nombre o correo…"
+        [value]="busqueda()"
+        (input)="alBuscar($event)"
+        aria-label="Buscar usuarios"
+      />
+      @if (busqueda()) {
+        <button
+          type="button"
+          class="usuarios__limpiar"
+          (click)="limpiarBusqueda()"
+          aria-label="Limpiar búsqueda"
+        >
+          ×
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ========================= CONTENIDO ========================= -->
+
+  <!-- Estado: descargando -->
+  @if (cargando()) {
+    <div class="usuarios__estado">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando usuarios…</span>
+    </div>
+  } @else if (errorCarga()) {
+    <!-- Estado: fallo de carga, con opción de reintentar -->
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span class="usuarios__alert-mark" aria-hidden="true"></span>
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargarUsuarios()">
+        Reintentar
+      </button>
+    </div>
+  } @else {
+    <!-- Estado: tabla con datos -->
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th class="usuarios__col-id">ID</th>
+            <th>Nombre completo</th>
+            <th>Correo electrónico</th>
+            <th>Teléfono</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th class="usuarios__col-acciones">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (usuario of usuariosFiltrados(); track usuario.id_usuario) {
+            <tr [class.fs-fila--inactiva]="usuario.estado === 'Inactivo'">
+              <td class="fs-col-num">{{ usuario.id_usuario }}</td>
+
+              <td class="usuarios__nombre">
+                {{ usuario.nombre }} {{ usuario.apellido }}
+                <!-- Marca la fila del propio administrador conectado -->
+                @if (usuario.id_usuario === idUsuarioActual()) {
+                  <span class="usuarios__yo">Usted</span>
+                }
+              </td>
+
+              <td class="usuarios__correo">{{ usuario.correo }}</td>
+
+              <td class="fs-col-num">{{ usuario.telefono || '—' }}</td>
+
+              <td>
+                <span class="fs-badge" [class]="claseRol(usuario.rol)">
+                  {{ usuario.rol || 'Sin rol' }}
+                </span>
+              </td>
+
+              <td>
+                <span class="fs-badge" [class]="claseEstado(usuario.estado)">
+                  {{ usuario.estado }}
+                </span>
+              </td>
+
+              <td>
+                <div class="usuarios__acciones">
+                  <button
+                    type="button"
+                    class="fs-accion"
+                    (click)="abrirEdicion(usuario)"
+                  >
+                    Editar
+                  </button>
+
+                  @if (usuario.estado === 'Activo') {
+                    <!--
+                      Inhabilitar queda bloqueado sobre la propia cuenta: el
+                      backend lo rechaza con un 400 y así se evita el error.
+                    -->
+                    <button
+                      type="button"
+                      class="fs-accion fs-accion--peligro"
+                      (click)="inhabilitar(usuario)"
+                      [disabled]="
+                        noSePuedeInhabilitar(usuario) ||
+                        inhabilitandoId() === usuario.id_usuario
+                      "
+                      [title]="
+                        usuario.id_usuario === idUsuarioActual()
+                          ? 'No puede inhabilitar su propia cuenta'
+                          : 'Inhabilitar usuario'
+                      "
+                    >
+                      {{
+                        inhabilitandoId() === usuario.id_usuario
+                          ? 'Procesando…'
+                          : 'Inactivar'
+                      }}
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      class="fs-accion"
+                      (click)="reactivar(usuario)"
+                      [disabled]="inhabilitandoId() === usuario.id_usuario"
+                    >
+                      {{
+                        inhabilitandoId() === usuario.id_usuario
+                          ? 'Procesando…'
+                          : 'Reactivar'
+                      }}
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <!-- Sin resultados: mensaje distinto según haya o no búsqueda activa -->
+            <tr>
+              <td colspan="7" class="fs-tabla-vacia">
+                @if (busqueda()) {
+                  No se encontraron usuarios que coincidan con
+                  «{{ busqueda() }}».
+                } @else {
+                  Todavía no hay usuarios registrados en el sistema.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pie informativo del listado -->
+    <p class="usuarios__pie">
+      Mostrando {{ usuariosFiltrados().length }} de {{ total() }} usuarios.
+    </p>
+  }
+</section>
+
+<!-- ==================== MODAL DE ALTA / EDICIÓN ==================== -->
+<!-- El bloque @if garantiza que el componente se cree de cero en cada
+     apertura, de modo que el formulario siempre arranque limpio. -->
+@if (modalAbierto()) {
+  <app-usuario-modal
+    [usuario]="usuarioEnEdicion()"
+    [roles]="roles()"
+    (cerrado)="cerrarModal()"
+    (guardado)="alGuardar($event)"
+  />
+}
