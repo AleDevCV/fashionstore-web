@@ -25,13 +25,18 @@ import { NotificacionService } from '../services/notificacion.service';
  * indicados.
  *
  * Uso en la tabla de rutas:
- *     { path: 'usuarios', canActivate: [rolGuard(['Administrador'])], ... }
+ *     { path: 'usuarios', canActivate: [rolGuard(['Administrador'], 'Usuarios y Roles')], ... }
  *
  * @param rolesPermitidos Nombres de rol autorizados, tal como figuran en la
  *                        columna `rol.nombre` de PostgreSQL.
+ * @param seccion Nombre de la sección, usado para redactar el aviso de acceso
+ *                denegado de forma coherente en cada módulo.
  * @returns CanActivateFn que concede o deniega el acceso a la ruta.
  */
-export const rolGuard = (rolesPermitidos: string[]): CanActivateFn => {
+export const rolGuard = (
+  rolesPermitidos: string[],
+  seccion: string = 'esta sección',
+): CanActivateFn => {
   return () => {
     const authService = inject(AuthService);
     const notificacion = inject(NotificacionService);
@@ -48,7 +53,7 @@ export const rolGuard = (rolesPermitidos: string[]): CanActivateFn => {
     // panel. No se cierra la sesión, porque el problema no es la autenticación
     // sino la falta de privilegios.
     notificacion.aviso(
-      'No tiene permisos para acceder a la sección "Usuarios y Roles".',
+      `No tiene permisos para acceder a la sección "${seccion}".`,
     );
     router.navigate(['/panel/inicio']);
     return false;

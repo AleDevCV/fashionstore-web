@@ -1,0 +1,291 @@
+<!--
+  =============================================================================
+  MODAL DE ALTA Y EDICIÓN DE PRENDAS (CU08)
+  -----------------------------------------------------------------------------
+  Datos maestros del diseño + matriz de variantes (FormArray). En edición las
+  variantes se ocultan porque el backend no las modifica por esta vía.
+  =============================================================================
+-->
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal prenda-modal"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <!-- ========================= CABECERA ========================= -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">
+          {{ esEdicion() ? 'Editar registro' : 'Nuevo registro' }}
+        </span>
+        <h2 class="fs-modal__titulo modal__titulo">
+          {{ esEdicion() ? 'Editar prenda' : 'Registrar prenda' }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- ========================= FORMULARIO ========================= -->
+    <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      <div class="fs-modal__cuerpo modal__cuerpo">
+        <!-- SKU y nombre comparten fila -->
+        <div class="modal__fila">
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="sku">SKU maestro</label>
+            <input
+              id="sku"
+              type="text"
+              class="fs-input"
+              formControlName="sku"
+              placeholder="CHQ-JEAN-001"
+              [class.is-invalid]="campoInvalido('sku')"
+            />
+            @if (campoInvalido('sku')) {
+              <span class="fs-field-error">El SKU es obligatorio (mínimo 2 caracteres).</span>
+            }
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="nombre">Nombre</label>
+            <input
+              id="nombre"
+              type="text"
+              class="fs-input"
+              formControlName="nombre"
+              placeholder="Chaqueta de Jean"
+              [class.is-invalid]="campoInvalido('nombre')"
+            />
+            @if (campoInvalido('nombre')) {
+              <span class="fs-field-error">El nombre es obligatorio.</span>
+            }
+          </div>
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="descripcion">Descripción</label>
+          <textarea
+            id="descripcion"
+            class="fs-input prenda-modal__textarea"
+            formControlName="descripcion"
+            placeholder="Ficha técnica de tela y costura…"
+          ></textarea>
+        </div>
+
+        <!-- Marca y género comparten fila -->
+        <div class="modal__fila">
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="marca">Marca</label>
+            <input
+              id="marca"
+              type="text"
+              class="fs-input"
+              formControlName="marca"
+              placeholder="FashionStore"
+            />
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="genero">Género</label>
+            <select id="genero" class="fs-input fs-select" formControlName="genero">
+              <option value="Dama">Dama</option>
+              <option value="Caballero">Caballero</option>
+              <option value="Unisex">Unisex</option>
+              <option value="Nino">Niño</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Precio y categoría comparten fila -->
+        <div class="modal__fila">
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="precio_base">Precio base (Bs)</label>
+            <input
+              id="precio_base"
+              type="number"
+              step="0.01"
+              min="0"
+              class="fs-input"
+              formControlName="precio_base"
+              placeholder="349.90"
+              [class.is-invalid]="campoInvalido('precio_base')"
+            />
+            @if (campoInvalido('precio_base')) {
+              <span class="fs-field-error">Introduzca un precio mayor o igual a cero.</span>
+            }
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="id_categoria">Categoría</label>
+            <select
+              id="id_categoria"
+              class="fs-input fs-select"
+              formControlName="id_categoria"
+              [class.is-invalid]="campoInvalido('id_categoria')"
+            >
+              <option [ngValue]="null" disabled>Seleccione una categoría</option>
+              @for (categoria of categorias(); track categoria.id_categoria) {
+                <option [ngValue]="categoria.id_categoria">
+                  {{ categoria.nombre }}
+                </option>
+              }
+            </select>
+            @if (campoInvalido('id_categoria')) {
+              <span class="fs-field-error">Debe elegir una categoría.</span>
+            }
+          </div>
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="url_imagen">URL de imagen principal</label>
+          <input
+            id="url_imagen"
+            type="text"
+            class="fs-input"
+            formControlName="url_imagen"
+            placeholder="https://…"
+          />
+        </div>
+
+        <!-- Estado: solo se gestiona en edición -->
+        @if (esEdicion()) {
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="estado">Estado</label>
+            <select id="estado" class="fs-input fs-select" formControlName="estado">
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+              <option value="Borrador">Borrador</option>
+            </select>
+          </div>
+        }
+
+        <!-- ==================== MATRIZ DE VARIANTES (solo alta) ==================== -->
+        @if (!esEdicion()) {
+          <fieldset class="prenda-modal__variantes">
+            <legend class="fs-eyebrow">Variantes (talla / color)</legend>
+
+            <div formArrayName="variantes">
+              @for (fila of variantes.controls; track $index; let i = $index) {
+                <div class="prenda-modal__fila-variante" [formGroupName]="i">
+                  <div class="fs-field">
+                    <select
+                      class="fs-input fs-select"
+                      formControlName="id_talla"
+                      [class.is-invalid]="varianteInvalida(i, 'id_talla')"
+                    >
+                      <option [ngValue]="null" disabled>Talla</option>
+                      @for (talla of tallas(); track talla.id_talla) {
+                        <option [ngValue]="talla.id_talla">{{ talla.nombre }}</option>
+                      }
+                    </select>
+                  </div>
+
+                  <div class="fs-field">
+                    <select
+                      class="fs-input fs-select"
+                      formControlName="id_color"
+                      [class.is-invalid]="varianteInvalida(i, 'id_color')"
+                    >
+                      <option [ngValue]="null" disabled>Color</option>
+                      @for (color of colores(); track color.id_color) {
+                        <option [ngValue]="color.id_color">{{ color.nombre }}</option>
+                      }
+                    </select>
+                  </div>
+
+                  <div class="fs-field">
+                    <input
+                      type="number"
+                      min="0"
+                      class="fs-input"
+                      formControlName="stock_inicial"
+                      placeholder="Stock"
+                    />
+                  </div>
+
+                  <div class="fs-field">
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="fs-input"
+                      formControlName="precio_adicional"
+                      placeholder="Recargo"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    class="fs-accion fs-accion--peligro prenda-modal__quitar"
+                    (click)="quitarVariante(i)"
+                    [disabled]="variantes.length <= 1"
+                  >
+                    Quitar
+                  </button>
+                </div>
+              }
+            </div>
+
+            <button
+              type="button"
+              class="fs-btn fs-btn--ghost"
+              (click)="agregarVariante()"
+            >
+              + Agregar variante
+            </button>
+
+            <span class="modal__nota">
+              El stock inicial se aplica a cada sucursal existente al dar de alta.
+            </span>
+          </fieldset>
+        } @else {
+          <span class="modal__nota">
+            Las variantes no se editan desde aquí: su modificación afectaría al
+            inventario ya registrado en las sucursales.
+          </span>
+        }
+
+        <!-- Banner de error del backend (SKU duplicado, variantes repetidas…) -->
+        @if (mensajeError()) {
+          <div class="fs-alert fs-alert--error" role="alert">
+            <span class="modal__alert-mark" aria-hidden="true"></span>
+            <span>{{ mensajeError() }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- ========================= PIE ========================= -->
+      <div class="fs-modal__pie">
+        <button
+          type="button"
+          class="fs-btn fs-btn--ghost"
+          (click)="cerrar()"
+          [disabled]="cargando()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="fs-btn fs-btn--primary"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="fs-spinner" aria-hidden="true"></span>
+            <span>Guardando</span>
+          } @else {
+            <span>{{ esEdicion() ? 'Guardar cambios' : 'Registrar prenda' }}</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

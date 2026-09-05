@@ -1,0 +1,163 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - GESTIÓN DE FICHAS DE CLIENTES (CU05)
+  -----------------------------------------------------------------------------
+  Cabecera, barra de búsqueda reactiva, filtro de estado y tabla de alta
+  densidad con acciones de alta, edición y baja lógica.
+  =============================================================================
+-->
+<section class="clientes">
+  <!-- ========================= CABECERA ========================= -->
+  <header class="clientes__head">
+    <div>
+      <span class="fs-eyebrow">Módulo comercial · CU05</span>
+      <h1 class="clientes__titulo">Fichas de Clientes</h1>
+      <p class="clientes__lead">
+        Registre a los compradores, búsquelos por cédula o nombre y mantenga su
+        estado al día para el mostrador y la tienda en línea.
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--primary" (click)="abrirAlta()">
+      + Agregar cliente
+    </button>
+  </header>
+
+  <!-- ================= BARRA DE FILTROS ================= -->
+  <div class="clientes__barra">
+    <div class="clientes__buscador">
+      <input
+        type="search"
+        class="fs-input"
+        placeholder="Buscar por CI o nombre…"
+        [value]="busqueda()"
+        (input)="alBuscar($event)"
+        aria-label="Buscar clientes"
+      />
+    </div>
+
+    <select
+      class="fs-input fs-select clientes__estado"
+      [value]="estado() ?? ''"
+      (change)="alCambiarEstado($event)"
+      aria-label="Filtrar por estado"
+    >
+      <option value="">Todos los estados</option>
+      <option value="Activo">Activos</option>
+      <option value="Inactivo">Inactivos</option>
+    </select>
+  </div>
+
+  <!-- ========================= CONTENIDO ========================= -->
+
+  @if (cargando()) {
+    <div class="clientes__estado-carga">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando clientes…</span>
+    </div>
+  } @else if (errorCarga()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span class="clientes__alert-mark" aria-hidden="true"></span>
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th class="clientes__col-id">ID</th>
+            <th>CI / NIT</th>
+            <th>Nombre completo</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th class="clientes__col-acciones">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (cliente of clientes(); track cliente.id_cliente) {
+            <tr [class.fs-fila--inactiva]="cliente.estado === 'Inactivo'">
+              <td class="fs-col-num">{{ cliente.id_cliente }}</td>
+              <td class="clientes__ci">{{ cliente.ci }}</td>
+              <td class="clientes__nombre">{{ cliente.nombre_completo }}</td>
+              <td class="fs-col-num">{{ cliente.telefono || '—' }}</td>
+              <td class="clientes__correo">{{ cliente.correo || '—' }}</td>
+              <td>
+                <span
+                  class="fs-badge"
+                  [class.fs-badge--activo]="cliente.estado === 'Activo'"
+                  [class.fs-badge--inactivo]="cliente.estado === 'Inactivo'"
+                >
+                  {{ cliente.estado }}
+                </span>
+              </td>
+              <td>
+                <div class="clientes__acciones">
+                  <button
+                    type="button"
+                    class="fs-accion"
+                    (click)="abrirEdicion(cliente)"
+                  >
+                    Editar
+                  </button>
+
+                  @if (cliente.estado === 'Activo') {
+                    <button
+                      type="button"
+                      class="fs-accion fs-accion--peligro"
+                      (click)="inhabilitar(cliente)"
+                      [disabled]="inhabilitandoId() === cliente.id_cliente"
+                    >
+                      {{
+                        inhabilitandoId() === cliente.id_cliente
+                          ? 'Procesando…'
+                          : 'Inactivar'
+                      }}
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      class="fs-accion"
+                      (click)="reactivar(cliente)"
+                      [disabled]="inhabilitandoId() === cliente.id_cliente"
+                    >
+                      {{
+                        inhabilitandoId() === cliente.id_cliente
+                          ? 'Procesando…'
+                          : 'Reactivar'
+                      }}
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="fs-tabla-vacia">
+                @if (busqueda()) {
+                  No se encontraron clientes que coincidan con «{{ busqueda() }}».
+                } @else {
+                  Todavía no hay clientes registrados.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="clientes__pie">Mostrando {{ clientes().length }} ficha(s).</p>
+  }
+</section>
+
+<!-- ==================== MODAL DE ALTA / EDICIÓN ==================== -->
+<!-- El bloque @if garantiza que el componente se cree de cero en cada apertura. -->
+@if (modalAbierto()) {
+  <app-cliente-modal
+    [cliente]="clienteEnEdicion()"
+    (cerrado)="cerrarModal()"
+    (guardado)="alGuardar($event)"
+  />
+}

@@ -1,0 +1,131 @@
+/* =============================================================================
+   FASHIONSTORE - ESTILOS DE CIUDADES Y SUCURSALES (CU06)
+   La tabla y el modal viven en styles.scss; aquí solo el encabezado, los
+   bloques de sección y el formulario de alta rápida de ciudad.
+   ========================================================================== */
+
+.sucursales {
+  max-width: 1180px;
+}
+
+/* -----------------------------------------------------------------------------
+   CABECERA
+   -------------------------------------------------------------------------- */
+.sucursales__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--fs-space-5);
+  margin-bottom: var(--fs-space-5);
+}
+
+.sucursales__titulo {
+  margin-top: var(--fs-space-2);
+  font-size: 30px;
+}
+
+.sucursales__lead {
+  margin-top: var(--fs-space-2);
+  max-width: 58ch;
+  font-size: 13.5px;
+  color: var(--fs-ink-soft);
+}
+
+/* -----------------------------------------------------------------------------
+   BLOQUES DE SECCIÓN
+   -------------------------------------------------------------------------- */
+.sucursales__bloque {
+  margin-bottom: var(--fs-space-6);
+}
+
+.sucursales__bloque-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fs-space-4);
+  margin-bottom: var(--fs-space-3);
+}
+
+.sucursales__subtitulo {
+  font-size: 19px;
+}
+
+/* -----------------------------------------------------------------------------
+   ALTA RÁPIDA DE CIUDAD
+   -------------------------------------------------------------------------- */
+.sucursales__alta-ciudad {
+  display: flex;
+  gap: var(--fs-space-2);
+}
+
+.sucursales__alta-ciudad .fs-input {
+  width: 240px;
+}
+
+/* -----------------------------------------------------------------------------
+   ESTADOS DE CARGA Y ERROR
+   -------------------------------------------------------------------------- */
+.sucursales__estado {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-3);
+  padding: var(--fs-space-7);
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+  font-size: 13px;
+  color: var(--fs-ink-soft);
+}
+
+.sucursales__alert-mark {
+  flex-shrink: 0;
+  width: 3px;
+  height: 3px;
+  margin-top: 8px;
+  background-color: var(--fs-danger);
+  transform: rotate(45deg);
+}
+
+/* -----------------------------------------------------------------------------
+   COLUMNAS DE LA TABLA
+   -------------------------------------------------------------------------- */
+.sucursales__col-id {
+  width: 56px;
+}
+
+.sucursales__col-acciones {
+  width: 90px;
+}
+
+.sucursales__nombre {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sucursales__direccion {
+  color: var(--fs-ink-soft);
+  max-width: 320px;
+}
+
+/* -----------------------------------------------------------------------------
+   ADAPTACIÓN RESPONSIVA
+   -------------------------------------------------------------------------- */
+@media (max-width: 720px) {
+  .sucursales__head {
+    flex-direction: column;
+  }
+
+  .sucursales__bloque-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sucursales__alta-ciudad {
+    width: 100%;
+  }
+
+  .sucursales__alta-ciudad .fs-input {
+    flex: 1;
+    width: auto;
+  }
+}

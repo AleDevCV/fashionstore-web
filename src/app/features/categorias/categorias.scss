@@ -1,0 +1,107 @@
+/* =============================================================================
+   FASHIONSTORE - ESTILOS DE LA GESTIÓN DE CATEGORÍAS (CU07)
+   La tabla, los distintivos y el modal viven en styles.scss; aquí solo el
+   encabezado y los detalles propios de la vista.
+   ========================================================================== */
+
+.categorias {
+  max-width: 1180px;
+}
+
+/* -----------------------------------------------------------------------------
+   CABECERA
+   -------------------------------------------------------------------------- */
+.categorias__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--fs-space-5);
+  margin-bottom: var(--fs-space-5);
+}
+
+.categorias__titulo {
+  margin-top: var(--fs-space-2);
+  font-size: 30px;
+}
+
+.categorias__lead {
+  margin-top: var(--fs-space-2);
+  max-width: 58ch;
+  font-size: 13.5px;
+  color: var(--fs-ink-soft);
+}
+
+/* -----------------------------------------------------------------------------
+   ESTADOS DE CARGA Y ERROR
+   -------------------------------------------------------------------------- */
+.categorias__estado-carga {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-3);
+  padding: var(--fs-space-7);
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+  font-size: 13px;
+  color: var(--fs-ink-soft);
+}
+
+.categorias__alert-mark {
+  flex-shrink: 0;
+  width: 3px;
+  height: 3px;
+  margin-top: 8px;
+  background-color: var(--fs-danger);
+  transform: rotate(45deg);
+}
+
+/* -----------------------------------------------------------------------------
+   COLUMNAS DE LA TABLA
+   -------------------------------------------------------------------------- */
+.categorias__col-id {
+  width: 56px;
+}
+
+.categorias__col-acciones {
+  width: 172px;
+}
+
+/* Marcador de rama para las subcategorías */
+.categorias__rama {
+  margin-right: 6px;
+  color: var(--fs-ink-muted);
+}
+
+.categorias__nombre {
+  font-weight: 500;
+}
+
+.categorias__padre {
+  color: var(--fs-ink-soft);
+  white-space: nowrap;
+}
+
+.categorias__descripcion {
+  color: var(--fs-ink-soft);
+  max-width: 360px;
+}
+
+.categorias__acciones {
+  display: flex;
+  gap: var(--fs-space-4);
+}
+
+.categorias__pie {
+  margin-top: var(--fs-space-3);
+  font-size: 11.5px;
+  color: var(--fs-ink-muted);
+}
+
+/* -----------------------------------------------------------------------------
+   ADAPTACIÓN RESPONSIVA
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .categorias__head {
+    flex-direction: column;
+  }
+}

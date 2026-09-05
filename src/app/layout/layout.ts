@@ -68,11 +68,21 @@ export class Layout {
       // Solo el Administrador ve esta entrada (RBAC visual).
       roles: ['Administrador'],
     },
-    { etiqueta: 'Clientes', caso: 'CU05', ruta: null, roles: null },
-    { etiqueta: 'Sucursales', caso: 'CU06', ruta: null, roles: null },
-    { etiqueta: 'Categorías', caso: 'CU07', ruta: null, roles: null },
-    { etiqueta: 'Prendas', caso: 'CU08', ruta: null, roles: null },
-    { etiqueta: 'Catálogo', caso: 'CU14', ruta: null, roles: null },
+    { etiqueta: 'Clientes', caso: 'CU05', ruta: '/panel/clientes', roles: null },
+    {
+      etiqueta: 'Sucursales',
+      caso: 'CU06',
+      ruta: '/panel/sucursales',
+      roles: ['Administrador'],
+    },
+    { etiqueta: 'Categorías', caso: 'CU07', ruta: '/panel/categorias', roles: null },
+    {
+      etiqueta: 'Prendas',
+      caso: 'CU08',
+      ruta: '/panel/prendas',
+      roles: ['Administrador'],
+    },
+    { etiqueta: 'Catálogo', caso: 'CU14', ruta: '/catalogo', roles: null },
   ];
 
   /**
