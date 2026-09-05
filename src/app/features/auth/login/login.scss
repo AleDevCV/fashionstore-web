@@ -1,0 +1,296 @@
+/* =============================================================================
+   FASHIONSTORE - ESTILOS DE LA PANTALLA DE INICIO DE SESIÓN (CU01)
+   -----------------------------------------------------------------------------
+   Rejilla asimétrica 55/45. La columna visual actúa como portada editorial y la
+   derecha concentra el formulario con un ancho de lectura controlado.
+   ========================================================================== */
+
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.login {
+  display: grid;
+  /* Asimetría deliberada: la fotografía domina y el formulario respira */
+  grid-template-columns: 55fr 45fr;
+  height: 100%;
+  background-color: var(--fs-bg);
+}
+
+/* -----------------------------------------------------------------------------
+   COLUMNA IZQUIERDA — LIENZO EDITORIAL
+   -------------------------------------------------------------------------- */
+.login__canvas {
+  position: relative;
+  overflow: hidden;
+  /* Degradado carbón de respaldo: si la foto remota falla, el panel conserva
+     su aspecto intencionado en lugar de quedar en blanco. */
+  background: linear-gradient(160deg, #1C1B19 0%, #111111 55%, #0B0B0B 100%);
+}
+
+.login__photo {
+  position: absolute;
+  inset: 0;
+  background-image: url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center 28%;
+  /* Desaturación parcial: acerca la fotografía a una portada de revista */
+  filter: grayscale(28%) contrast(1.04);
+}
+
+/* Velo oscuro que garantiza la legibilidad del texto sobre la imagen */
+.login__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0.55) 0%,
+    rgba(10, 10, 10, 0.28) 42%,
+    rgba(10, 10, 10, 0.82) 100%
+  );
+}
+
+.login__canvas-content {
+  position: relative; /* por encima de la imagen y del velo */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: var(--fs-space-7) var(--fs-space-7) var(--fs-space-6);
+  color: #FFFFFF;
+}
+
+/* --- Logotipo --- */
+.login__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-4);
+}
+
+.login__brand-name {
+  font-size: 17px;
+  color: #FFFFFF;
+}
+
+/* La segunda mitad del nombre en cursiva marca el contraste de alta costura */
+.login__brand-name em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--fs-gold);
+}
+
+/* Filete dorado de 1px que separa logotipo y descriptor */
+.login__brand-rule {
+  width: 34px;
+  height: 1px;
+  background-color: rgba(197, 168, 128, 0.7);
+}
+
+.login__brand-tag {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* --- Pie editorial --- */
+.login__canvas-foot {
+  max-width: 30ch;
+}
+
+/* Numeral de sección: recurso editorial de revista */
+.login__index {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fs-gold);
+  margin-bottom: var(--fs-space-4);
+}
+
+.login__quote {
+  font-family: var(--fs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.28;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+}
+
+.login__caption {
+  display: block;
+  margin-top: var(--fs-space-4);
+  padding-top: var(--fs-space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+/* -----------------------------------------------------------------------------
+   COLUMNA DERECHA — FORMULARIO
+   -------------------------------------------------------------------------- */
+.login__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fs-space-6);
+  background-color: var(--fs-surface);
+  /* Filete de 1px en lugar de una sombra difusa entre las dos columnas */
+  border-left: 1px solid var(--fs-border);
+  overflow-y: auto;
+}
+
+.login__form-wrap {
+  width: 100%;
+  max-width: 372px;
+}
+
+/* --- Encabezado --- */
+.login__head {
+  margin-bottom: var(--fs-space-6);
+}
+
+.login__title {
+  margin-top: var(--fs-space-3);
+  font-size: 38px;
+}
+
+.login__subtitle {
+  margin-top: var(--fs-space-3);
+  font-size: 14px;
+  color: var(--fs-ink-soft);
+  max-width: 34ch;
+}
+
+/* --- Cuerpo del formulario --- */
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-5);
+}
+
+/* Fila que alinea la etiqueta con el botón "Ver / Ocultar" */
+.login__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.login__toggle {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--fs-font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+  transition: color var(--fs-transition);
+}
+
+.login__toggle:hover {
+  color: var(--fs-gold-deep);
+}
+
+/* Cuadro dorado que precede al texto de error, en lugar de un icono genérico */
+.login__alert-mark {
+  flex-shrink: 0;
+  width: 3px;
+  height: 3px;
+  margin-top: 8px;
+  background-color: var(--fs-danger);
+  transform: rotate(45deg);
+}
+
+.login__submit {
+  width: 100%;
+  margin-top: var(--fs-space-1);
+}
+
+/* --- Enlaces secundarios --- */
+.login__links {
+  display: flex;
+  justify-content: center;
+}
+
+.login__link {
+  font-size: 13px;
+  color: var(--fs-ink-soft);
+  border-bottom: 1px solid transparent;
+  transition: color var(--fs-transition), border-color var(--fs-transition);
+}
+
+.login__link:hover {
+  color: var(--fs-ink);
+  border-bottom-color: var(--fs-gold);
+}
+
+/* --- Pie legal --- */
+.login__foot {
+  margin-top: var(--fs-space-7);
+}
+
+.login__foot-rule {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: var(--fs-border);
+  margin-bottom: var(--fs-space-4);
+}
+
+.login__foot-text {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--fs-ink-muted);
+}
+
+/* -----------------------------------------------------------------------------
+   ADAPTACIÓN RESPONSIVA (RNF05)
+   -------------------------------------------------------------------------- */
+
+/* Tablet: se reduce el peso de la columna visual */
+@media (max-width: 1180px) {
+  .login {
+    grid-template-columns: 46fr 54fr;
+  }
+
+  .login__canvas-content {
+    padding: var(--fs-space-6);
+  }
+
+  .login__quote {
+    font-size: 25px;
+  }
+}
+
+/* Móvil y tablet vertical: la fotografía se oculta y el formulario ocupa todo */
+@media (max-width: 980px) {
+  :host {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .login {
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+  }
+
+  .login__canvas {
+    display: none;
+  }
+
+  .login__panel {
+    border-left: none;
+    padding: var(--fs-space-6) var(--fs-space-5);
+    background-color: var(--fs-bg);
+  }
+
+  .login__title {
+    font-size: 32px;
+  }
+}

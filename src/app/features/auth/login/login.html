@@ -1,0 +1,168 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - PLANTILLA DE INICIO DE SESIÓN (CU01)
+  -----------------------------------------------------------------------------
+  Composición asimétrica de dos columnas:
+    - Izquierda : lienzo editorial con fotografía de moda y logotipo de marca.
+    - Derecha   : formulario de acceso, limpio y centrado verticalmente.
+  En pantallas menores a 980px la columna visual se oculta y el formulario
+  ocupa todo el ancho.
+  =============================================================================
+-->
+<div class="login">
+  <!-- ======================= COLUMNA IZQUIERDA: LIENZO ====================== -->
+  <aside class="login__canvas" aria-hidden="true">
+    <!-- Capa de imagen: si la fotografía remota no carga, queda el degradado
+         carbón de fondo, de modo que el panel nunca se ve roto. -->
+    <div class="login__photo"></div>
+    <div class="login__scrim"></div>
+
+    <div class="login__canvas-content">
+      <!-- Logotipo de la marca -->
+      <header class="login__brand">
+        <span class="fs-wordmark login__brand-name">Fashion<em>Store</em></span>
+        <span class="login__brand-rule"></span>
+        <span class="login__brand-tag">Bolivia · Desde 2026</span>
+      </header>
+
+      <!-- Pie editorial: numeral de sección y frase de marca -->
+      <footer class="login__canvas-foot">
+        <span class="login__index">01 — Acceso</span>
+        <p class="login__quote">
+          La moda se desvanece,<br />
+          solo el estilo permanece.
+        </p>
+        <span class="login__caption">Plataforma omnicanal de gestión minorista</span>
+      </footer>
+    </div>
+  </aside>
+
+  <!-- ======================= COLUMNA DERECHA: FORMULARIO ==================== -->
+  <main class="login__panel">
+    <div class="login__form-wrap">
+      <!-- Encabezado del formulario -->
+      <div class="login__head">
+        <span class="fs-eyebrow">Panel administrativo</span>
+        <h1 class="login__title">Iniciar sesión</h1>
+        <p class="login__subtitle">
+          Introduzca sus credenciales para acceder al sistema de gestión.
+        </p>
+      </div>
+
+      <!--
+        Formulario reactivo. `novalidate` desactiva las burbujas de validación
+        nativas del navegador para usar exclusivamente las de Angular.
+      -->
+      <form
+        class="login__form"
+        [formGroup]="formulario"
+        (ngSubmit)="iniciarSesion()"
+        novalidate
+      >
+        <!-- ---------------------------- CORREO ---------------------------- -->
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="correo">Correo electrónico</label>
+          <input
+            id="correo"
+            type="email"
+            class="fs-input"
+            formControlName="correo"
+            placeholder="nombre@fashionstore.com"
+            autocomplete="username"
+            [class.is-invalid]="campoInvalido('correo')"
+            [attr.aria-invalid]="campoInvalido('correo')"
+          />
+
+          <!-- Mensajes de validación: se muestra solo el primero aplicable -->
+          @if (campoInvalido('correo')) {
+            <span class="fs-field-error">
+              @if (correo.errors?.['required']) {
+                El correo electrónico es obligatorio.
+              } @else if (correo.errors?.['email']) {
+                Introduzca un correo con formato válido.
+              }
+            </span>
+          }
+        </div>
+
+        <!-- -------------------------- CONTRASEÑA -------------------------- -->
+        <div class="fs-field">
+          <div class="login__label-row">
+            <label class="fs-eyebrow" for="password">Contraseña</label>
+
+            <!-- Alterna el enmascarado del campo (opción "Ver Contraseña") -->
+            <button
+              type="button"
+              class="login__toggle"
+              (click)="alternarPassword()"
+            >
+              {{ mostrarPassword() ? 'Ocultar' : 'Ver' }}
+            </button>
+          </div>
+
+          <input
+            id="password"
+            [type]="mostrarPassword() ? 'text' : 'password'"
+            class="fs-input"
+            formControlName="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            [class.is-invalid]="campoInvalido('password')"
+            [attr.aria-invalid]="campoInvalido('password')"
+          />
+
+          @if (campoInvalido('password')) {
+            <span class="fs-field-error">
+              @if (password.errors?.['required']) {
+                La contraseña es obligatoria.
+              } @else if (password.errors?.['minlength']) {
+                La contraseña debe tener al menos 4 caracteres.
+              }
+            </span>
+          }
+        </div>
+
+        <!-- ----------------- MENSAJE DE ERROR DEL SERVIDOR ----------------- -->
+        <!-- Cubre las excepciones A y B del CU01 (401 y 403) y los fallos de red -->
+        @if (mensajeError()) {
+          <div class="fs-alert fs-alert--error" role="alert">
+            <span class="login__alert-mark" aria-hidden="true"></span>
+            <span>{{ mensajeError() }}</span>
+          </div>
+        }
+
+        <!-- --------------------- BOTÓN DE ENVÍO --------------------------- -->
+        <!-- Se deshabilita durante la petición para evitar envíos duplicados -->
+        <button
+          type="submit"
+          class="fs-btn fs-btn--primary login__submit"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="fs-spinner" aria-hidden="true"></span>
+            <span>Verificando</span>
+          } @else {
+            <span>Ingresar al panel</span>
+          }
+        </button>
+
+        <!-- ------------------------ ENLACES DE PIE ------------------------ -->
+        <div class="login__links">
+          <!-- CU04: Recuperar Contraseña, planificado para la Iteración 2 -->
+          <a routerLink="/recuperar-password" class="login__link">
+            ¿Olvidó su contraseña?
+          </a>
+        </div>
+      </form>
+
+      <!-- Pie legal del formulario -->
+      <footer class="login__foot">
+        <span class="login__foot-rule"></span>
+        <p class="login__foot-text">
+          Acceso restringido al personal autorizado de FashionStore.
+          Toda actividad queda registrada en la bitácora del sistema.
+        </p>
+      </footer>
+    </div>
+  </main>
+</div>
