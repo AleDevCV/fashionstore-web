@@ -1,0 +1,38 @@
+/* =============================================================================
+   ESTILOS DEL MODAL DE CLIENTES (CU05)
+   La estructura del modal (velo, marco, cabecera, pie) vive en styles.scss;
+   aquí solo van los detalles propios de este formulario.
+   ========================================================================== */
+
+.modal__titulo {
+  margin-top: var(--fs-space-2);
+}
+
+.modal__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-4);
+}
+
+/* Dos campos por fila para acortar el formulario */
+.modal__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fs-space-4);
+}
+
+/* Rombo diminuto que precede al texto de error */
+.modal__alert-mark {
+  flex-shrink: 0;
+  width: 3px;
+  height: 3px;
+  margin-top: 8px;
+  background-color: var(--fs-danger);
+  transform: rotate(45deg);
+}
+
+@media (max-width: 520px) {
+  .modal__fila {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,124 @@
+<!--
+  =============================================================================
+  MODAL DE DETALLE DE PRENDA (CU14)
+  -----------------------------------------------------------------------------
+  Ficha con imagen, datos maestros y la disponibilidad de stock por sucursal
+  para cada combinación de talla y color.
+  =============================================================================
+-->
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="prenda-detalle"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <!-- ========================= CABECERA ========================= -->
+    <header class="prenda-detalle__head">
+      <div>
+        <span class="fs-eyebrow">Disponibilidad por sucursal</span>
+        <h2 class="prenda-detalle__titulo">
+          {{ prenda()?.nombre ?? 'Detalle de prenda' }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar"
+      >
+        ×
+      </button>
+    </header>
+
+    <!-- ========================= CONTENIDO ========================= -->
+    @if (cargando()) {
+      <div class="prenda-detalle__estado">
+        <span class="fs-spinner" aria-hidden="true"></span>
+        <span>Cargando disponibilidad…</span>
+      </div>
+    } @else if (error()) {
+      <div class="fs-alert fs-alert--error prenda-detalle__alerta" role="alert">
+        <span class="prenda-detalle__alert-mark" aria-hidden="true"></span>
+        <span>{{ error() }}</span>
+      </div>
+    } @else if (prenda(); as p) {
+      <div class="prenda-detalle__cuerpo">
+        <!-- Ficha principal -->
+        <div class="prenda-detalle__ficha">
+          <div class="prenda-detalle__img">
+            @if (p.url_imagen) {
+              <img [src]="p.url_imagen" [alt]="p.nombre" />
+            } @else {
+              <span class="prenda-detalle__sin-img">Sin imagen</span>
+            }
+          </div>
+
+          <div class="prenda-detalle__datos">
+            <span class="fs-eyebrow">
+              {{ p.categoria || 'Sin categoría' }} · {{ p.genero }}
+            </span>
+            <h3 class="prenda-detalle__nombre">{{ p.nombre }}</h3>
+            @if (p.marca) {
+              <p class="prenda-detalle__marca">{{ p.marca }}</p>
+            }
+            <p class="prenda-detalle__precio">
+              Bs {{ formatearPrecio(p.precio_base) }}
+            </p>
+            @if (p.descripcion) {
+              <p class="prenda-detalle__descripcion">{{ p.descripcion }}</p>
+            }
+          </div>
+        </div>
+
+        <!-- Matriz de variantes con disponibilidad -->
+        <div class="prenda-detalle__variantes">
+          <span class="fs-eyebrow">Tallas y colores</span>
+
+          @for (variante of p.variantes; track variante.id_variante_prenda) {
+            <div class="prenda-detalle__variante">
+              <div class="prenda-detalle__variante-head">
+                <span class="prenda-detalle__talla-color">
+                  {{ variante.talla }} / {{ variante.color }}
+                </span>
+                <span class="prenda-detalle__precio-variante">
+                  Bs {{ formatearPrecio(variante.precio) }}
+                </span>
+                <span
+                  class="fs-badge"
+                  [class.fs-badge--activo]="variante.stock_total > 0"
+                  [class.fs-badge--inactivo]="variante.stock_total === 0"
+                >
+                  {{ variante.stock_total }} u.
+                </span>
+              </div>
+
+              @if (variante.disponibilidad.length > 0) {
+                <ul class="prenda-detalle__sucursales">
+                  @for (stock of variante.disponibilidad; track stock.id_sucursal) {
+                    <li class="prenda-detalle__sucursal">
+                      <span class="prenda-detalle__sucursal-nombre">
+                        {{ stock.sucursal }}
+                      </span>
+                      <span class="prenda-detalle__sucursal-ciudad">
+                        {{ stock.ciudad || '—' }}
+                      </span>
+                      <span class="prenda-detalle__sucursal-stock">
+                        {{ stock.stock }} u. disponibles
+                      </span>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="prenda-detalle__sin-stock">
+                  Sin stock en ninguna sucursal.
+                </p>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

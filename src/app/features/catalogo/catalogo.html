@@ -1,0 +1,208 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - CATÁLOGO PÚBLICO (CU14)
+  -----------------------------------------------------------------------------
+  Página de vitrina con barra superior, panel lateral de filtros y cuadrícula
+  de tarjetas. El detalle de disponibilidad se abre en un modal.
+  =============================================================================
+-->
+<div class="catalogo">
+  <!-- ========================= BARRA SUPERIOR ========================= -->
+  <header class="catalogo__topbar">
+    <span class="fs-wordmark catalogo__brand">Fashion<em>Store</em></span>
+
+    <nav class="catalogo__nav">
+      <span class="catalogo__tag">Catálogo público · CU14</span>
+      <a class="fs-btn fs-btn--ghost" routerLink="/login">Acceso personal</a>
+    </nav>
+  </header>
+
+  <div class="catalogo__layout">
+    <!-- ==================== PANEL LATERAL DE FILTROS ==================== -->
+    <aside class="catalogo__filtros">
+      <div class="catalogo__filtros-head">
+        <h1 class="catalogo__titulo">Catálogo</h1>
+        <button type="button" class="fs-accion" (click)="limpiarFiltros()">
+          Limpiar filtros
+        </button>
+      </div>
+
+      <input
+        type="search"
+        class="fs-input"
+        placeholder="Buscar prenda, SKU o marca…"
+        [value]="busqueda()"
+        (input)="alBuscar($event)"
+        aria-label="Buscar en el catálogo"
+      />
+
+      @if (filtros(); as f) {
+        <div class="catalogo__grupo">
+          <span class="fs-eyebrow">Categoría</span>
+          <select
+            class="fs-input fs-select"
+            [value]="idCategoria() ?? ''"
+            (change)="cambiarCategoria($event)"
+          >
+            <option value="">Todas</option>
+            @for (categoria of f.categorias; track categoria.id_categoria) {
+              <option [value]="categoria.id_categoria">{{ categoria.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="catalogo__grupo">
+          <span class="fs-eyebrow">Género</span>
+          <select
+            class="fs-input fs-select"
+            [value]="genero() ?? ''"
+            (change)="cambiarGenero($event)"
+          >
+            <option value="">Todos</option>
+            @for (g of f.generos; track g) {
+              <option [value]="g">{{ g }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="catalogo__grupo">
+          <span class="fs-eyebrow">Talla</span>
+          <select
+            class="fs-input fs-select"
+            [value]="idTalla() ?? ''"
+            (change)="cambiarTalla($event)"
+          >
+            <option value="">Todas</option>
+            @for (talla of f.tallas; track talla.id_talla) {
+              <option [value]="talla.id_talla">{{ talla.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="catalogo__grupo">
+          <span class="fs-eyebrow">Color</span>
+          <select
+            class="fs-input fs-select"
+            [value]="idColor() ?? ''"
+            (change)="cambiarColor($event)"
+          >
+            <option value="">Todos</option>
+            @for (color of f.colores; track color.id_color) {
+              <option [value]="color.id_color">{{ color.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="catalogo__grupo">
+          <span class="fs-eyebrow">Rango de precio (Bs)</span>
+          <div class="catalogo__rango">
+            <input
+              type="number"
+              min="0"
+              class="fs-input"
+              placeholder="Mín"
+              [value]="precioMin() ?? ''"
+              (change)="cambiarPrecioMin($event)"
+            />
+            <span class="catalogo__rango-sep">—</span>
+            <input
+              type="number"
+              min="0"
+              class="fs-input"
+              placeholder="Máx"
+              [value]="precioMax() ?? ''"
+              (change)="cambiarPrecioMax($event)"
+            />
+          </div>
+        </div>
+      }
+    </aside>
+
+    <!-- ==================== CUADRÍCULA DE RESULTADOS ==================== -->
+    <main class="catalogo__resultados">
+      @if (cargando()) {
+        <div class="catalogo__estado">
+          <span class="fs-spinner" aria-hidden="true"></span>
+          <span>Cargando catálogo…</span>
+        </div>
+      } @else if (errorCarga()) {
+        <div class="fs-alert fs-alert--error" role="alert">
+          <span>{{ errorCarga() }}</span>
+          <button type="button" class="fs-accion" (click)="consultar()">
+            Reintentar
+          </button>
+        </div>
+      } @else {
+        <p class="catalogo__contador">{{ total() }} prenda(s) disponibles</p>
+
+        <div class="catalogo__grid">
+          @for (prenda of prendas(); track prenda.id_prenda) {
+            <article
+              class="catalogo__card"
+              (click)="abrirDetalle(prenda.id_prenda)"
+              tabindex="0"
+              (keyup.enter)="abrirDetalle(prenda.id_prenda)"
+            >
+              <div class="catalogo__card-img">
+                @if (prenda.url_imagen) {
+                  <img [src]="prenda.url_imagen" [alt]="prenda.nombre" loading="lazy" />
+                } @else {
+                  <span class="catalogo__sin-img">Sin imagen</span>
+                }
+              </div>
+
+              <div class="catalogo__card-cuerpo">
+                <span class="fs-eyebrow">{{ prenda.categoria || 'Sin categoría' }}</span>
+                <h2 class="catalogo__card-nombre">{{ prenda.nombre }}</h2>
+
+                <div class="catalogo__card-pie">
+                  <span class="catalogo__precio">
+                    Bs {{ formatearPrecio(prenda.precio_base) }}
+                  </span>
+                  <span
+                    class="fs-badge"
+                    [class.fs-badge--activo]="prenda.stock_total > 0"
+                    [class.fs-badge--inactivo]="prenda.stock_total === 0"
+                  >
+                    {{ prenda.stock_total > 0 ? 'Disponible' : 'Agotado' }}
+                  </span>
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <div class="catalogo__vacio">
+              No hay prendas que coincidan con los filtros elegidos.
+            </div>
+          }
+        </div>
+
+        @if (total() > 0) {
+          <div class="catalogo__paginador">
+            <button
+              type="button"
+              class="fs-btn fs-btn--ghost"
+              (click)="paginaAnterior()"
+              [disabled]="!hayPaginaAnterior"
+            >
+              Anterior
+            </button>
+            <span class="catalogo__rango">{{ rangoActual() }}</span>
+            <button
+              type="button"
+              class="fs-btn fs-btn--ghost"
+              (click)="paginaSiguiente()"
+              [disabled]="!hayPaginaSiguiente"
+            >
+              Siguiente
+            </button>
+          </div>
+        }
+      }
+    </main>
+  </div>
+</div>
+
+<!-- ==================== MODAL DE DETALLE ==================== -->
+@if (prendaSeleccionada(); as id) {
+  <app-prenda-detalle [prendaId]="id" (cerrado)="cerrarDetalle()" />
+}

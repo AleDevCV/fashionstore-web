@@ -1,0 +1,151 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - GESTIÓN DE CATEGORÍAS DE PRENDAS (CU07)
+  -----------------------------------------------------------------------------
+  Cabecera y tabla del árbol de categorías con alta, edición y baja lógica.
+  =============================================================================
+-->
+<section class="categorias">
+  <!-- ========================= CABECERA ========================= -->
+  <header class="categorias__head">
+    <div>
+      <span class="fs-eyebrow">Módulo de inventarios · CU07</span>
+      <h1 class="categorias__titulo">Categorías de Prendas</h1>
+      <p class="categorias__lead">
+        Organice la clasificación jerárquica del catálogo. Las categorías pueden
+        colgar de otras para formar árboles como «Damas → Blusas».
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--primary" (click)="abrirAlta()">
+      + Nueva categoría
+    </button>
+  </header>
+
+  <!-- ========================= CONTENIDO ========================= -->
+
+  @if (cargando()) {
+    <div class="categorias__estado-carga">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando categorías…</span>
+    </div>
+  } @else if (errorCarga()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span class="categorias__alert-mark" aria-hidden="true"></span>
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th class="categorias__col-id">ID</th>
+            <th>Nombre</th>
+            <th>Categoría padre</th>
+            <th>Descripción</th>
+            <th>Prendas</th>
+            <th>Estado</th>
+            <th class="categorias__col-acciones">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (categoria of categorias(); track categoria.id_categoria) {
+            <tr [class.fs-fila--inactiva]="categoria.estado === 'Inactivo'">
+              <td class="fs-col-num">{{ categoria.id_categoria }}</td>
+
+              <td>
+                <!-- La marca «└» distingue visualmente las subcategorías -->
+                @if (categoria.id_categoria_padre !== null) {
+                  <span class="categorias__rama" aria-hidden="true">└</span>
+                }
+                <span class="categorias__nombre">{{ categoria.nombre }}</span>
+              </td>
+
+              <td class="categorias__padre">
+                {{ categoria.categoria_padre || '—' }}
+              </td>
+
+              <td class="categorias__descripcion">
+                {{ categoria.descripcion || '—' }}
+              </td>
+
+              <td class="fs-col-num">{{ categoria.total_prendas }}</td>
+
+              <td>
+                <span
+                  class="fs-badge"
+                  [class.fs-badge--activo]="categoria.estado === 'Activo'"
+                  [class.fs-badge--inactivo]="categoria.estado === 'Inactivo'"
+                >
+                  {{ categoria.estado }}
+                </span>
+              </td>
+
+              <td>
+                <div class="categorias__acciones">
+                  <button
+                    type="button"
+                    class="fs-accion"
+                    (click)="abrirEdicion(categoria)"
+                  >
+                    Editar
+                  </button>
+
+                  @if (categoria.estado === 'Activo') {
+                    <button
+                      type="button"
+                      class="fs-accion fs-accion--peligro"
+                      (click)="inhabilitar(categoria)"
+                      [disabled]="inhabilitandoId() === categoria.id_categoria"
+                    >
+                      {{
+                        inhabilitandoId() === categoria.id_categoria
+                          ? 'Procesando…'
+                          : 'Inactivar'
+                      }}
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      class="fs-accion"
+                      (click)="reactivar(categoria)"
+                      [disabled]="inhabilitandoId() === categoria.id_categoria"
+                    >
+                      {{
+                        inhabilitandoId() === categoria.id_categoria
+                          ? 'Procesando…'
+                          : 'Reactivar'
+                      }}
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="fs-tabla-vacia">
+                Todavía no hay categorías registradas.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="categorias__pie">
+      Mostrando {{ categorias().length }} categoría(s).
+    </p>
+  }
+</section>
+
+<!-- ==================== MODAL DE ALTA / EDICIÓN ==================== -->
+@if (modalAbierto()) {
+  <app-categoria-modal
+    [categoria]="categoriaEnEdicion()"
+    [categorias]="categorias()"
+    (cerrado)="cerrarModal()"
+    (guardado)="alGuardar($event)"
+  />
+}

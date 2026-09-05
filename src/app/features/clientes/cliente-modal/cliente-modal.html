@@ -1,0 +1,176 @@
+<!--
+  =============================================================================
+  MODAL DE ALTA Y EDICIÓN DE CLIENTES (CU05)
+  -----------------------------------------------------------------------------
+  El velo cierra el modal al pulsarse; el clic sobre la ventana detiene la
+  propagación para no cerrarla al interactuar con el formulario.
+  =============================================================================
+-->
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <!-- ========================= CABECERA ========================= -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">
+          {{ esEdicion() ? 'Editar registro' : 'Nuevo registro' }}
+        </span>
+        <h2 class="fs-modal__titulo modal__titulo">
+          {{ esEdicion() ? 'Editar cliente' : 'Registrar cliente' }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- ========================= FORMULARIO ========================= -->
+    <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      <div class="fs-modal__cuerpo modal__cuerpo">
+        <!-- CI y nombre comparten fila -->
+        <div class="modal__fila">
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="ci">CI / NIT</label>
+            <input
+              id="ci"
+              type="text"
+              class="fs-input"
+              formControlName="ci"
+              placeholder="9876543"
+              [class.is-invalid]="campoInvalido('ci')"
+            />
+            @if (campoInvalido('ci')) {
+              <span class="fs-field-error">
+                @if (errores('ci')?.['required']) {
+                  La cédula es obligatoria.
+                } @else if (errores('ci')?.['minlength']) {
+                  La cédula debe tener al menos 4 caracteres.
+                }
+              </span>
+            }
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="nombre_completo">Nombre completo</label>
+            <input
+              id="nombre_completo"
+              type="text"
+              class="fs-input"
+              formControlName="nombre_completo"
+              placeholder="María René Ortiz"
+              [class.is-invalid]="campoInvalido('nombre_completo')"
+            />
+            @if (campoInvalido('nombre_completo')) {
+              <span class="fs-field-error">El nombre completo es obligatorio.</span>
+            }
+          </div>
+        </div>
+
+        <!-- Teléfono y correo comparten fila -->
+        <div class="modal__fila">
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="telefono">Teléfono</label>
+            <input
+              id="telefono"
+              type="text"
+              inputmode="numeric"
+              class="fs-input"
+              formControlName="telefono"
+              placeholder="78911223"
+              [class.is-invalid]="campoInvalido('telefono')"
+            />
+            @if (campoInvalido('telefono')) {
+              <span class="fs-field-error">
+                El teléfono debe contener solo números.
+              </span>
+            }
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="correo">Correo electrónico</label>
+            <input
+              id="correo"
+              type="email"
+              class="fs-input"
+              formControlName="correo"
+              placeholder="maria@gmail.com"
+              autocomplete="off"
+              [class.is-invalid]="campoInvalido('correo')"
+            />
+            @if (campoInvalido('correo')) {
+              <span class="fs-field-error">
+                Introduzca un correo con formato válido.
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="direccion_envio">Dirección de envío</label>
+          <input
+            id="direccion_envio"
+            type="text"
+            class="fs-input"
+            formControlName="direccion_envio"
+            placeholder="Av. Banzer km 6"
+            [class.is-invalid]="campoInvalido('direccion_envio')"
+          />
+        </div>
+
+        <!-- Estado: solo se gestiona en edición -->
+        @if (esEdicion()) {
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="estado">Estado</label>
+            <select id="estado" class="fs-input fs-select" formControlName="estado">
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </div>
+        }
+
+        <!-- Banner de error del backend (cédula o correo duplicados) -->
+        @if (mensajeError()) {
+          <div class="fs-alert fs-alert--error" role="alert">
+            <span class="modal__alert-mark" aria-hidden="true"></span>
+            <span>{{ mensajeError() }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- ========================= PIE ========================= -->
+      <div class="fs-modal__pie">
+        <button
+          type="button"
+          class="fs-btn fs-btn--ghost"
+          (click)="cerrar()"
+          [disabled]="cargando()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="fs-btn fs-btn--primary"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="fs-spinner" aria-hidden="true"></span>
+            <span>Guardando</span>
+          } @else {
+            <span>{{ esEdicion() ? 'Guardar cambios' : 'Registrar cliente' }}</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,132 @@
+<!--
+  =============================================================================
+  MODAL DE ALTA Y EDICIÓN DE CATEGORÍAS (CU07)
+  -----------------------------------------------------------------------------
+  El velo cierra el modal al pulsarse; el clic sobre la ventana detiene la
+  propagación para no cerrarla al interactuar con el formulario.
+  =============================================================================
+-->
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <!-- ========================= CABECERA ========================= -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">
+          {{ esEdicion() ? 'Editar registro' : 'Nuevo registro' }}
+        </span>
+        <h2 class="fs-modal__titulo modal__titulo">
+          {{ esEdicion() ? 'Editar categoría' : 'Registrar categoría' }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- ========================= FORMULARIO ========================= -->
+    <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      <div class="fs-modal__cuerpo modal__cuerpo">
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            type="text"
+            class="fs-input"
+            formControlName="nombre"
+            placeholder="Blusas"
+            [class.is-invalid]="campoInvalido('nombre')"
+          />
+          @if (campoInvalido('nombre')) {
+            <span class="fs-field-error">
+              El nombre es obligatorio (mínimo 2 caracteres).
+            </span>
+          }
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="descripcion">Descripción</label>
+          <input
+            id="descripcion"
+            type="text"
+            class="fs-input"
+            formControlName="descripcion"
+            placeholder="Prendas de vestir para la parte superior"
+          />
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="id_categoria_padre">Categoría padre</label>
+          <select
+            id="id_categoria_padre"
+            class="fs-input fs-select"
+            formControlName="id_categoria_padre"
+          >
+            <option [ngValue]="null">Sin categoría padre (raíz)</option>
+            @for (padre of padresDisponibles(); track padre.id_categoria) {
+              <option [ngValue]="padre.id_categoria">{{ padre.nombre }}</option>
+            }
+          </select>
+          <span class="modal__nota">
+            Las categorías raíz inician una rama del árbol; las demás cuelgan de
+            una categoría existente.
+          </span>
+        </div>
+
+        <!-- Estado: solo se gestiona en edición -->
+        @if (esEdicion()) {
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="estado">Estado</label>
+            <select id="estado" class="fs-input fs-select" formControlName="estado">
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </div>
+        }
+
+        <!-- Banner de error del backend (nombre duplicado, ciclo, subcategorías) -->
+        @if (mensajeError()) {
+          <div class="fs-alert fs-alert--error" role="alert">
+            <span class="modal__alert-mark" aria-hidden="true"></span>
+            <span>{{ mensajeError() }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- ========================= PIE ========================= -->
+      <div class="fs-modal__pie">
+        <button
+          type="button"
+          class="fs-btn fs-btn--ghost"
+          (click)="cerrar()"
+          [disabled]="cargando()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="fs-btn fs-btn--primary"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="fs-spinner" aria-hidden="true"></span>
+            <span>Guardando</span>
+          } @else {
+            <span>{{ esEdicion() ? 'Guardar cambios' : 'Registrar categoría' }}</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

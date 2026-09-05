@@ -1,0 +1,86 @@
+/* =============================================================================
+   ESTILOS DEL MODAL DE PRENDAS (CU08)
+   La estructura del modal vive en styles.scss; aquí el ensanchado del marco,
+   los campos propios y la matriz de variantes del FormArray.
+   ========================================================================== */
+
+.modal__titulo {
+  margin-top: var(--fs-space-2);
+}
+
+.modal__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-4);
+}
+
+.modal__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fs-space-4);
+}
+
+.modal__nota {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--fs-ink-muted);
+}
+
+.modal__alert-mark {
+  flex-shrink: 0;
+  width: 3px;
+  height: 3px;
+  margin-top: 8px;
+  background-color: var(--fs-danger);
+  transform: rotate(45deg);
+}
+
+/* El modal de prendas es más ancho por la matriz de variantes */
+.prenda-modal {
+  max-width: 720px;
+}
+
+.prenda-modal__textarea {
+  resize: vertical;
+  min-height: 72px;
+  font-family: var(--fs-font-body);
+}
+
+/* -----------------------------------------------------------------------------
+   MATRIZ DE VARIANTES
+   -------------------------------------------------------------------------- */
+.prenda-modal__variantes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-3);
+  margin: 0;
+  padding: var(--fs-space-4);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+}
+
+.prenda-modal__variantes legend {
+  padding: 0 var(--fs-space-2);
+}
+
+/* Una fila por combinación talla/color: dos selectores, dos números y acción */
+.prenda-modal__fila-variante {
+  display: grid;
+  grid-template-columns: 1fr 1fr 110px 110px auto;
+  gap: var(--fs-space-2);
+  align-items: end;
+}
+
+.prenda-modal__quitar {
+  align-self: center;
+}
+
+@media (max-width: 640px) {
+  .modal__fila {
+    grid-template-columns: 1fr;
+  }
+
+  .prenda-modal__fila-variante {
+    grid-template-columns: 1fr 1fr;
+  }
+}
