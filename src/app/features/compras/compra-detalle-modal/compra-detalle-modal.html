@@ -1,0 +1,127 @@
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal fs-modal--comprobante"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-comprobante-titulo"
+  >
+    <!-- Cabecera -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">Comprobante de adquisición · CU13</span>
+        <h2 id="modal-comprobante-titulo" class="fs-modal__titulo">
+          Detalle de Compra #{{ idCompra() }}
+        </h2>
+      </div>
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar comprobante"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="fs-modal__cuerpo">
+      @if (cargando()) {
+        <div class="compra-detalle__cargando">
+          <span class="fs-spinner" aria-hidden="true"></span>
+          <span>Cargando detalle de la compra…</span>
+        </div>
+      } @else if (error()) {
+        <div class="fs-alert fs-alert--error" role="alert">
+          <span>{{ error() }}</span>
+          <button type="button" class="fs-accion" (click)="cargarDetalle()">Reintentar</button>
+        </div>
+      } @else if (compra(); as c) {
+        <!-- Cabecera de Comprobante -->
+        <div class="comprobante-meta">
+          <div class="comprobante-meta__item">
+            <span class="comprobante-meta__label">Proveedor</span>
+            <span class="comprobante-meta__valor">{{ c.proveedor_razon_social || 'Proveedor #' + c.id_proveedor }}</span>
+          </div>
+          <div class="comprobante-meta__item">
+            <span class="comprobante-meta__label">Sucursal de destino</span>
+            <span class="comprobante-meta__valor">{{ c.sucursal_nombre || 'Sucursal #' + c.id_sucursal }}</span>
+          </div>
+          <div class="comprobante-meta__item">
+            <span class="comprobante-meta__label">Fecha de registro</span>
+            <span class="comprobante-meta__valor">{{ c.fecha | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="comprobante-meta__item">
+            <span class="comprobante-meta__label">Registrado por</span>
+            <span class="comprobante-meta__valor">{{ c.usuario_nombre || 'Usuario #' + c.id_usuario }}</span>
+          </div>
+        </div>
+
+        <!-- Tabla de ítems adquiridos -->
+        <div class="fs-tabla-wrap">
+          <table class="fs-tabla">
+            <thead>
+              <tr>
+                <th class="comprobante__col-num">#</th>
+                <th>SKU</th>
+                <th>Prenda / Modelo</th>
+                <th>Talla / Color</th>
+                <th class="comprobante__col-cant">Cantidad</th>
+                <th class="comprobante__col-monto">Costo Unit. (Bs.)</th>
+                <th class="comprobante__col-monto">Subtotal (Bs.)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of (c.items || c.detalles); track $index) {
+                <tr>
+                  <td class="fs-col-num">{{ $index + 1 }}</td>
+                  <td class="comprobante__sku">{{ item.sku_variante || '—' }}</td>
+                  <td class="comprobante__prenda">{{ item.prenda_nombre || 'Variante #' + item.id_variante_prenda }}</td>
+                  <td class="comprobante__talla-color">
+                    {{ item.talla || 'U' }} · {{ item.color || 'Estándar' }}
+                  </td>
+                  <td class="comprobante__col-cant">{{ item.cantidad }}</td>
+                  <td class="comprobante__col-monto">{{ item.costo_unitario | number: '1.2-2' }}</td>
+                  <td class="comprobante__col-monto">{{ (item.subtotal_item ?? (item.cantidad * item.costo_unitario)) | number: '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Resumen de liquidación con 13% IVA -->
+        <div class="comprobante-totales">
+          <div class="comprobante-totales__fila">
+            <span class="comprobante-totales__label">Subtotal Bruto:</span>
+            <span class="comprobante-totales__valor">
+              Bs. {{ (c.subtotal ?? (c.total / 1.13)) | number: '1.2-2' }}
+            </span>
+          </div>
+          <div class="comprobante-totales__fila">
+            <span class="comprobante-totales__label">Impuesto IVA (13.00% Ley 843):</span>
+            <span class="comprobante-totales__valor">
+              Bs. {{ (c.iva ?? (c.total - (c.total / 1.13))) | number: '1.2-2' }}
+            </span>
+          </div>
+          <div class="comprobante-totales__fila comprobante-totales__fila--total">
+            <span class="comprobante-totales__label">Total Liquidación:</span>
+            <span class="comprobante-totales__valor">
+              Bs. {{ c.total | number: '1.2-2' }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pie -->
+    <div class="fs-modal__pie">
+      <button
+        type="button"
+        class="fs-btn fs-btn--ghost"
+        (click)="cerrar()"
+      >
+        Cerrar comprobante
+      </button>
+    </div>
+  </div>
+</div>

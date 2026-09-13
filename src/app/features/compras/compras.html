@@ -1,0 +1,129 @@
+<section class="compras">
+  <!-- Cabecera de módulo -->
+  <header class="compras__head">
+    <div>
+      <span class="fs-eyebrow">Gestión de Compras · CU13</span>
+      <h1 class="compras__titulo">Historial de Adquisiciones</h1>
+      <p class="compras__lead">
+        Registro transaccional de compras a proveedores con liquidación de 13% IVA e ingreso automatizado de existencias a sucursales.
+      </p>
+    </div>
+
+    <a routerLink="/panel/compras/nueva" class="fs-btn fs-btn--primary">
+      + Registrar nueva compra
+    </a>
+  </header>
+
+  <!-- Barra de filtros -->
+  <div class="compras__barra">
+    <!-- Proveedor -->
+    <div class="compras__filtro-grupo">
+      <label class="fs-eyebrow" for="filtro-compra-prov">Proveedor</label>
+      <select
+        id="filtro-compra-prov"
+        class="fs-input fs-select"
+        [value]="filtroProveedor() ?? ''"
+        (change)="alCambiarProveedor($event)"
+      >
+        <option value="">Todos los proveedores</option>
+        @for (p of proveedores(); track p.id_proveedor) {
+          <option [value]="p.id_proveedor">{{ p.razon_social }} (NIT: {{ p.nit }})</option>
+        }
+      </select>
+    </div>
+
+    <!-- Sucursal -->
+    <div class="compras__filtro-grupo">
+      <label class="fs-eyebrow" for="filtro-compra-suc">Sucursal receptora</label>
+      <select
+        id="filtro-compra-suc"
+        class="fs-input fs-select"
+        [value]="filtroSucursal() ?? ''"
+        (change)="alCambiarSucursal($event)"
+      >
+        <option value="">Todas las sucursales</option>
+        @for (s of sucursales(); track s.id_sucursal) {
+          <option [value]="s.id_sucursal">{{ s.nombre }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Estado de carga / error / tabla ERP -->
+  @if (cargando()) {
+    <div class="compras__estado-carga">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando historial de adquisiciones…</span>
+    </div>
+  } @else if (errorCarga()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th class="compras__col-id"># Compra</th>
+            <th>Fecha</th>
+            <th>Proveedor</th>
+            <th>Sucursal Receptora</th>
+            <th class="compras__col-num-items">Ítems</th>
+            <th class="compras__col-monto">Subtotal (Bs.)</th>
+            <th class="compras__col-monto">IVA (13%)</th>
+            <th class="compras__col-monto">Total (Bs.)</th>
+            <th>Responsable</th>
+            <th class="compras__col-acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (compra of compras(); track compra.id_compra) {
+            <tr>
+              <td class="fs-col-num">#{{ compra.id_compra }}</td>
+              <td class="compras__fecha">{{ compra.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="compras__prov">{{ compra.proveedor_razon_social || 'Proveedor #' + compra.id_proveedor }}</td>
+              <td class="compras__suc">{{ compra.sucursal_nombre || 'Sucursal #' + compra.id_sucursal }}</td>
+              <td class="compras__col-num-items">{{ compra.total_items ?? '—' }}</td>
+              <td class="compras__col-monto">
+                {{ (compra.subtotal ?? (compra.total / 1.13)) | number: '1.2-2' }}
+              </td>
+              <td class="compras__col-monto">
+                {{ (compra.iva ?? (compra.total - (compra.total / 1.13))) | number: '1.2-2' }}
+              </td>
+              <td class="compras__col-monto compras__total">
+                Bs. {{ compra.total | number: '1.2-2' }}
+              </td>
+              <td class="compras__user">{{ compra.usuario_nombre || 'Sistema' }}</td>
+              <td class="compras__col-acciones">
+                <button
+                  type="button"
+                  class="fs-accion"
+                  (click)="abrirDetalle(compra.id_compra)"
+                >
+                  Ver Detalle
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="10" class="fs-tabla-vacia">
+                No se registran compras con los criterios seleccionados.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="compras__pie">Mostrando {{ compras().length }} comprobante(s) de compra.</p>
+  }
+</section>
+
+<!-- Modal de Detalle de Compra -->
+@if (modalDetalleAbierto() && idCompraSeleccionada(); as idSel) {
+  <app-compra-detalle-modal
+    [idCompra]="idSel"
+    (cerrado)="cerrarDetalle()"
+  />
+}

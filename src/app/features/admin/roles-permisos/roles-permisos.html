@@ -1,0 +1,228 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - MATRIZ DE ROLES Y PERMISOS (CU03)
+  -----------------------------------------------------------------------------
+  Vista administrativa RBAC para conceder y revocar permisos del sistema.
+  =============================================================================
+-->
+<section class="roles-permisos">
+  <!-- ========================= CABECERA ========================= -->
+  <header class="roles-permisos__head">
+    <div>
+      <span class="fs-eyebrow">Módulo de seguridad · CU03</span>
+      <h1 class="roles-permisos__titulo">Roles y Permisos</h1>
+      <p class="roles-permisos__lead">
+        Configure el control de acceso granular basado en roles (RBAC). Active o desactive
+        los permisos por cada módulo del sistema con persistencia reactiva inmediata.
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--ghost" (click)="cargarDatos()" [disabled]="cargando()">
+      @if (cargando()) {
+        <span class="fs-spinner" aria-hidden="true"></span>
+        <span>Sincronizando…</span>
+      } @else {
+        <span>Actualizar matriz</span>
+      }
+    </button>
+  </header>
+
+  <!-- ==================== INDICADORES COMPACTOS ==================== -->
+  <div class="roles-permisos__stats">
+    <div class="roles-permisos__stat">
+      <span class="roles-permisos__stat-cifra">{{ totalPermisos() }}</span>
+      <span class="fs-eyebrow">Permisos</span>
+    </div>
+
+    <div class="roles-permisos__stat">
+      <span class="roles-permisos__stat-cifra roles-permisos__stat-cifra--roles">
+        {{ totalRoles() }}
+      </span>
+      <span class="fs-eyebrow">Roles</span>
+    </div>
+
+    <div class="roles-permisos__stat">
+      <span class="roles-permisos__stat-cifra roles-permisos__stat-cifra--modulos">
+        {{ totalModulos() }}
+      </span>
+      <span class="fs-eyebrow">Módulos</span>
+    </div>
+
+    <!-- Buscador rápido -->
+    <div class="roles-permisos__buscador">
+      <input
+        type="search"
+        class="fs-input"
+        placeholder="Filtrar por código, nombre o módulo…"
+        [value]="busqueda()"
+        (input)="alBuscar($event)"
+        aria-label="Buscar permisos"
+      />
+      @if (busqueda()) {
+        <button
+          type="button"
+          class="roles-permisos__limpiar"
+          (click)="limpiarBusqueda()"
+          aria-label="Limpiar búsqueda"
+        >
+          ×
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ==================== FILTRO POR MÓDULOS ==================== -->
+  <div class="roles-permisos__filtros-modulos" role="tablist">
+    <button
+      type="button"
+      class="roles-permisos__chip"
+      [class.is-active]="filtroModulo() === 'TODOS'"
+      (click)="seleccionarModulo('TODOS')"
+    >
+      Todos ({{ totalPermisos() }})
+    </button>
+    @for (modulo of modulosDisponibles(); track modulo) {
+      <button
+        type="button"
+        class="roles-permisos__chip"
+        [class.is-active]="filtroModulo() === modulo"
+        (click)="seleccionarModulo(modulo)"
+      >
+        {{ modulo }}
+      </button>
+    }
+  </div>
+
+  <!-- ========================= CONTENIDO DE LA MATRIZ ========================= -->
+  @if (cargando() && permisos().length === 0) {
+    <div class="roles-permisos__estado">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando matriz de roles y permisos…</span>
+    </div>
+  } @else if (errorCarga() && permisos().length === 0) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargarDatos()">
+        Reintentar
+      </button>
+    </div>
+  } @else {
+    <div class="fs-tabla-wrap roles-permisos__matriz-wrap">
+      <table class="fs-tabla roles-permisos__matriz">
+        <thead>
+          <tr>
+            <th class="roles-permisos__col-permiso">
+              Permiso del Sistema / Código
+            </th>
+            @for (rol of roles(); track rol.id_rol) {
+              <th class="roles-permisos__col-rol">
+                <div class="roles-permisos__rol-head">
+                  <span class="roles-permisos__rol-nombre">{{ rol.nombre }}</span>
+                  <span class="fs-badge" [class]="claseRolBadge(rol)">
+                    ID {{ rol.id_rol }}
+                  </span>
+                </div>
+              </th>
+            }
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (grupo of gruposPorModulo(); track grupo.nombre) {
+            <!-- Fila separadora de módulo -->
+            <tr class="roles-permisos__fila-modulo">
+              <td [attr.colspan]="roles().length + 1">
+                <div class="roles-permisos__modulo-encabezado">
+                  <div class="roles-permisos__modulo-meta">
+                    <span class="roles-permisos__modulo-badge">Módulo</span>
+                    <strong class="roles-permisos__modulo-titulo">{{ grupo.nombre }}</strong>
+                    <span class="roles-permisos__modulo-conteo">
+                      ({{ grupo.permisos.length }} {{ grupo.permisos.length === 1 ? 'permiso' : 'permisos' }})
+                    </span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Filas individuales de permisos de este módulo -->
+            @for (permiso of grupo.permisos; track permiso.id_permiso) {
+              <tr class="roles-permisos__fila-permiso">
+                <td class="roles-permisos__celda-info">
+                  <div class="roles-permisos__permiso-info">
+                    <div class="roles-permisos__permiso-linea1">
+                      <span class="roles-permisos__permiso-nombre">{{ permiso.nombre }}</span>
+                      <code class="roles-permisos__permiso-codigo">{{ permiso.codigo }}</code>
+                    </div>
+                    @if (permiso.descripcion) {
+                      <p class="roles-permisos__permiso-desc">{{ permiso.descripcion }}</p>
+                    }
+                  </div>
+                </td>
+
+                <!-- Celdas para cada rol -->
+                @for (rol of roles(); track rol.id_rol) {
+                  <td class="roles-permisos__celda-accion">
+                    <div class="roles-permisos__toggle-wrap">
+                      @if (estaGuardando(rol.id_rol, permiso.id_permiso)) {
+                        <span class="fs-spinner roles-permisos__celda-spinner" aria-hidden="true"></span>
+                      } @else if (esRolBloqueado(rol)) {
+                        <!-- Administrador siempre tiene acceso total bloqueado -->
+                        <label
+                          class="roles-permisos__switch roles-permisos__switch--bloqueado"
+                          title="El rol Administrador cuenta con acceso total por diseño"
+                        >
+                          <input type="checkbox" checked disabled />
+                          <span class="roles-permisos__slider"></span>
+                        </label>
+                      } @else {
+                        <!-- Roles configurables -->
+                        <label
+                          class="roles-permisos__switch"
+                          [title]="(tienePermiso(rol.id_rol, permiso.id_permiso) ? 'Revocar' : 'Asignar') + ' permiso para ' + rol.nombre"
+                        >
+                          <input
+                            type="checkbox"
+                            [checked]="tienePermiso(rol.id_rol, permiso.id_permiso)"
+                            (change)="alternarPermiso(rol, permiso)"
+                          />
+                          <span class="roles-permisos__slider"></span>
+                        </label>
+                      }
+                    </div>
+                  </td>
+                }
+              </tr>
+            }
+          } @empty {
+            <tr>
+              <td [attr.colspan]="roles().length + 1" class="fs-tabla-vacia">
+                @if (busqueda()) {
+                  No se encontraron permisos que coincidan con «{{ busqueda() }}».
+                } @else {
+                  No hay permisos registrados en este módulo.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pie informativo -->
+    <div class="roles-permisos__pie">
+      <div class="roles-permisos__leyenda">
+        <span class="roles-permisos__leyenda-item">
+          <span class="roles-permisos__indicador-oro"></span>
+          Administrador: Acceso incondicional permanente.
+        </span>
+        <span class="roles-permisos__leyenda-item">
+          <span class="roles-permisos__indicador-verde"></span>
+          Conmutadores activos guardan reactivamente con registro inmutable en bitácora (CU25).
+        </span>
+      </div>
+      <p class="roles-permisos__conteo-final">
+        Mostrando {{ permisosFiltrados().length }} de {{ totalPermisos() }} permisos.
+      </p>
+    </div>
+  }
+</section>

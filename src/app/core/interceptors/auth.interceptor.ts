@@ -36,17 +36,23 @@ export const authInterceptor: HttpInterceptorFn = (solicitud, siguiente) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // 1. El endpoint de login queda excluido: enviarle un token viejo no aporta
-  //    nada y podría confundir la validación del backend.
+  // 1. Los endpoints públicos (login y recuperación de contraseñas CU04) quedan
+  //    excluidos: no requieren token saliente y no deben forzar logout ante un 401.
   const esPeticionDeLogin = solicitud.url.includes('/api/login');
+  const esPeticionRecuperacion =
+    solicitud.url.includes('/api/auth/recuperar-password') ||
+    solicitud.url.includes('/api/auth/verificar-token-recuperacion') ||
+    solicitud.url.includes('/api/auth/restablecer-password');
+
+  const esPeticionExcluida = esPeticionDeLogin || esPeticionRecuperacion;
 
   const token = authService.obtenerToken();
 
-  // 2. Solo se clona la petición si hay un token vigente que adjuntar.
+  // 2. Solo se clona la petición si hay un token vigente que adjuntar y no es excluida.
   //    Las peticiones de HttpClient son inmutables: para modificarlas hay que
   //    crear una copia con clone().
   const solicitudFinal =
-    !esPeticionDeLogin && token && !authService.tokenExpirado(token)
+    !esPeticionExcluida && token && !authService.tokenExpirado(token)
       ? solicitud.clone({
           setHeaders: { Authorization: `Bearer ${token}` },
         })
@@ -54,9 +60,9 @@ export const authInterceptor: HttpInterceptorFn = (solicitud, siguiente) => {
 
   return siguiente(solicitudFinal).pipe(
     catchError((error: HttpErrorResponse) => {
-      // 3. Un 401 fuera del login significa que el token dejó de ser válido
-      //    (expiró o fue revocado): se limpia la sesión y se vuelve al acceso.
-      if (error.status === 401 && !esPeticionDeLogin) {
+      // 3. Un 401 fuera de los endpoints públicos significa que el token dejó
+      //    de ser válido (expiró o fue revocado): se limpia la sesión y se vuelve al login.
+      if (error.status === 401 && !esPeticionExcluida) {
         authService.logout();
         router.navigate(['/login']);
       }

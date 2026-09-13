@@ -1,0 +1,65 @@
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal fs-modal--confirmar"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-eliminar-titulo"
+  >
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">Confirmación requerida</span>
+        <h2 id="modal-eliminar-titulo" class="fs-modal__titulo">Eliminar Proveedor</h2>
+      </div>
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar diálogo"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="fs-modal__cuerpo">
+      @if (mensajeError()) {
+        <div class="fs-alert fs-alert--error" role="alert">
+          <span>{{ mensajeError() }}</span>
+        </div>
+      }
+
+      <p class="eliminar-aviso">
+        ¿Está seguro de que desea eliminar al proveedor
+        <strong>«{{ proveedor().razon_social }}»</strong> (NIT: {{ proveedor().nit }})?
+      </p>
+      <p class="eliminar-subaviso">
+        Esta acción es irreversible. Si el proveedor cuenta con transacciones de compra registradas en el sistema, la base de datos impedirá la eliminación por restricción de integridad referencial.
+      </p>
+    </div>
+
+    <div class="fs-modal__pie">
+      <button
+        type="button"
+        class="fs-btn fs-btn--ghost"
+        (click)="cerrar()"
+        [disabled]="cargando()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="fs-btn fs-btn--peligro"
+        (click)="confirmar()"
+        [disabled]="cargando()"
+      >
+        @if (cargando()) {
+          <span class="fs-spinner" aria-hidden="true"></span>
+          <span>Eliminando…</span>
+        } @else {
+          <span>Confirmar eliminación</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

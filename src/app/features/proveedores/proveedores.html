@@ -1,0 +1,121 @@
+<section class="proveedores">
+  <!-- Cabecera de módulo -->
+  <header class="proveedores__head">
+    <div>
+      <span class="fs-eyebrow">Cadena de Suministro · CU12</span>
+      <h1 class="proveedores__titulo">Directorio de Proveedores</h1>
+      <p class="proveedores__lead">
+        Administre las empresas proveedoras de prendas e insumos de la cadena de tiendas.
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--primary" (click)="abrirAlta()">
+      + Nuevo proveedor
+    </button>
+  </header>
+
+  <!-- Barra de búsqueda -->
+  <div class="proveedores__barra">
+    <div class="proveedores__buscador">
+      <input
+        type="search"
+        class="fs-input"
+        placeholder="Buscar por NIT o Razón Social…"
+        [value]="busqueda()"
+        (input)="alBuscar($event)"
+        aria-label="Buscar proveedores"
+      />
+    </div>
+  </div>
+
+  <!-- Estado de carga / error / tabla ERP -->
+  @if (cargando()) {
+    <div class="proveedores__estado-carga">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando proveedores…</span>
+    </div>
+  } @else if (errorCarga()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th class="proveedores__col-id">ID</th>
+            <th>NIT</th>
+            <th>Razón Social</th>
+            <th>Contacto</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Dirección</th>
+            <th class="proveedores__col-acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (proveedor of proveedores(); track proveedor.id_proveedor) {
+            <tr>
+              <td class="fs-col-num">{{ proveedor.id_proveedor }}</td>
+              <td class="proveedores__nit">{{ proveedor.nit }}</td>
+              <td class="proveedores__razon">{{ proveedor.razon_social }}</td>
+              <td>{{ proveedor.contacto || '—' }}</td>
+              <td class="fs-col-num">{{ proveedor.telefono || '—' }}</td>
+              <td class="proveedores__correo">{{ proveedor.correo || '—' }}</td>
+              <td class="proveedores__direccion">{{ proveedor.direccion || '—' }}</td>
+              <td>
+                <div class="proveedores__acciones">
+                  <button
+                    type="button"
+                    class="fs-accion"
+                    (click)="abrirEdicion(proveedor)"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="fs-accion fs-accion--peligro"
+                    (click)="abrirEliminar(proveedor)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="fs-tabla-vacia">
+                @if (busqueda()) {
+                  No se encontraron proveedores que coincidan con «{{ busqueda() }}».
+                } @else {
+                  Todavía no hay proveedores registrados en el sistema.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="proveedores__pie">Mostrando {{ proveedores().length }} proveedor(es) registrado(s).</p>
+  }
+</section>
+
+<!-- Modal de Alta / Edición -->
+@if (modalAbierto()) {
+  <app-proveedor-modal
+    [proveedor]="proveedorEnEdicion()"
+    (cerrado)="cerrarModal()"
+    (guardado)="alGuardar($event)"
+  />
+}
+
+<!-- Diálogo de Confirmación de Eliminación -->
+@if (modalEliminarAbierto() && proveedorAEliminar(); as pEliminar) {
+  <app-proveedor-eliminar-modal
+    [proveedor]="pEliminar"
+    (cerrado)="cerrarModalEliminar()"
+    (eliminado)="alEliminar($event)"
+  />
+}
