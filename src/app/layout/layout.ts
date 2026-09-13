@@ -68,6 +68,12 @@ export class Layout {
       // Solo el Administrador ve esta entrada (RBAC visual).
       roles: ['Administrador'],
     },
+    {
+      etiqueta: 'Roles y Permisos',
+      caso: 'CU03',
+      ruta: '/panel/roles-permisos',
+      roles: ['Administrador'],
+    },
     { etiqueta: 'Clientes', caso: 'CU05', ruta: '/panel/clientes', roles: null },
     {
       etiqueta: 'Sucursales',
@@ -81,6 +87,48 @@ export class Layout {
       caso: 'CU08',
       ruta: '/panel/prendas',
       roles: ['Administrador'],
+    },
+    {
+      etiqueta: 'Temporadas',
+      caso: 'CU09',
+      ruta: '/panel/temporadas',
+      roles: ['Administrador', 'Encargado de Sucursal'],
+    },
+    {
+      etiqueta: 'Proveedores',
+      caso: 'CU12',
+      ruta: '/panel/proveedores',
+      roles: ['Administrador', 'Encargado de Sucursal'],
+    },
+    {
+      etiqueta: 'Movimientos',
+      caso: 'CU11',
+      ruta: '/panel/movimientos-inventario',
+      roles: ['Administrador', 'Encargado de Sucursal'],
+    },
+    {
+      etiqueta: 'Monitoreo Stock',
+      caso: 'CU10',
+      ruta: '/panel/inventario/monitoreo',
+      roles: ['Administrador', 'Encargado de Sucursal'],
+    },
+    {
+      etiqueta: 'Compras',
+      caso: 'CU13',
+      ruta: '/panel/compras',
+      roles: ['Administrador', 'Encargado de Sucursal'],
+    },
+    {
+      etiqueta: 'Asistente de Moda IA',
+      caso: 'CU22',
+      ruta: '/panel/ia/asistente-moda',
+      roles: null,
+    },
+    {
+      etiqueta: 'Analítica por Voz',
+      caso: 'CU23',
+      ruta: '/panel/ia/analitica-voz',
+      roles: ['Administrador', 'Encargado de Sucursal'],
     },
     { etiqueta: 'Catálogo', caso: 'CU14', ruta: '/catalogo', roles: null },
   ];

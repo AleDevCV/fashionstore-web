@@ -1,0 +1,164 @@
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="'modal-proveedor-titulo'"
+  >
+    <!-- Cabecera -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">Directorio de proveedores</span>
+        <h2 id="modal-proveedor-titulo" class="fs-modal__titulo">
+          {{ esEdicion() ? 'Editar Proveedor' : 'Nuevo Proveedor' }}
+        </h2>
+      </div>
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar modal"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="fs-modal__cuerpo">
+      @if (mensajeError()) {
+        <div class="fs-alert fs-alert--error" role="alert">
+          <span>{{ mensajeError() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="formulario" (ngSubmit)="guardar()" class="proveedor-form" novalidate>
+        <!-- NIT -->
+        <div class="fs-field">
+          <label class="fs-field-label" for="campo-nit">
+            NIT <span class="fs-campo-req">*</span>
+          </label>
+          <input
+            id="campo-nit"
+            type="text"
+            class="fs-input"
+            [class.is-invalid]="campoInvalido('nit')"
+            formControlName="nit"
+            placeholder="Ej. 1028374029"
+          />
+          @if (campoInvalido('nit')) {
+            <span class="fs-field-error">
+              @if (errores('nit')?.['required']) { El NIT es obligatorio. }
+              @if (errores('nit')?.['minlength']) { Mínimo 3 caracteres. }
+              @if (errores('nit')?.['maxlength']) { Máximo 30 caracteres. }
+            </span>
+          }
+        </div>
+
+        <!-- Razón Social -->
+        <div class="fs-field">
+          <label class="fs-field-label" for="campo-razon-social">
+            Razón Social <span class="fs-campo-req">*</span>
+          </label>
+          <input
+            id="campo-razon-social"
+            type="text"
+            class="fs-input"
+            [class.is-invalid]="campoInvalido('razon_social')"
+            formControlName="razon_social"
+            placeholder="Ej. Textil Boliviana S.R.L."
+          />
+          @if (campoInvalido('razon_social')) {
+            <span class="fs-field-error">
+              @if (errores('razon_social')?.['required']) { La razón social es obligatoria. }
+              @if (errores('razon_social')?.['minlength']) { Mínimo 2 caracteres. }
+              @if (errores('razon_social')?.['maxlength']) { Máximo 150 caracteres. }
+            </span>
+          }
+        </div>
+
+        <!-- Persona de Contacto -->
+        <div class="fs-field">
+          <label class="fs-field-label" for="campo-contacto">Contacto comercial</label>
+          <input
+            id="campo-contacto"
+            type="text"
+            class="fs-input"
+            [class.is-invalid]="campoInvalido('contacto')"
+            formControlName="contacto"
+            placeholder="Ej. Carlos Valdivia"
+          />
+        </div>
+
+        <!-- Fila doble: Teléfono y Correo -->
+        <div class="proveedor-form__fila">
+          <div class="fs-field">
+            <label class="fs-field-label" for="campo-telefono">Teléfono</label>
+            <input
+              id="campo-telefono"
+              type="tel"
+              class="fs-input"
+              [class.is-invalid]="campoInvalido('telefono')"
+              formControlName="telefono"
+              placeholder="Ej. +591 3 3445566"
+            />
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-field-label" for="campo-correo">Correo electrónico</label>
+            <input
+              id="campo-correo"
+              type="email"
+              class="fs-input"
+              [class.is-invalid]="campoInvalido('correo')"
+              formControlName="correo"
+              placeholder="ventas@textilboliviana.com"
+            />
+            @if (campoInvalido('correo')) {
+              <span class="fs-field-error">Ingrese un correo válido.</span>
+            }
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="fs-field">
+          <label class="fs-field-label" for="campo-direccion">Dirección comercial / Almacén</label>
+          <input
+            id="campo-direccion"
+            type="text"
+            class="fs-input"
+            [class.is-invalid]="campoInvalido('direccion')"
+            formControlName="direccion"
+            placeholder="Ej. Av. Cristo Redentor #1420, Santa Cruz"
+          />
+        </div>
+      </form>
+    </div>
+
+    <!-- Pie -->
+    <div class="fs-modal__pie">
+      <button
+        type="button"
+        class="fs-btn fs-btn--ghost"
+        (click)="cerrar()"
+        [disabled]="cargando()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="fs-btn fs-btn--primary"
+        (click)="guardar()"
+        [disabled]="cargando() || formulario.invalid"
+      >
+        @if (cargando()) {
+          <span class="fs-spinner" aria-hidden="true"></span>
+          <span>Guardando…</span>
+        } @else {
+          <span>{{ esEdicion() ? 'Guardar cambios' : 'Registrar proveedor' }}</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

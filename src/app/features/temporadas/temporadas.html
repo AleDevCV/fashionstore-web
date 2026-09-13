@@ -1,0 +1,142 @@
+<section class="temporadas">
+  <!-- Cabecera de módulo -->
+  <header class="temporadas__head">
+    <div>
+      <span class="fs-eyebrow">Gestión de Catálogo · CU09</span>
+      <h1 class="temporadas__titulo">Temporadas y Colecciones</h1>
+      <p class="temporadas__lead">
+        Administre los ciclos temporales de comercialización del catálogo, vigencias y fechas de lanzamiento.
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--primary" (click)="abrirAlta()">
+      + Nueva temporada
+    </button>
+  </header>
+
+  <!-- Barra de búsqueda -->
+  <div class="temporadas__barra">
+    <div class="temporadas__buscador">
+      <input
+        type="search"
+        class="fs-input"
+        placeholder="Buscar por nombre o descripción…"
+        [value]="busqueda()"
+        (input)="alBuscar($event)"
+        aria-label="Buscar temporadas"
+      />
+    </div>
+  </div>
+
+  <!-- Estado de carga / error / tabla ERP -->
+  @if (cargando()) {
+    <div class="temporadas__estado-carga">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando temporadas…</span>
+    </div>
+  } @else if (errorCarga()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th class="temporadas__col-id">ID</th>
+            <th>Nombre de Temporada</th>
+            <th>Descripción</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Vigencia Temporal</th>
+            <th>Estado</th>
+            <th class="temporadas__col-acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (temp of temporadas(); track temp.id_temporada) {
+            <tr>
+              <td class="fs-col-num">{{ temp.id_temporada }}</td>
+              <td class="temporadas__nombre">
+                <strong>{{ temp.nombre }}</strong>
+              </td>
+              <td class="temporadas__desc">{{ temp.descripcion || '—' }}</td>
+              <td class="fs-col-num">{{ temp.fecha_inicio | date: 'dd/MM/yyyy' }}</td>
+              <td class="fs-col-num">{{ temp.fecha_fin | date: 'dd/MM/yyyy' }}</td>
+              <td>
+                <span
+                  class="fs-badge"
+                  [class.fs-badge--activo]="obtenerVigencia(temp) === 'Activa'"
+                  [class.fs-badge--oro]="obtenerVigencia(temp) === 'Próxima'"
+                  [class.fs-badge--inactivo]="obtenerVigencia(temp) === 'Pasada'"
+                >
+                  {{ obtenerVigencia(temp) }}
+                </span>
+              </td>
+              <td>
+                <span
+                  class="fs-badge"
+                  [class.fs-badge--activo]="temp.activo"
+                  [class.fs-badge--inactivo]="!temp.activo"
+                >
+                  {{ temp.activo ? 'Habilitada' : 'Inhabilitada' }}
+                </span>
+              </td>
+              <td>
+                <div class="temporadas__acciones">
+                  <button
+                    type="button"
+                    class="fs-accion"
+                    (click)="abrirEdicion(temp)"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="fs-accion fs-accion--peligro"
+                    (click)="abrirEliminar(temp)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="fs-tabla-vacia">
+                @if (busqueda()) {
+                  No se encontraron temporadas que coincidan con «{{ busqueda() }}».
+                } @else {
+                  Todavía no hay temporadas registradas en el catálogo.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="temporadas__pie">
+      Mostrando {{ temporadas().length }} temporada(s) registrada(s).
+    </p>
+  }
+</section>
+
+<!-- Modal de Alta / Edición -->
+@if (modalAbierto()) {
+  <app-temporada-modal
+    [temporada]="temporadaEnEdicion()"
+    (cerrado)="cerrarModal()"
+    (guardado)="alGuardar($event)"
+  />
+}
+
+<!-- Diálogo de Confirmación de Eliminación -->
+@if (modalEliminarAbierto() && temporadaAEliminar(); as tEliminar) {
+  <app-temporada-eliminar-modal
+    [temporada]="tEliminar"
+    (cerrado)="cerrarModalEliminar()"
+    (eliminado)="alEliminar($event)"
+  />
+}

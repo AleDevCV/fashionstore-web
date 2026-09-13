@@ -1,0 +1,136 @@
+<section class="movimientos">
+  <!-- Cabecera de módulo -->
+  <header class="movimientos__head">
+    <div>
+      <span class="fs-eyebrow">Control de existencias · CU11</span>
+      <h1 class="movimientos__titulo">Movimientos de Inventario</h1>
+      <p class="movimientos__lead">
+        Registro de ajustes físicos, mermas, entradas y traspasos con actualización automática de stock vía disparador transaccional en PostgreSQL.
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--primary" (click)="abrirNuevo()">
+      + Nuevo movimiento
+    </button>
+  </header>
+
+  <!-- Barra de filtros -->
+  <div class="movimientos__barra">
+    <!-- Filtro por Sucursal -->
+    <div class="movimientos__filtro-grupo">
+      <label class="fs-eyebrow" for="filtro-sucursal">Sucursal</label>
+      <select
+        id="filtro-sucursal"
+        class="fs-input fs-select"
+        [value]="filtroSucursal() ?? ''"
+        (change)="alCambiarFiltroSucursal($event)"
+      >
+        <option value="">Todas las sucursales</option>
+        @for (s of sucursales(); track s.id_sucursal) {
+          <option [value]="s.id_sucursal">{{ s.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Filtro por Tipo -->
+    <div class="movimientos__filtro-grupo">
+      <label class="fs-eyebrow" for="filtro-tipo">Tipo de Operación</label>
+      <select
+        id="filtro-tipo"
+        class="fs-input fs-select"
+        [value]="filtroTipo()"
+        (change)="alCambiarFiltroTipo($event)"
+      >
+        <option value="">Todos los tipos</option>
+        <option value="Entrada">Entrada (+)</option>
+        <option value="Salida">Salida (-)</option>
+        <option value="Traspaso">Traspaso (-)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Estado de carga / error / tabla ERP -->
+  @if (cargando()) {
+    <div class="movimientos__estado-carga">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando movimientos de almacén…</span>
+    </div>
+  } @else if (errorCarga()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th class="movimientos__col-id">ID</th>
+            <th>Fecha / Hora</th>
+            <th>Sucursal</th>
+            <th>SKU Variante</th>
+            <th>Prenda</th>
+            <th>Talla / Color</th>
+            <th>Tipo</th>
+            <th class="movimientos__col-cant">Cantidad</th>
+            <th>Motivo</th>
+            <th>Responsable</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (mov of movimientos(); track mov.id_movimiento) {
+            <tr>
+              <td class="fs-col-num">{{ mov.id_movimiento }}</td>
+              <td class="movimientos__fecha">{{ mov.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="movimientos__sucursal">{{ mov.sucursal_nombre || 'Sucursal #' + mov.id_sucursal }}</td>
+              <td class="movimientos__sku">{{ mov.sku_variante || '—' }}</td>
+              <td class="movimientos__prenda">{{ mov.prenda_nombre || '—' }}</td>
+              <td>
+                <span class="movimientos__talla-color">
+                  {{ mov.talla || 'U' }} · {{ mov.color || 'Estándar' }}
+                </span>
+              </td>
+              <td>
+                <span
+                  class="fs-badge"
+                  [class.fs-badge--activo]="mov.tipo === 'Entrada'"
+                  [class.fs-badge--inactivo]="mov.tipo === 'Salida'"
+                  [class.fs-badge--oro]="mov.tipo === 'Traspaso'"
+                >
+                  {{ mov.tipo }}
+                </span>
+              </td>
+              <td class="movimientos__col-cant">
+                <span
+                  class="movimientos__cant"
+                  [class.movimientos__cant--pos]="mov.tipo === 'Entrada'"
+                  [class.movimientos__cant--neg]="mov.tipo === 'Salida' || mov.tipo === 'Traspaso'"
+                >
+                  {{ mov.tipo === 'Entrada' ? '+' : '-' }}{{ mov.cantidad }}
+                </span>
+              </td>
+              <td class="movimientos__motivo">{{ mov.motivo }}</td>
+              <td class="movimientos__usuario">{{ mov.usuario_nombre || 'Sistema' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="10" class="fs-tabla-vacia">
+                No se registran movimientos con los filtros seleccionados.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="movimientos__pie">Mostrando {{ movimientos().length }} movimiento(s) de kardex.</p>
+  }
+</section>
+
+<!-- Modal de Nuevo Movimiento -->
+@if (modalAbierto()) {
+  <app-movimiento-modal
+    (cerrado)="cerrarModal()"
+    (guardado)="alGuardar($event)"
+  />
+}

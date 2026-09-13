@@ -226,4 +226,81 @@ describe('AuthService', () => {
     expect(servicio.tieneRol('Cajero (POS)', 'Administrador')).toBeTrue();
     expect(servicio.tieneRol('Cliente')).toBeFalse();
   });
+
+  // ---------------------------------------------------------------------------
+  // RECUPERACIÓN DE CONTRASEÑA (CU04)
+  // ---------------------------------------------------------------------------
+
+  it('solicita recuperación de contraseña enviando POST a /api/auth/recuperar-password', () => {
+    servicio = crearServicio();
+
+    servicio
+      .solicitarRecuperacionPassword('usuario@fashionstore.com')
+      .subscribe((res) => {
+        expect(res.mensaje).toBe('Enlace enviado');
+      });
+
+    const peticion = httpMock.expectOne(
+      `${environment.apiUrl}/api/auth/recuperar-password`,
+    );
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toEqual({ correo: 'usuario@fashionstore.com' });
+    peticion.flush({ mensaje: 'Enlace enviado' });
+  });
+
+  it('verifica token de recuperación enviando POST a /api/auth/verificar-token-recuperacion', () => {
+    servicio = crearServicio();
+
+    servicio
+      .verificarTokenRecuperacion('token-123')
+      .subscribe((res) => {
+        expect(res.valido).toBeTrue();
+        expect(res.correo).toBe('us***@fashionstore.com');
+      });
+
+    const peticion = httpMock.expectOne(
+      `${environment.apiUrl}/api/auth/verificar-token-recuperacion`,
+    );
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toEqual({ token: 'token-123' });
+    peticion.flush({ valido: true, correo: 'us***@fashionstore.com' });
+  });
+
+  it('restablece contraseña enviando POST a /api/auth/restablecer-password', () => {
+    servicio = crearServicio();
+
+    servicio
+      .restablecerPassword('token-123', 'NuevaPass2026!')
+      .subscribe((res) => {
+        expect(res.mensaje).toBe('Contraseña actualizada');
+      });
+
+    const peticion = httpMock.expectOne(
+      `${environment.apiUrl}/api/auth/restablecer-password`,
+    );
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toEqual({
+      token: 'token-123',
+      nueva_password: 'NuevaPass2026!',
+    });
+    peticion.flush({ mensaje: 'Contraseña actualizada' });
+  });
+
+  it('traduce error 400/401 en recuperación al mensaje descriptivo', (listo) => {
+    servicio = crearServicio();
+
+    servicio.verificarTokenRecuperacion('token-invalido').subscribe({
+      error: (error: Error) => {
+        expect(error.message).toContain('token');
+        listo();
+      },
+    });
+
+    httpMock
+      .expectOne(`${environment.apiUrl}/api/auth/verificar-token-recuperacion`)
+      .flush(
+        { detail: 'El token de recuperación es inválido o ha expirado.' },
+        { status: 400, statusText: 'Bad Request' },
+      );
+  });
 });

@@ -1,0 +1,36 @@
+.fs-modal--confirmar {
+  max-width: 440px;
+}
+
+.eliminar-aviso {
+  font-size: 14px;
+  color: var(--fs-ink);
+  line-height: 1.5;
+  margin-bottom: var(--fs-space-3);
+}
+
+.eliminar-subaviso {
+  font-size: 12px;
+  color: var(--fs-ink-soft);
+  line-height: 1.45;
+  padding: var(--fs-space-2) var(--fs-space-3);
+  background-color: var(--fs-surface-alt);
+  border-left: 2px solid var(--fs-danger);
+  border-radius: var(--fs-radius);
+}
+
+.fs-btn--peligro {
+  background-color: var(--fs-danger);
+  border-color: var(--fs-danger);
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background-color: #6d2020;
+    border-color: #6d2020;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

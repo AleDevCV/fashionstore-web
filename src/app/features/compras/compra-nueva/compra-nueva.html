@@ -1,0 +1,204 @@
+<section class="compra-nueva">
+  <!-- Cabecera de módulo y navegación de regreso -->
+  <header class="compra-nueva__head">
+    <div>
+      <div class="compra-nueva__migaja">
+        <a routerLink="/panel/compras" class="fs-accion">← Volver al historial</a>
+      </div>
+      <span class="fs-eyebrow">Procesar Adquisición · CU13</span>
+      <h1 class="compra-nueva__titulo">Nueva Compra de Mercadería</h1>
+      <p class="compra-nueva__lead">
+        Registre la recepción física de prendas de un proveedor. La transacción incrementará automáticamente las existencias en almacén mediante el disparador de base de datos.
+      </p>
+    </div>
+  </header>
+
+  @if (mensajeError()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span>{{ mensajeError() }}</span>
+    </div>
+  }
+
+  @if (cargandoCatalogos()) {
+    <div class="compra-nueva__estado-carga">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando directorio de proveedores y catálogo de sucursales…</span>
+    </div>
+  } @else {
+    <form [formGroup]="formulario" (ngSubmit)="guardar()" class="compra-nueva__form" novalidate>
+      <!-- Panel de Datos Generales de la Compra -->
+      <div class="compra-nueva__tarjeta">
+        <h2 class="compra-nueva__tarjeta-titulo">Datos de la Cabecera</h2>
+
+        <div class="compra-nueva__tarjeta-grid">
+          <!-- Proveedor -->
+          <div class="fs-field">
+            <label class="fs-field-label" for="campo-proveedor">
+              Proveedor emisor <span class="fs-campo-req">*</span>
+            </label>
+            <select
+              id="campo-proveedor"
+              class="fs-input fs-select"
+              formControlName="id_proveedor"
+            >
+              @for (p of proveedores(); track p.id_proveedor) {
+                <option [value]="p.id_proveedor">{{ p.razon_social }} (NIT: {{ p.nit }})</option>
+              }
+            </select>
+          </div>
+
+          <!-- Sucursal receptora -->
+          <div class="fs-field">
+            <label class="fs-field-label" for="campo-sucursal">
+              Sucursal física de destino <span class="fs-campo-req">*</span>
+            </label>
+            <select
+              id="campo-sucursal"
+              class="fs-input fs-select"
+              formControlName="id_sucursal"
+            >
+              @for (s of sucursales(); track s.id_sucursal) {
+                <option [value]="s.id_sucursal">{{ s.nombre }} — {{ s.ciudad || 'Central' }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Indicador fiscal -->
+          <div class="compra-nueva__regla-fiscal">
+            <span class="compra-nueva__regla-fiscal-etiqueta">Régimen tributario</span>
+            <span class="fs-badge fs-badge--oro">IVA 13.00% (Ley 843 Bolivia)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel de Ítems Adquiridos (FormArray dinámico) -->
+      <div class="compra-nueva__tarjeta">
+        <div class="compra-nueva__tarjeta-head">
+          <div>
+            <h2 class="compra-nueva__tarjeta-titulo">Desglose de Ítems y Lotes</h2>
+            <p class="compra-nueva__tarjeta-subtitulo">
+              Agregue las variantes recibidas con sus cantidades y costos pactados.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="fs-btn fs-btn--ghost"
+            (click)="agregarItem()"
+          >
+            + Agregar ítem
+          </button>
+        </div>
+
+        <div class="fs-tabla-wrap" formArrayName="detalles">
+          <table class="fs-tabla">
+            <thead>
+              <tr>
+                <th class="compra-item__col-num">#</th>
+                <th>Variante / Prenda (SKU)</th>
+                <th class="compra-item__col-cant">Cantidad</th>
+                <th class="compra-item__col-costo">Costo Unit. (Bs.)</th>
+                <th class="compra-item__col-sub">Subtotal (Bs.)</th>
+                <th class="compra-item__col-accion">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (control of detalles.controls; track $index) {
+                <tr [formGroupName]="$index">
+                  <td class="fs-col-num">{{ $index + 1 }}</td>
+                  <td>
+                    <select
+                      class="fs-input fs-select compra-item__select"
+                      formControlName="id_variante_prenda"
+                    >
+                      @for (v of variantes(); track v.id_variante_prenda) {
+                        <option [value]="v.id_variante_prenda">{{ v.etiqueta }}</option>
+                      }
+                    </select>
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="1"
+                      class="fs-input compra-item__input-num"
+                      formControlName="cantidad"
+                      placeholder="1"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="0.01"
+                      step="0.50"
+                      class="fs-input compra-item__input-num"
+                      formControlName="costo_unitario"
+                      placeholder="0.00"
+                    />
+                  </td>
+                  <td class="compra-item__subtotal">
+                    {{ subtotalFila($index) | number: '1.2-2' }}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="fs-accion fs-accion--peligro"
+                      (click)="removerItem($index)"
+                      [disabled]="detalles.length <= 1"
+                      title="Eliminar fila"
+                    >
+                      Quitar
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Resumen Financiero Reactivo -->
+        <div class="compra-nueva__liquidacion">
+          <div class="compra-nueva__totales-card">
+            <div class="compra-nueva__total-fila">
+              <span class="compra-nueva__total-label">Subtotal Bruto:</span>
+              <span class="compra-nueva__total-monto">
+                Bs. {{ subtotal() | number: '1.2-2' }}
+              </span>
+            </div>
+            <div class="compra-nueva__total-fila">
+              <span class="compra-nueva__total-label">Impuesto IVA (13.00%):</span>
+              <span class="compra-nueva__total-monto">
+                Bs. {{ iva() | number: '1.2-2' }}
+              </span>
+            </div>
+            <div class="compra-nueva__total-fila compra-nueva__total-fila--destacada">
+              <span class="compra-nueva__total-label">Total Liquidación:</span>
+              <span class="compra-nueva__total-monto">
+                Bs. {{ total() | number: '1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Acciones Final -->
+      <div class="compra-nueva__acciones">
+        <a routerLink="/panel/compras" class="fs-btn fs-btn--ghost">
+          Cancelar
+        </a>
+
+        <button
+          type="submit"
+          class="fs-btn fs-btn--primary"
+          [disabled]="guardando() || formulario.invalid || detalles.length === 0"
+        >
+          @if (guardando()) {
+            <span class="fs-spinner" aria-hidden="true"></span>
+            <span>Registrando compra atómica…</span>
+          } @else {
+            <span>Completar compra (Total: Bs. {{ total() | number: '1.2-2' }})</span>
+          }
+        </button>
+      </div>
+    </form>
+  }
+</section>

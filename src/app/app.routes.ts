@@ -35,6 +35,26 @@ export const routes: Routes = [
       import('./features/auth/login/login').then((m) => m.Login),
   },
   {
+    // CU04 - Solicitud de recuperación de contraseña ("Olvidé mi contraseña")
+    path: 'recuperar-password',
+    canActivate: [invitadoGuard],
+    title: 'Recuperar contraseña · FashionStore',
+    loadComponent: () =>
+      import('./features/auth/recuperar-password/recuperar-password').then(
+        (m) => m.RecuperarPassword,
+      ),
+  },
+  {
+    // CU04 - Restablecimiento de contraseña mediante token temporal
+    path: 'restablecer-password',
+    canActivate: [invitadoGuard],
+    title: 'Restablecer contraseña · FashionStore',
+    loadComponent: () =>
+      import('./features/auth/restablecer-password/restablecer-password').then(
+        (m) => m.RestablecerPassword,
+      ),
+  },
+  {
     // Layout administrativo: sidebar + cabecera. Todas sus rutas hijas quedan
     // protegidas por authGuard, que exige un token JWT vigente.
     path: 'panel',
@@ -63,6 +83,17 @@ export const routes: Routes = [
         title: 'Usuarios y Roles · FashionStore',
         loadComponent: () =>
           import('./features/usuarios/usuarios').then((m) => m.Usuarios),
+      },
+      {
+        // CU03 - Matriz de Roles y Permisos (RBAC granular).
+        // Restringido exclusivamente al Administrador.
+        path: 'roles-permisos',
+        canActivate: [rolGuard(['Administrador'], 'Roles y Permisos')],
+        title: 'Roles y Permisos · FashionStore',
+        loadComponent: () =>
+          import('./features/admin/roles-permisos/roles-permisos').then(
+            (m) => m.RolesPermisos,
+          ),
       },
       {
         // CU05 - Fichas de clientes. Accesible para cualquier sesión activa:
@@ -99,6 +130,86 @@ export const routes: Routes = [
         title: 'Prendas · FashionStore',
         loadComponent: () =>
           import('./features/prendas/prendas').then((m) => m.Prendas),
+      },
+      {
+        // CU09 - Gestión de Temporadas y Colecciones
+        path: 'temporadas',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Temporadas')],
+        title: 'Temporadas y Colecciones · FashionStore',
+        loadComponent: () =>
+          import('./features/temporadas/temporadas').then((m) => m.Temporadas),
+      },
+      {
+        // CU10 - Monitoreo de Inventario Multisucursal
+        path: 'inventario/monitoreo',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Monitoreo de Inventario')],
+        title: 'Monitoreo de Inventario · FashionStore',
+        loadComponent: () =>
+          import('./features/inventario-monitoreo/inventario-monitoreo').then(
+            (m) => m.InventarioMonitoreo,
+          ),
+      },
+      {
+        // CU10 - Alias alternativo
+        path: 'monitoreo-inventario',
+        redirectTo: 'inventario/monitoreo',
+      },
+      {
+        // CU12 - Directorio de Proveedores
+        path: 'proveedores',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Proveedores')],
+        title: 'Proveedores · FashionStore',
+        loadComponent: () =>
+          import('./features/proveedores/proveedores').then((m) => m.Proveedores),
+      },
+      {
+        // CU11 - Movimientos de Inventario
+        path: 'movimientos-inventario',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Movimientos de Inventario')],
+        title: 'Movimientos de Inventario · FashionStore',
+        loadComponent: () =>
+          import('./features/inventario-movimientos/movimientos').then((m) => m.Movimientos),
+      },
+      {
+        // CU11 - Alias alternativo para concordancia exacta de URLs
+        path: 'inventario/movimientos',
+        redirectTo: 'movimientos-inventario',
+      },
+      {
+        // CU13 - Historial de Compras
+        path: 'compras',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Compras')],
+        title: 'Compras · FashionStore',
+        loadComponent: () =>
+          import('./features/compras/compras').then((m) => m.Compras),
+      },
+      {
+        // CU13 - Formulario de Adquisición Transaccional
+        path: 'compras/nueva',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Registro de Compras')],
+        title: 'Nueva Compra · FashionStore',
+        loadComponent: () =>
+          import('./features/compras/compra-nueva/compra-nueva').then((m) => m.CompraNueva),
+      },
+      {
+        // CU22 - Asistente y Recomendador Virtual de Moda con IA (Gemini)
+        path: 'ia/asistente-moda',
+        title: 'Asistente de Moda IA · FashionStore',
+        loadComponent: () =>
+          import('./features/ia/asistente-moda/asistente-moda').then((m) => m.AsistenteModa),
+      },
+      {
+        // CU22 - Alias de ruta
+        path: 'ia/recomendador',
+        redirectTo: 'ia/asistente-moda',
+      },
+      {
+        // CU23 - Consultas Analíticas Ejecutivas por Voz con IA
+        path: 'ia/analitica-voz',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Analítica por Voz')],
+        title: 'Analítica por Voz · FashionStore',
+        loadComponent: () =>
+          import('./features/ia/analitica-voz/analitica-voz').then((m) => m.AnaliticaVoz),
       },
     ],
   },

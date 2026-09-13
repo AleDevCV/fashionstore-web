@@ -20,7 +20,14 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { PayloadJwt, RespuestaLogin, SolicitudLogin } from '../models/auth.model';
+import {
+  PayloadJwt,
+  RespuestaLogin,
+  RespuestaRecuperarPassword,
+  RespuestaRestablecerPassword,
+  RespuestaVerificarToken,
+  SolicitudLogin,
+} from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -90,6 +97,62 @@ export class AuthService {
       // No es un fallo crítico: la señal igualmente se limpia abajo.
     }
     this._usuarioActual.set(null);
+  }
+
+  // ---------------------------------------------------------------------------
+  // OPERACIONES DE RECUPERACIÓN DE CONTRASEÑA (CU04)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * CU04 - Solicita el envío de un enlace de recuperación de contraseña por correo.
+   * Endpoint: POST /api/auth/recuperar-password
+   *
+   * @param correo Dirección de correo electrónico del usuario.
+   * @returns Observable con el mensaje de confirmación del servidor.
+   */
+  solicitarRecuperacionPassword(correo: string): Observable<RespuestaRecuperarPassword> {
+    return this.http
+      .post<RespuestaRecuperarPassword>(
+        `${environment.apiUrl}/api/auth/recuperar-password`,
+        { correo },
+      )
+      .pipe(catchError((error: HttpErrorResponse) => this.traducirErrorRecuperacion(error)));
+  }
+
+  /**
+   * CU04 - Verifica la validez, vigencia y estado no utilizado de un token de recuperación.
+   * Endpoint: POST /api/auth/verificar-token-recuperacion
+   *
+   * @param token Cadena alfanumérica o criptográfica del token temporal.
+   * @returns Observable con el resultado de la validación.
+   */
+  verificarTokenRecuperacion(token: string): Observable<RespuestaVerificarToken> {
+    return this.http
+      .post<RespuestaVerificarToken>(
+        `${environment.apiUrl}/api/auth/verificar-token-recuperacion`,
+        { token },
+      )
+      .pipe(catchError((error: HttpErrorResponse) => this.traducirErrorRecuperacion(error)));
+  }
+
+  /**
+   * CU04 - Restablece la contraseña de acceso utilizando un token vigente.
+   * Endpoint: POST /api/auth/restablecer-password
+   *
+   * @param token Token de recuperación temporal.
+   * @param nuevaPassword Nueva contraseña a cifrar con bcrypt en el backend.
+   * @returns Observable con el mensaje de confirmación de restablecimiento.
+   */
+  restablecerPassword(
+    token: string,
+    nuevaPassword: string,
+  ): Observable<RespuestaRestablecerPassword> {
+    return this.http
+      .post<RespuestaRestablecerPassword>(
+        `${environment.apiUrl}/api/auth/restablecer-password`,
+        { token, nueva_password: nuevaPassword },
+      )
+      .pipe(catchError((error: HttpErrorResponse) => this.traducirErrorRecuperacion(error)));
   }
 
   // ---------------------------------------------------------------------------
@@ -290,6 +353,49 @@ export class AuthService {
         mensaje =
           error.error?.detail ??
           'Ocurrió un error inesperado al iniciar sesión. Intente nuevamente.';
+    }
+
+    return throwError(() => new Error(mensaje));
+  }
+
+  /**
+   * Convierte un error HTTP de los endpoints de recuperación en un Error legible.
+   *
+   * @param error Error emitido por HttpClient.
+   * @returns Observable que emite un Error con el mensaje legible.
+   */
+  private traducirErrorRecuperacion(error: HttpErrorResponse): Observable<never> {
+    let mensaje: string;
+
+    switch (error.status) {
+      case 0:
+        mensaje =
+          'No se pudo contactar con el servidor. Verifique que el backend esté activo.';
+        break;
+
+      case 400:
+      case 401:
+        mensaje =
+          error.error?.detail ??
+          'El token de recuperación es inválido, ha expirado o ya fue utilizado.';
+        break;
+
+      case 404:
+        mensaje =
+          error.error?.detail ??
+          'El servicio de recuperación no se encuentra disponible.';
+        break;
+
+      case 422:
+        mensaje =
+          error.error?.detail?.[0]?.msg ??
+          'Los datos enviados no tienen el formato esperado.';
+        break;
+
+      default:
+        mensaje =
+          error.error?.detail ??
+          'Ocurrió un error inesperado al procesar la solicitud. Intente nuevamente.';
     }
 
     return throwError(() => new Error(mensaje));

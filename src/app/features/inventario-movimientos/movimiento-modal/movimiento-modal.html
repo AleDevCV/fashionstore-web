@@ -1,0 +1,182 @@
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal fs-modal--movimiento"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-movimiento-titulo"
+  >
+    <!-- Cabecera -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">Control de existencias · CU11</span>
+        <h2 id="modal-movimiento-titulo" class="fs-modal__titulo">Nuevo Movimiento de Inventario</h2>
+      </div>
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar modal"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="fs-modal__cuerpo">
+      @if (mensajeError()) {
+        <div class="fs-alert fs-alert--error" role="alert">
+          <span>{{ mensajeError() }}</span>
+        </div>
+      }
+
+      @if (cargandoOpciones()) {
+        <div class="movimiento-cargando">
+          <span class="fs-spinner" aria-hidden="true"></span>
+          <span>Cargando sucursales y catálogo de prendas…</span>
+        </div>
+      } @else {
+        <form [formGroup]="formulario" (ngSubmit)="guardar()" class="movimiento-form" novalidate>
+          <!-- Sucursal -->
+          <div class="fs-field">
+            <label class="fs-field-label" for="campo-sucursal">
+              Sucursal física <span class="fs-campo-req">*</span>
+            </label>
+            <select
+              id="campo-sucursal"
+              class="fs-input fs-select"
+              formControlName="id_sucursal"
+              (change)="alCambiarSucursal()"
+            >
+              @for (s of sucursales(); track s.id_sucursal) {
+                <option [value]="s.id_sucursal">{{ s.nombre }} — {{ s.ciudad || 'Central' }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Variante de Prenda -->
+          <div class="fs-field">
+            <label class="fs-field-label" for="campo-variante">
+              Prenda / Variante (SKU) <span class="fs-campo-req">*</span>
+            </label>
+            <select
+              id="campo-variante"
+              class="fs-input fs-select"
+              formControlName="id_variante_prenda"
+              (change)="alCambiarVariante()"
+            >
+              @for (v of variantes(); track v.id_variante_prenda) {
+                <option [value]="v.id_variante_prenda">{{ v.etiqueta }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Fila: Tipo de Movimiento y Cantidad -->
+          <div class="movimiento-form__fila">
+            <div class="fs-field">
+              <label class="fs-field-label" for="campo-tipo">
+                Tipo de Operación <span class="fs-campo-req">*</span>
+              </label>
+              <select
+                id="campo-tipo"
+                class="fs-input fs-select"
+                formControlName="tipo"
+              >
+                <option value="Entrada">Entrada (+)</option>
+                <option value="Salida">Salida (-)</option>
+                <option value="Traspaso">Traspaso (-)</option>
+              </select>
+            </div>
+
+            <div class="fs-field">
+              <label class="fs-field-label" for="campo-cantidad">
+                Cantidad física <span class="fs-campo-req">*</span>
+              </label>
+              <input
+                id="campo-cantidad"
+                type="number"
+                min="1"
+                class="fs-input"
+                [class.is-invalid]="campoInvalido('cantidad') || stockInsuficiente"
+                formControlName="cantidad"
+                placeholder="1"
+              />
+            </div>
+          </div>
+
+          <!-- Indicador de Stock Físico en Sucursal -->
+          <div class="stock-info">
+            <span class="stock-info__etiqueta">Existencias actuales en sucursal:</span>
+            @if (consultandoStock()) {
+              <span class="stock-info__valor stock-info__valor--cargando">Consultando…</span>
+            } @else if (stockActual() !== null) {
+              <span
+                class="stock-info__valor"
+                [class.stock-info__valor--agotado]="stockActual() === 0"
+              >
+                {{ stockActual() }} unidades
+              </span>
+            } @else {
+              <span class="stock-info__valor">—</span>
+            }
+          </div>
+
+          <!-- Alerta Proactiva de Stock Insuficiente -->
+          @if (stockInsuficiente) {
+            <div class="fs-alert fs-alert--error" role="alert">
+              <span>
+                <strong>Stock insuficiente:</strong> La cantidad indicada ({{ formulario.value.cantidad }})
+                supera las existencias disponibles en la sucursal ({{ stockActual() }} un.).
+                El disparador transaccional rechazará la operación.
+              </span>
+            </div>
+          }
+
+          <!-- Motivo -->
+          <div class="fs-field">
+            <label class="fs-field-label" for="campo-motivo">
+              Motivo o Justificación <span class="fs-campo-req">*</span>
+            </label>
+            <input
+              id="campo-motivo"
+              type="text"
+              class="fs-input"
+              [class.is-invalid]="campoInvalido('motivo')"
+              formControlName="motivo"
+              placeholder="Ej. Ajuste por conteo físico mensual / Merma por exhibición"
+            />
+            @if (campoInvalido('motivo')) {
+              <span class="fs-field-error">El motivo es obligatorio (mínimo 3 caracteres).</span>
+            }
+          </div>
+        </form>
+      }
+    </div>
+
+    <!-- Pie -->
+    <div class="fs-modal__pie">
+      <button
+        type="button"
+        class="fs-btn fs-btn--ghost"
+        (click)="cerrar()"
+        [disabled]="cargando()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="fs-btn fs-btn--primary"
+        (click)="guardar()"
+        [disabled]="cargando() || formulario.invalid || stockInsuficiente || cargandoOpciones()"
+      >
+        @if (cargando()) {
+          <span class="fs-spinner" aria-hidden="true"></span>
+          <span>Registrando…</span>
+        } @else {
+          <span>Registrar movimiento</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

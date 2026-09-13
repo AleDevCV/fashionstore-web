@@ -1,0 +1,133 @@
+.analitica {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-5);
+  max-width: 900px;
+
+  &__titulo {
+    margin-top: var(--fs-space-1);
+    font-size: 26px;
+  }
+
+  &__lead {
+    margin-top: var(--fs-space-2);
+    color: var(--fs-ink-soft);
+    font-size: 13.5px;
+  }
+
+  &__panel {
+    background-color: var(--fs-surface);
+    border: 1px solid var(--fs-border);
+    border-radius: var(--fs-radius-md);
+    padding: var(--fs-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--fs-space-4);
+  }
+
+  &__entrada {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--fs-space-3);
+  }
+
+  &__campo-texto {
+    flex: 1;
+  }
+
+  &__microfono {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--fs-border);
+    background-color: var(--fs-surface);
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color var(--fs-transition), border-color var(--fs-transition);
+
+    &:hover:not(:disabled) {
+      border-color: var(--fs-border-strong);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    &--activo {
+      background-color: var(--fs-danger-wash);
+      border-color: var(--fs-danger);
+      animation: analitica-pulso 1.2s ease-in-out infinite;
+    }
+  }
+
+  &__escuchando {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fs-space-2);
+    font-size: 12.5px;
+    color: var(--fs-danger);
+  }
+
+  &__checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fs-space-2);
+    font-size: 13px;
+    color: var(--fs-ink-soft);
+    cursor: pointer;
+    width: fit-content;
+  }
+
+  // --- Resultado ---
+  &__resultado {
+    background-color: var(--fs-surface);
+    border: 1px solid var(--fs-border);
+    border-radius: var(--fs-radius-md);
+    padding: var(--fs-space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--fs-space-3);
+  }
+
+  &__resumen {
+    background-color: var(--fs-gold-wash);
+    padding: var(--fs-space-3) var(--fs-space-4);
+    border-radius: var(--fs-radius);
+    font-size: 13.5px;
+    color: var(--fs-ink);
+    line-height: 1.5;
+  }
+
+  &__interpretacion {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fs-space-1);
+
+    p {
+      font-size: 12.5px;
+      color: var(--fs-ink-muted);
+      font-style: italic;
+    }
+  }
+
+  &__sin-datos {
+    color: var(--fs-ink-muted);
+    font-size: 13px;
+  }
+
+  &__descarga {
+    align-self: flex-start;
+  }
+}
+
+@keyframes analitica-pulso {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 43, 43, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(139, 43, 43, 0);
+  }
+}

@@ -1,0 +1,85 @@
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal fs-modal--confirmacion"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="'modal-temp-eliminar-titulo'"
+  >
+    <!-- Cabecera -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">Confirmación de catálogo</span>
+        <h2 id="modal-temp-eliminar-titulo" class="fs-modal__titulo">
+          Eliminar Temporada
+        </h2>
+      </div>
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar modal"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="fs-modal__cuerpo">
+      @if (mensajeError()) {
+        <div class="fs-alert fs-alert--error" role="alert">
+          <span>{{ mensajeError() }}</span>
+        </div>
+      }
+
+      <div class="temp-eliminar__contenido">
+        <p class="temp-eliminar__pregunta">
+          ¿Está seguro de que desea eliminar la temporada <strong>«{{ temporada().nombre }}»</strong>?
+        </p>
+
+        <div class="temp-eliminar__ficha">
+          <div class="temp-eliminar__fila">
+            <span class="fs-eyebrow">Periodo de vigencia:</span>
+            <span>{{ temporada().fecha_inicio | date: 'dd/MM/yyyy' }} — {{ temporada().fecha_fin | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          @if (temporada().total_prendas && temporada().total_prendas! > 0) {
+            <div class="temp-eliminar__aviso-prendas">
+              <span class="fs-badge fs-badge--inactivo">Atención</span>
+              <span>Esta temporada tiene <strong>{{ temporada().total_prendas }}</strong> prenda(s) asociada(s).</span>
+            </div>
+          }
+        </div>
+
+        <p class="temp-eliminar__nota">
+          Esta acción removerá el ciclo del catálogo. Si existen prendas registradas vinculadas a esta temporada, la operación será rechazada por integridad referencial.
+        </p>
+      </div>
+    </div>
+
+    <!-- Pie -->
+    <div class="fs-modal__pie">
+      <button
+        type="button"
+        class="fs-btn fs-btn--ghost"
+        (click)="cerrar()"
+        [disabled]="cargando()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="fs-btn fs-btn--danger"
+        (click)="confirmar()"
+        [disabled]="cargando()"
+      >
+        @if (cargando()) {
+          <span class="fs-spinner" aria-hidden="true"></span>
+          <span>Eliminando…</span>
+        } @else {
+          <span>Confirmar eliminación</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
