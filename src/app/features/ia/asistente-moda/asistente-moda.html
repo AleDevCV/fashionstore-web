@@ -1,0 +1,165 @@
+<section class="asistente">
+  <header class="asistente__head">
+    <span class="fs-eyebrow">Estilista Virtual · CU22</span>
+    <h1 class="asistente__titulo">Asistente de Moda IA</h1>
+    <p class="asistente__lead">
+      Cuéntale al estilista tus preferencias y recibirás un outfit sugerido junto con prendas
+      disponibles en stock, elegidas por Gemini y validadas contra el catálogo real.
+    </p>
+  </header>
+
+  <div class="asistente__layout">
+    <!-- Panel de preferencias -->
+    <div class="asistente__form fs-field">
+      <span class="fs-eyebrow">Tus preferencias</span>
+
+      <div class="asistente__form-grid">
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="estilo">Estilo</label>
+          <select
+            id="estilo"
+            class="fs-input fs-select"
+            [value]="estilo()"
+            (change)="estilo.set($any($event.target).value)"
+          >
+            @for (o of estilos; track o) {
+              <option [value]="o">{{ o }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="ocasion">Ocasión</label>
+          <select
+            id="ocasion"
+            class="fs-input fs-select"
+            [value]="ocasion()"
+            (change)="ocasion.set($any($event.target).value)"
+          >
+            @for (o of ocasiones; track o) {
+              <option [value]="o">{{ o }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="genero">Género</label>
+          <select
+            id="genero"
+            class="fs-input fs-select"
+            [value]="genero()"
+            (change)="genero.set($any($event.target).value)"
+          >
+            @for (o of generos; track o) {
+              <option [value]="o">{{ o }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="talla">Talla</label>
+          <select
+            id="talla"
+            class="fs-input fs-select"
+            [value]="talla()"
+            (change)="talla.set($any($event.target).value)"
+          >
+            @for (o of tallas; track o) {
+              <option [value]="o">{{ o }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="clima">Clima</label>
+          <select
+            id="clima"
+            class="fs-input fs-select"
+            [value]="clima()"
+            (change)="clima.set($any($event.target).value)"
+          >
+            @for (o of climas; track o) {
+              <option [value]="o">{{ o }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="fs-btn fs-btn--primary"
+        [disabled]="cargando()"
+        (click)="obtenerRecomendaciones()"
+      >
+        @if (cargando()) {
+          <span class="fs-spinner" aria-hidden="true"></span>
+          Consultando al estilista…
+        } @else {
+          Obtener recomendaciones
+        }
+      </button>
+
+      @if (error()) {
+        <div class="fs-alert fs-alert--error" role="alert">
+          <span>{{ error() }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Panel de chat + carrusel -->
+    <div class="asistente__chat">
+      @if (mensajes().length === 0) {
+        <div class="asistente__vacio">
+          <span class="fs-eyebrow">Sin conversación aún</span>
+          <p>Completa tus preferencias y presiona «Obtener recomendaciones» para comenzar.</p>
+        </div>
+      } @else {
+        <div class="asistente__mensajes">
+          @for (m of mensajes(); track $index) {
+            <div class="asistente__burbuja" [class]="'asistente__burbuja--' + m.autor">
+              <span class="fs-eyebrow">{{ m.autor === 'ia' ? 'Estilista IA' : 'Tú' }}</span>
+              <p>{{ m.texto }}</p>
+            </div>
+          }
+        </div>
+      }
+
+      @if (respuesta(); as resp) {
+        @if (resp.es_fallback) {
+          <span class="fs-badge fs-badge--carbon asistente__badge-fallback">
+            Sugerencia general (catálogo popular)
+          </span>
+        }
+
+        <span class="fs-eyebrow">Prendas recomendadas · {{ resp.prendas.length }}</span>
+
+        @if (resp.prendas.length === 0) {
+          <p class="asistente__sin-prendas">
+            No hay prendas disponibles en stock para este perfil en este momento.
+          </p>
+        } @else {
+          <div class="asistente__carrusel">
+            @for (p of resp.prendas; track p.id_prenda) {
+              <article class="asistente__tarjeta">
+                <div class="asistente__tarjeta-imagen">
+                  @if (p.imagen_url) {
+                    <img [src]="p.imagen_url" [alt]="p.nombre" loading="lazy" />
+                  } @else {
+                    <div class="asistente__tarjeta-sin-imagen">Sin imagen</div>
+                  }
+                </div>
+                <div class="asistente__tarjeta-cuerpo">
+                  <span class="fs-eyebrow">{{ p.categoria }}</span>
+                  <h3 class="asistente__tarjeta-nombre">{{ p.nombre }}</h3>
+                  <p class="asistente__tarjeta-precio">Bs {{ p.precio.toFixed(2) }}</p>
+                  <p class="asistente__tarjeta-justificacion">{{ p.justificacion }}</p>
+                  <span class="fs-badge fs-badge--activo">Stock: {{ p.stock_total }}</span>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+</section>

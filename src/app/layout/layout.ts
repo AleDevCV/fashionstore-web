@@ -89,6 +89,12 @@ export class Layout {
       roles: ['Administrador'],
     },
     {
+      etiqueta: 'Temporadas',
+      caso: 'CU09',
+      ruta: '/panel/temporadas',
+      roles: ['Administrador', 'Encargado de Sucursal'],
+    },
+    {
       etiqueta: 'Proveedores',
       caso: 'CU12',
       ruta: '/panel/proveedores',
@@ -101,9 +107,27 @@ export class Layout {
       roles: ['Administrador', 'Encargado de Sucursal'],
     },
     {
+      etiqueta: 'Monitoreo Stock',
+      caso: 'CU10',
+      ruta: '/panel/inventario/monitoreo',
+      roles: ['Administrador', 'Encargado de Sucursal'],
+    },
+    {
       etiqueta: 'Compras',
       caso: 'CU13',
       ruta: '/panel/compras',
+      roles: ['Administrador', 'Encargado de Sucursal'],
+    },
+    {
+      etiqueta: 'Asistente de Moda IA',
+      caso: 'CU22',
+      ruta: '/panel/ia/asistente-moda',
+      roles: null,
+    },
+    {
+      etiqueta: 'Analítica por Voz',
+      caso: 'CU23',
+      ruta: '/panel/ia/analitica-voz',
       roles: ['Administrador', 'Encargado de Sucursal'],
     },
     { etiqueta: 'Catálogo', caso: 'CU14', ruta: '/catalogo', roles: null },

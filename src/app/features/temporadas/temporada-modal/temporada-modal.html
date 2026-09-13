@@ -1,0 +1,158 @@
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="'modal-temporada-titulo'"
+  >
+    <!-- Cabecera -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">Gestión de Catálogo · CU09</span>
+        <h2 id="modal-temporada-titulo" class="fs-modal__titulo">
+          {{ esEdicion() ? 'Editar Temporada' : 'Nueva Temporada' }}
+        </h2>
+      </div>
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar modal"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="fs-modal__cuerpo">
+      @if (mensajeError()) {
+        <div class="fs-alert fs-alert--error" role="alert">
+          <span>{{ mensajeError() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="formulario" (ngSubmit)="guardar()" class="temporada-form" novalidate>
+        <!-- Nombre -->
+        <div class="fs-field">
+          <label class="fs-field-label" for="campo-temp-nombre">
+            Nombre de la Temporada <span class="fs-campo-req">*</span>
+          </label>
+          <input
+            id="campo-temp-nombre"
+            type="text"
+            class="fs-input"
+            [class.is-invalid]="campoInvalido('nombre')"
+            formControlName="nombre"
+            placeholder="Ej. Primavera-Verano 2026"
+          />
+          @if (campoInvalido('nombre')) {
+            <span class="fs-field-error">
+              @if (errores('nombre')?.['required']) { El nombre es obligatorio. }
+              @if (errores('nombre')?.['minlength']) { Mínimo 2 caracteres. }
+              @if (errores('nombre')?.['maxlength']) { Máximo 100 caracteres. }
+            </span>
+          }
+        </div>
+
+        <!-- Descripción -->
+        <div class="fs-field">
+          <label class="fs-field-label" for="campo-temp-desc">
+            Descripción conceptual
+          </label>
+          <input
+            id="campo-temp-desc"
+            type="text"
+            class="fs-input"
+            [class.is-invalid]="campoInvalido('descripcion')"
+            formControlName="descripcion"
+            placeholder="Ej. Línea ligera floral para climas cálidos"
+          />
+          @if (campoInvalido('descripcion')) {
+            <span class="fs-field-error">Máximo 255 caracteres.</span>
+          }
+        </div>
+
+        <!-- Fila de Fechas de Vigencia -->
+        <div class="temporada-form__fila">
+          <div class="fs-field">
+            <label class="fs-field-label" for="campo-temp-inicio">
+              Fecha de Inicio <span class="fs-campo-req">*</span>
+            </label>
+            <input
+              id="campo-temp-inicio"
+              type="date"
+              class="fs-input"
+              [class.is-invalid]="campoInvalido('fecha_inicio')"
+              formControlName="fecha_inicio"
+            />
+            @if (campoInvalido('fecha_inicio')) {
+              <span class="fs-field-error">La fecha de inicio es requerida.</span>
+            }
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-field-label" for="campo-temp-fin">
+              Fecha de Fin <span class="fs-campo-req">*</span>
+            </label>
+            <input
+              id="campo-temp-fin"
+              type="date"
+              class="fs-input"
+              [class.is-invalid]="campoInvalido('fecha_fin')"
+              formControlName="fecha_fin"
+            />
+            @if (campoInvalido('fecha_fin')) {
+              <span class="fs-field-error">La fecha de fin es requerida.</span>
+            }
+          </div>
+        </div>
+
+        <!-- Alerta de Validación de Rango de Fechas -->
+        @if (rangoInvalido) {
+          <div class="fs-alert fs-alert--error" role="alert">
+            <span>La fecha de fin debe ser posterior o igual a la fecha de inicio.</span>
+          </div>
+        }
+
+        <!-- Checkbox de Habilitación -->
+        <div class="temporada-form__check-wrap">
+          <label class="temporada-form__check-label" for="campo-temp-activo">
+            <input
+              id="campo-temp-activo"
+              type="checkbox"
+              formControlName="activo"
+            />
+            <span>Temporada habilitada en el catálogo</span>
+          </label>
+        </div>
+      </form>
+    </div>
+
+    <!-- Pie -->
+    <div class="fs-modal__pie">
+      <button
+        type="button"
+        class="fs-btn fs-btn--ghost"
+        (click)="cerrar()"
+        [disabled]="cargando()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="fs-btn fs-btn--primary"
+        (click)="guardar()"
+        [disabled]="cargando() || formulario.invalid"
+      >
+        @if (cargando()) {
+          <span class="fs-spinner" aria-hidden="true"></span>
+          <span>Guardando…</span>
+        } @else {
+          <span>{{ esEdicion() ? 'Guardar cambios' : 'Crear temporada' }}</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

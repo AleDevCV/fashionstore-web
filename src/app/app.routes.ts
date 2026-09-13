@@ -132,6 +132,29 @@ export const routes: Routes = [
           import('./features/prendas/prendas').then((m) => m.Prendas),
       },
       {
+        // CU09 - Gestión de Temporadas y Colecciones
+        path: 'temporadas',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Temporadas')],
+        title: 'Temporadas y Colecciones · FashionStore',
+        loadComponent: () =>
+          import('./features/temporadas/temporadas').then((m) => m.Temporadas),
+      },
+      {
+        // CU10 - Monitoreo de Inventario Multisucursal
+        path: 'inventario/monitoreo',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Monitoreo de Inventario')],
+        title: 'Monitoreo de Inventario · FashionStore',
+        loadComponent: () =>
+          import('./features/inventario-monitoreo/inventario-monitoreo').then(
+            (m) => m.InventarioMonitoreo,
+          ),
+      },
+      {
+        // CU10 - Alias alternativo
+        path: 'monitoreo-inventario',
+        redirectTo: 'inventario/monitoreo',
+      },
+      {
         // CU12 - Directorio de Proveedores
         path: 'proveedores',
         canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Proveedores')],
@@ -167,6 +190,26 @@ export const routes: Routes = [
         title: 'Nueva Compra · FashionStore',
         loadComponent: () =>
           import('./features/compras/compra-nueva/compra-nueva').then((m) => m.CompraNueva),
+      },
+      {
+        // CU22 - Asistente y Recomendador Virtual de Moda con IA (Gemini)
+        path: 'ia/asistente-moda',
+        title: 'Asistente de Moda IA · FashionStore',
+        loadComponent: () =>
+          import('./features/ia/asistente-moda/asistente-moda').then((m) => m.AsistenteModa),
+      },
+      {
+        // CU22 - Alias de ruta
+        path: 'ia/recomendador',
+        redirectTo: 'ia/asistente-moda',
+      },
+      {
+        // CU23 - Consultas Analíticas Ejecutivas por Voz con IA
+        path: 'ia/analitica-voz',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Analítica por Voz')],
+        title: 'Analítica por Voz · FashionStore',
+        loadComponent: () =>
+          import('./features/ia/analitica-voz/analitica-voz').then((m) => m.AnaliticaVoz),
       },
     ],
   },

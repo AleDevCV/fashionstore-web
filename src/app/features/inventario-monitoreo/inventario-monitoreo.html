@@ -1,0 +1,203 @@
+<section class="monitoreo">
+  <!-- Cabecera de módulo -->
+  <header class="monitoreo__head">
+    <div>
+      <span class="fs-eyebrow">Control Multisucursal · CU10</span>
+      <h1 class="monitoreo__titulo">Monitoreo de Inventario y Existencias</h1>
+      <p class="monitoreo__lead">
+        Supervisión consolidada de niveles de existencias por sucursal física, detección de roturas de stock y umbrales de reposición.
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--ghost" (click)="cargarTodo()">
+      ↻ Actualizar datos
+    </button>
+  </header>
+
+  <!-- Tarjetas KPI -->
+  <div class="monitoreo__kpis">
+    <div class="monitoreo__kpi-card">
+      <span class="fs-eyebrow">Total Existencias</span>
+      <span class="monitoreo__kpi-valor">{{ kpis().total_existencias | number }}</span>
+      <span class="monitoreo__kpi-sub">Unidades físicas en almacenes</span>
+    </div>
+
+    <div class="monitoreo__kpi-card monitoreo__kpi-card--aviso">
+      <span class="fs-eyebrow">Stock Bajo (1 a 4)</span>
+      <span class="monitoreo__kpi-valor">{{ kpis().variantes_stock_bajo | number }}</span>
+      <span class="monitoreo__kpi-sub">Variantes en umbral de reposición</span>
+    </div>
+
+    <div class="monitoreo__kpi-card monitoreo__kpi-card--peligro">
+      <span class="fs-eyebrow">Agotadas (0)</span>
+      <span class="monitoreo__kpi-valor">{{ kpis().variantes_agotadas | number }}</span>
+      <span class="monitoreo__kpi-sub">Quiebres de stock sin existencias</span>
+    </div>
+  </div>
+
+  <!-- Barra de Filtros y Búsqueda Reactiva -->
+  <div class="monitoreo__barra">
+    <div class="monitoreo__filtro-grupo">
+      <label class="fs-eyebrow" for="filtro-sucursal">Sucursal</label>
+      <select
+        id="filtro-sucursal"
+        class="fs-input fs-select"
+        [value]="filtroSucursal() ?? ''"
+        (change)="alCambiarSucursal($event)"
+      >
+        <option value="">Todas las sucursales</option>
+        @for (s of sucursales(); track s.id_sucursal) {
+          <option [value]="s.id_sucursal">{{ s.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="monitoreo__filtro-grupo">
+      <label class="fs-eyebrow" for="filtro-categoria">Categoría</label>
+      <select
+        id="filtro-categoria"
+        class="fs-input fs-select"
+        [value]="filtroCategoria() ?? ''"
+        (change)="alCambiarCategoria($event)"
+      >
+        <option value="">Todas las categorías</option>
+        @for (c of categorias(); track c.id_categoria) {
+          <option [value]="c.id_categoria">{{ c.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="monitoreo__filtro-grupo">
+      <label class="fs-eyebrow" for="filtro-temporada">Temporada</label>
+      <select
+        id="filtro-temporada"
+        class="fs-input fs-select"
+        [value]="filtroTemporada() ?? ''"
+        (change)="alCambiarTemporada($event)"
+      >
+        <option value="">Todas las colecciones</option>
+        @for (t of temporadas(); track t.id_temporada) {
+          <option [value]="t.id_temporada">{{ t.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="monitoreo__filtro-grupo">
+      <label class="fs-eyebrow" for="filtro-estado">Estado de Stock</label>
+      <select
+        id="filtro-estado"
+        class="fs-input fs-select"
+        [value]="filtroEstado()"
+        (change)="alCambiarEstado($event)"
+      >
+        <option value="Todos">Todos los niveles</option>
+        <option value="Optimo">Óptimo (≥ 5)</option>
+        <option value="Bajo">Bajo Stock (1 a 4)</option>
+        <option value="Agotado">Agotado (0)</option>
+      </select>
+    </div>
+
+    <div class="monitoreo__filtro-grupo monitoreo__filtro-busqueda">
+      <label class="fs-eyebrow" for="filtro-busqueda">Búsqueda rápida</label>
+      <input
+        id="filtro-busqueda"
+        type="search"
+        class="fs-input"
+        placeholder="Buscar por SKU o prenda…"
+        [value]="busqueda()"
+        (input)="alBuscar($event)"
+      />
+    </div>
+  </div>
+
+  <!-- Estado de Carga / Error / Tabla ERP -->
+  @if (cargando()) {
+    <div class="monitoreo__estado-carga">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Actualizando existencias multisucursal…</span>
+    </div>
+  } @else if (errorCarga()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargarTodo()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th>Sucursal</th>
+            <th>SKU Variante</th>
+            <th>Prenda</th>
+            <th>Categoría</th>
+            <th>Talla / Color</th>
+            <th class="monitoreo__col-stock">Existencias</th>
+            <th>Estado de Stock</th>
+            <th class="monitoreo__col-acciones">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track (item.id_sucursal + '-' + item.id_variante_prenda)) {
+            <tr>
+              <td>
+                <strong>{{ item.nombre_sucursal || item.sucursal }}</strong>
+                @if (item.ciudad) {
+                  <span class="monitoreo__ciudad"> · {{ item.ciudad }}</span>
+                }
+              </td>
+              <td class="fs-col-num">{{ item.sku_variante || item.sku }}</td>
+              <td class="monitoreo__prenda-celda">
+                <strong>{{ item.nombre_prenda || item.prenda_nombre }}</strong>
+                @if (item.nombre_temporada || item.temporada) {
+                  <span class="monitoreo__temporada-tag">
+                    ({{ item.nombre_temporada || item.temporada }})
+                  </span>
+                }
+              </td>
+              <td>{{ item.nombre_categoria || item.categoria || '—' }}</td>
+              <td>
+                <span class="monitoreo__variante-tag">
+                  @if (item.codigo_hex) {
+                    <span
+                      class="monitoreo__color-swatch"
+                      [style.background-color]="item.codigo_hex"
+                    ></span>
+                  }
+                  {{ item.talla }} · {{ item.color }}
+                </span>
+              </td>
+              <td class="monitoreo__col-stock fs-col-num">
+                <span class="monitoreo__stock-num">{{ item.stock }}</span>
+              </td>
+              <td>
+                @let cls = obtenerClasificacion(item.stock);
+                <span class="fs-badge" [class]="cls.badgeClass">
+                  {{ cls.etiqueta }}
+                </span>
+              </td>
+              <td>
+                <a
+                  class="fs-accion"
+                  [routerLink]="['/panel/movimientos-inventario']"
+                  [queryParams]="{ sucursal: item.id_sucursal, variante: item.id_variante_prenda }"
+                >
+                  Ajustar
+                </a>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="fs-tabla-vacia">
+                No se encontraron registros de inventario con los filtros seleccionados.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="monitoreo__pie">
+      Mostrando {{ items().length }} registro(s) de inventario.
+    </p>
+  }
+</section>
