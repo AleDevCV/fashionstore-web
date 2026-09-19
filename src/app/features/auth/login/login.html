@@ -148,9 +148,19 @@
 
         <!-- ------------------------ ENLACES DE PIE ------------------------ -->
         <div class="login__links">
-          <!-- CU04: Recuperar Contraseña, planificado para la Iteración 2 -->
           <a routerLink="/recuperar-password" class="login__link">
             ¿Olvidó su contraseña?
+          </a>
+        </div>
+        <div class="login__links login__links--sub">
+          <span class="login__link-muted">¿Es cliente de FashionStore?</span>
+          <a routerLink="/login-cliente" class="login__link login__link--highlight">
+            Acceso clientes
+          </a>
+        </div>
+        <div class="login__links login__links--sub">
+          <a routerLink="/catalogo" class="login__link-back">
+            ← Volver al catálogo público
           </a>
         </div>
       </form>

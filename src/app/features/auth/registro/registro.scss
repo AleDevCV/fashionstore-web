@@ -1,58 +1,52 @@
-/* =============================================================================
-   FASHIONSTORE - ESTILOS DE LA PANTALLA DE INICIO DE SESIÓN (CU01)
+﻿/* =============================================================================
+   FASHIONSTORE - ESTILOS DE AUTO-REGISTRO DE CLIENTES (CU05 / CU01)
    -----------------------------------------------------------------------------
-   Rejilla asimétrica 55/45. La columna visual actúa como portada editorial y la
-   derecha concentra el formulario con un ancho de lectura controlado.
+   Rejilla asimétrica 50/50. Estilo editorial consistente con la pantalla de Login.
    ========================================================================== */
 
 :host {
   display: block;
-  height: 100vh;
+  min-height: 100vh;
 }
 
-.login {
+.registro {
   display: grid;
-  /* Asimetría deliberada: la fotografía domina y el formulario respira */
-  grid-template-columns: 55fr 45fr;
-  height: 100%;
+  grid-template-columns: 50fr 50fr;
+  min-height: 100vh;
   background-color: var(--fs-bg);
 }
 
 /* -----------------------------------------------------------------------------
    COLUMNA IZQUIERDA — LIENZO EDITORIAL
    -------------------------------------------------------------------------- */
-.login__canvas {
+.registro__canvas {
   position: relative;
   overflow: hidden;
-  /* Degradado carbón de respaldo: si la foto remota falla, el panel conserva
-     su aspecto intencionado en lugar de quedar en blanco. */
   background: linear-gradient(160deg, #1C1B19 0%, #111111 55%, #0B0B0B 100%);
 }
 
-.login__photo {
+.registro__photo {
   position: absolute;
   inset: 0;
-  background-image: url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=80");
+  background-image: url("https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1600&q=80");
   background-size: cover;
-  background-position: center 28%;
-  /* Desaturación parcial: acerca la fotografía a una portada de revista */
-  filter: grayscale(28%) contrast(1.04);
+  background-position: center 25%;
+  filter: grayscale(25%) contrast(1.05);
 }
 
-/* Velo oscuro que garantiza la legibilidad del texto sobre la imagen */
-.login__scrim {
+.registro__scrim {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
     rgba(10, 10, 10, 0.55) 0%,
-    rgba(10, 10, 10, 0.28) 42%,
-    rgba(10, 10, 10, 0.82) 100%
+    rgba(10, 10, 10, 0.32) 45%,
+    rgba(10, 10, 10, 0.85) 100%
   );
 }
 
-.login__canvas-content {
-  position: relative; /* por encima de la imagen y del velo */
+.registro__canvas-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -61,46 +55,41 @@
   color: #FFFFFF;
 }
 
-/* --- Logotipo --- */
-.login__brand {
+.registro__brand {
   display: flex;
   align-items: center;
   gap: var(--fs-space-4);
 }
 
-.login__brand-name {
+.registro__brand-name {
   font-size: 17px;
   color: #FFFFFF;
 }
 
-/* La segunda mitad del nombre en cursiva marca el contraste de alta costura */
-.login__brand-name em {
+.registro__brand-name em {
   font-style: italic;
   font-weight: 400;
   color: var(--fs-gold);
 }
 
-/* Filete dorado de 1px que separa logotipo y descriptor */
-.login__brand-rule {
+.registro__brand-rule {
   width: 34px;
   height: 1px;
   background-color: rgba(197, 168, 128, 0.7);
 }
 
-.login__brand-tag {
+.registro__brand-tag {
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.62);
 }
 
-/* --- Pie editorial --- */
-.login__canvas-foot {
-  max-width: 30ch;
+.registro__canvas-foot {
+  max-width: 32ch;
 }
 
-/* Numeral de sección: recurso editorial de revista */
-.login__index {
+.registro__index {
   display: block;
   font-size: 11px;
   letter-spacing: 0.2em;
@@ -109,17 +98,17 @@
   margin-bottom: var(--fs-space-4);
 }
 
-.login__quote {
+.registro__quote {
   font-family: var(--fs-font-display);
   font-style: italic;
   font-weight: 400;
-  font-size: 30px;
-  line-height: 1.28;
+  font-size: 28px;
+  line-height: 1.3;
   letter-spacing: -0.01em;
   color: #FFFFFF;
 }
 
-.login__caption {
+.registro__caption {
   display: block;
   margin-top: var(--fs-space-4);
   padding-top: var(--fs-space-4);
@@ -132,54 +121,58 @@
 /* -----------------------------------------------------------------------------
    COLUMNA DERECHA — FORMULARIO
    -------------------------------------------------------------------------- */
-.login__panel {
+.registro__panel {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--fs-space-6);
+  padding: var(--fs-space-6) var(--fs-space-6);
   background-color: var(--fs-surface);
-  /* Filete de 1px en lugar de una sombra difusa entre las dos columnas */
   border-left: 1px solid var(--fs-border);
   overflow-y: auto;
 }
 
-.login__form-wrap {
+.registro__form-wrap {
   width: 100%;
-  max-width: 372px;
+  max-width: 440px;
+  padding: var(--fs-space-3) 0;
 }
 
-/* --- Encabezado --- */
-.login__head {
-  margin-bottom: var(--fs-space-6);
+.registro__head {
+  margin-bottom: var(--fs-space-5);
 }
 
-.login__title {
-  margin-top: var(--fs-space-3);
-  font-size: 38px;
+.registro__title {
+  margin-top: var(--fs-space-2);
+  font-size: 36px;
+  line-height: 1.15;
 }
 
-.login__subtitle {
-  margin-top: var(--fs-space-3);
-  font-size: 14px;
+.registro__subtitle {
+  margin-top: var(--fs-space-2);
+  font-size: 13.5px;
   color: var(--fs-ink-soft);
-  max-width: 34ch;
+  max-width: 38ch;
 }
 
-/* --- Cuerpo del formulario --- */
-.login__form {
+.registro__form {
   display: flex;
   flex-direction: column;
-  gap: var(--fs-space-5);
+  gap: var(--fs-space-4);
 }
 
-/* Fila que alinea la etiqueta con el botón "Ver / Ocultar" */
-.login__label-row {
+.registro__grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fs-space-3);
+}
+
+.registro__label-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
 }
 
-.login__toggle {
+.registro__toggle {
   padding: 0;
   background: none;
   border: none;
@@ -193,12 +186,11 @@
   transition: color var(--fs-transition);
 }
 
-.login__toggle:hover {
+.registro__toggle:hover {
   color: var(--fs-gold-deep);
 }
 
-/* Cuadro dorado que precede al texto de error, en lugar de un icono genérico */
-.login__alert-mark {
+.registro__alert-mark {
   flex-shrink: 0;
   width: 3px;
   height: 3px;
@@ -207,71 +199,124 @@
   transform: rotate(45deg);
 }
 
-.login__submit {
+.registro__submit {
   width: 100%;
-  margin-top: var(--fs-space-1);
+  margin-top: var(--fs-space-2);
+  padding: 13px 20px;
 }
 
-/* --- Enlaces secundarios --- */
-.login__links {
+.registro__links {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--fs-space-2);
+  margin-top: var(--fs-space-2);
 }
 
-.login__link-sep {
-  color: var(--fs-border-dark);
+.registro__links-text {
   font-size: 13px;
-}
-
-.login__link-muted {
-  font-size: 12.5px;
   color: var(--fs-ink-muted);
 }
 
-.login__link {
+.registro__link {
   font-size: 13px;
-  color: var(--fs-ink-soft);
-  border-bottom: 1px solid transparent;
-  transition: color var(--fs-transition), border-color var(--fs-transition);
-}
-
-.login__link:hover {
-  color: var(--fs-ink);
-  border-bottom-color: var(--fs-gold);
-}
-
-.login__link--highlight {
   font-weight: 600;
   color: var(--fs-gold-deep);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--fs-transition), color var(--fs-transition);
 }
 
-.login__link--highlight:hover {
+.registro__link:hover {
+  color: var(--fs-ink);
   border-bottom-color: var(--fs-gold-deep);
 }
 
-.login__links--sub {
+.registro__links--sub {
   margin-top: var(--fs-space-1);
 }
 
-.login__link-back {
-  font-size: 12px;
-  color: var(--fs-ink-muted);
+.registro__link-back {
+  font-size: 12.5px;
+  color: var(--fs-ink-soft);
   text-decoration: none;
   transition: color var(--fs-transition);
 }
 
-.login__link-back:hover {
+.registro__link-back:hover {
   color: var(--fs-ink);
 }
 
-/* --- Pie legal --- */
-.login__foot {
-  margin-top: var(--fs-space-7);
+/* --- Estado de éxito --- */
+.registro__exito-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--fs-space-6) var(--fs-space-5);
+  background-color: var(--fs-bg);
+  border: 1px solid var(--fs-border);
+  border-radius: 4px;
 }
 
-.login__foot-rule {
+.registro__exito-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: rgba(46, 125, 50, 0.12);
+  color: #2E7D32;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--fs-space-4);
+}
+
+.registro__exito-title {
+  font-size: 24px;
+  margin-bottom: var(--fs-space-3);
+  color: var(--fs-ink);
+}
+
+.registro__exito-desc {
+  font-size: 14px;
+  color: var(--fs-ink-soft);
+  line-height: 1.5;
+  margin-bottom: var(--fs-space-5);
+}
+
+.registro__exito-aviso {
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  padding: var(--fs-space-4);
+  border-radius: 4px;
+  margin-bottom: var(--fs-space-6);
+  text-align: left;
+}
+
+.registro__exito-aviso p {
+  font-size: 12.5px;
+  color: var(--fs-ink-soft);
+  margin-top: var(--fs-space-2);
+  line-height: 1.5;
+}
+
+.registro__exito-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-3);
+  width: 100%;
+}
+
+.registro__exito-acciones .fs-btn {
+  width: 100%;
+}
+
+/* --- Pie legal --- */
+.registro__foot {
+  margin-top: var(--fs-space-6);
+}
+
+.registro__foot-rule {
   display: block;
   width: 100%;
   height: 1px;
@@ -279,54 +324,44 @@
   margin-bottom: var(--fs-space-4);
 }
 
-.login__foot-text {
-  font-size: 11.5px;
-  line-height: 1.6;
+.registro__foot-text {
+  font-size: 11px;
+  line-height: 1.55;
   color: var(--fs-ink-muted);
 }
 
 /* -----------------------------------------------------------------------------
-   ADAPTACIÓN RESPONSIVA (RNF05)
+   RESPONSIVIDAD
    -------------------------------------------------------------------------- */
-
-/* Tablet: se reduce el peso de la columna visual */
 @media (max-width: 1180px) {
-  .login {
-    grid-template-columns: 46fr 54fr;
-  }
-
-  .login__canvas-content {
-    padding: var(--fs-space-6);
-  }
-
-  .login__quote {
-    font-size: 25px;
+  .registro {
+    grid-template-columns: 44fr 56fr;
   }
 }
 
-/* Móvil y tablet vertical: la fotografía se oculta y el formulario ocupa todo */
 @media (max-width: 980px) {
   :host {
     height: auto;
-    min-height: 100vh;
   }
 
-  .login {
+  .registro {
     grid-template-columns: 1fr;
-    min-height: 100vh;
   }
 
-  .login__canvas {
+  .registro__canvas {
     display: none;
   }
 
-  .login__panel {
+  .registro__panel {
     border-left: none;
-    padding: var(--fs-space-6) var(--fs-space-5);
+    padding: var(--fs-space-6) var(--fs-space-4);
     background-color: var(--fs-bg);
   }
+}
 
-  .login__title {
-    font-size: 32px;
+@media (max-width: 540px) {
+  .registro__grid-2 {
+    grid-template-columns: 1fr;
+    gap: var(--fs-space-4);
   }
 }

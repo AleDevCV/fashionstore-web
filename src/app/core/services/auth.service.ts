@@ -27,6 +27,8 @@ import {
   RespuestaRestablecerPassword,
   RespuestaVerificarToken,
   SolicitudLogin,
+  SolicitudRegistroCliente,
+  RespuestaRegistroCliente,
 } from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
@@ -153,6 +155,30 @@ export class AuthService {
         { token, nueva_password: nuevaPassword },
       )
       .pipe(catchError((error: HttpErrorResponse) => this.traducirErrorRecuperacion(error)));
+  }
+
+  // ---------------------------------------------------------------------------
+  // OPERACIONES DE AUTO-REGISTRO DE CLIENTES (CU05 / CU01)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Registra a un nuevo cliente en la plataforma y auto-inicia su sesión con JWT.
+   * Endpoint: POST /api/auth/registro
+   *
+   * @param datos Información personal, credenciales y contacto del cliente.
+   * @returns Observable con los datos creados y el access_token JWT.
+   */
+  registrarCliente(datos: SolicitudRegistroCliente): Observable<RespuestaRegistroCliente> {
+    return this.http
+      .post<RespuestaRegistroCliente>(`${environment.apiUrl}/api/auth/registro`, datos)
+      .pipe(
+        tap((respuesta) => {
+          if (respuesta.access_token) {
+            this.guardarToken(respuesta.access_token);
+          }
+        }),
+        catchError((error: HttpErrorResponse) => this.traducirErrorRegistro(error)),
+      );
   }
 
   // ---------------------------------------------------------------------------
@@ -396,6 +422,45 @@ export class AuthService {
         mensaje =
           error.error?.detail ??
           'Ocurrió un error inesperado al procesar la solicitud. Intente nuevamente.';
+    }
+
+    return throwError(() => new Error(mensaje));
+  }
+
+  /**
+   * Convierte un error HTTP del endpoint de auto-registro en un Error legible.
+   *
+   * @param error Error emitido por HttpClient.
+   * @returns Observable que emite un Error con el mensaje legible.
+   */
+  private traducirErrorRegistro(error: HttpErrorResponse): Observable<never> {
+    let mensaje: string;
+
+    switch (error.status) {
+      case 0:
+        mensaje =
+          'No se pudo contactar con el servidor. Verifique que el backend esté activo.';
+        break;
+
+      case 400:
+      case 409:
+        mensaje =
+          error.error?.detail ??
+          'Los datos ingresados ya se encuentran registrados o no son válidos.';
+        break;
+
+      case 422:
+        if (Array.isArray(error.error?.detail)) {
+          mensaje = error.error.detail.map((d: any) => d.msg).join('. ');
+        } else {
+          mensaje = 'Los datos enviados no tienen el formato esperado.';
+        }
+        break;
+
+      default:
+        mensaje =
+          error.error?.detail ??
+          'Ocurrió un error inesperado al procesar el registro. Intente nuevamente.';
     }
 
     return throwError(() => new Error(mensaje));

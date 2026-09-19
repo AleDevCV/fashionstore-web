@@ -1,0 +1,169 @@
+﻿<!--
+  =============================================================================
+  FASHIONSTORE - PLANTILLA DE INICIO DE SESIÓN PARA CLIENTES (CU01 / CU14)
+  -----------------------------------------------------------------------------
+  Composición editorial asimétrica para la experiencia de compra de clientes.
+  =============================================================================
+-->
+<div class="login-cli">
+  <!-- ======================= COLUMNA IZQUIERDA: LIENZO ====================== -->
+  <aside class="login-cli__canvas" aria-hidden="true">
+    <div class="login-cli__photo"></div>
+    <div class="login-cli__scrim"></div>
+
+    <div class="login-cli__canvas-content">
+      <header class="login-cli__brand">
+        <span class="fs-wordmark login-cli__brand-name">Fashion<em>Store</em></span>
+        <span class="login-cli__brand-rule"></span>
+        <span class="login-cli__brand-tag">Clientes · Colecciones</span>
+      </header>
+
+      <footer class="login-cli__canvas-foot">
+        <span class="login-cli__index">01 — Mi Cuenta</span>
+        <p class="login-cli__quote">
+          El lujo es la libertad<br />
+          de expresar tu propia<br />
+          identidad.
+        </p>
+        <span class="login-cli__caption">Atención personalizada y asesoría de estilo con Inteligencia Artificial</span>
+      </footer>
+    </div>
+  </aside>
+
+  <!-- ======================= COLUMNA DERECHA: FORMULARIO ==================== -->
+  <main class="login-cli__panel">
+    <div class="login-cli__form-wrap">
+      <!-- Encabezado -->
+      <div class="login-cli__head">
+        <span class="fs-eyebrow">Tu cuenta FashionStore</span>
+        <h1 class="login-cli__title">Iniciar sesión</h1>
+        <p class="login-cli__subtitle">
+          Accede para realizar compras, gestionar tus pedidos y recibir recomendaciones de estilo exclusivas.
+        </p>
+      </div>
+
+      <!-- Formulario reactivo -->
+      <form
+        class="login-cli__form"
+        [formGroup]="formulario"
+        (ngSubmit)="iniciarSesion()"
+        novalidate
+      >
+        <!-- Correo -->
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="correo-cli">Correo electrónico</label>
+          <input
+            id="correo-cli"
+            type="email"
+            class="fs-input"
+            formControlName="correo"
+            placeholder="cliente@fashionstore.com"
+            autocomplete="email"
+            [class.is-invalid]="campoInvalido('correo')"
+            [attr.aria-invalid]="campoInvalido('correo')"
+          />
+
+          @if (campoInvalido('correo')) {
+            <span class="fs-field-error">
+              @if (correo.errors?.['required']) {
+                El correo electrónico es obligatorio.
+              } @else if (correo.errors?.['email']) {
+                Introduzca un correo con formato válido.
+              }
+            </span>
+          }
+        </div>
+
+        <!-- Contraseña -->
+        <div class="fs-field">
+          <div class="login-cli__label-row">
+            <label class="fs-eyebrow" for="password-cli">Contraseña</label>
+            <button
+              type="button"
+              class="login-cli__toggle"
+              (click)="alternarPassword()"
+            >
+              {{ mostrarPassword() ? 'Ocultar' : 'Ver' }}
+            </button>
+          </div>
+
+          <input
+            id="password-cli"
+            [type]="mostrarPassword() ? 'text' : 'password'"
+            class="fs-input"
+            formControlName="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            [class.is-invalid]="campoInvalido('password')"
+            [attr.aria-invalid]="campoInvalido('password')"
+          />
+
+          @if (campoInvalido('password')) {
+            <span class="fs-field-error">
+              @if (password.errors?.['required']) {
+                La contraseña es obligatoria.
+              } @else if (password.errors?.['minlength']) {
+                La contraseña debe tener al menos 4 caracteres.
+              }
+            </span>
+          }
+        </div>
+
+        <!-- Alerta de error -->
+        @if (mensajeError()) {
+          <div class="fs-alert fs-alert--error" role="alert">
+            <span class="login-cli__alert-mark" aria-hidden="true"></span>
+            <span>{{ mensajeError() }}</span>
+          </div>
+        }
+
+        <!-- Botón de Envío -->
+        <button
+          type="submit"
+          class="fs-btn fs-btn--primary login-cli__submit"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="fs-spinner" aria-hidden="true"></span>
+            <span>Accediendo a su cuenta…</span>
+          } @else {
+            <span>Ingresar a mi cuenta</span>
+          }
+        </button>
+
+        <!-- Enlaces secundarios -->
+        <div class="login-cli__links">
+          <a routerLink="/recuperar-password" class="login-cli__link">
+            ¿Olvidó su contraseña?
+          </a>
+        </div>
+
+        <div class="login-cli__links login-cli__links--reg">
+          <span class="login-cli__links-text">¿Aún no tienes cuenta?</span>
+          <a routerLink="/registro" class="login-cli__link login-cli__link--highlight">
+            Regístrate aquí
+          </a>
+        </div>
+
+        <div class="login-cli__links login-cli__links--sub">
+          <a routerLink="/catalogo" class="login-cli__link-back">
+            ← Volver al catálogo público
+          </a>
+        </div>
+      </form>
+
+      <!-- Pie legal / corporativo -->
+      <footer class="login-cli__foot">
+        <span class="login-cli__foot-rule"></span>
+        <div class="login-cli__foot-content">
+          <p class="login-cli__foot-text">
+            FashionStore Oficial · Acceso exclusivo para clientes registrados.
+          </p>
+          <a routerLink="/login" class="login-cli__staff-link">
+            Acceso para colaboradores y personal
+          </a>
+        </div>
+      </footer>
+    </div>
+  </main>
+</div>
