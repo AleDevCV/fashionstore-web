@@ -1,58 +1,52 @@
-/* =============================================================================
-   FASHIONSTORE - ESTILOS DE LA PANTALLA DE INICIO DE SESIÓN (CU01)
+﻿/* =============================================================================
+   FASHIONSTORE - ESTILOS DE INICIO DE SESIÓN PARA CLIENTES
    -----------------------------------------------------------------------------
-   Rejilla asimétrica 55/45. La columna visual actúa como portada editorial y la
-   derecha concentra el formulario con un ancho de lectura controlado.
+   Rejilla asimétrica 50/50 con enfoque en la experiencia de compra de lujo.
    ========================================================================== */
 
 :host {
   display: block;
-  height: 100vh;
+  min-height: 100vh;
 }
 
-.login {
+.login-cli {
   display: grid;
-  /* Asimetría deliberada: la fotografía domina y el formulario respira */
-  grid-template-columns: 55fr 45fr;
-  height: 100%;
+  grid-template-columns: 50fr 50fr;
+  min-height: 100vh;
   background-color: var(--fs-bg);
 }
 
 /* -----------------------------------------------------------------------------
    COLUMNA IZQUIERDA — LIENZO EDITORIAL
    -------------------------------------------------------------------------- */
-.login__canvas {
+.login-cli__canvas {
   position: relative;
   overflow: hidden;
-  /* Degradado carbón de respaldo: si la foto remota falla, el panel conserva
-     su aspecto intencionado en lugar de quedar en blanco. */
-  background: linear-gradient(160deg, #1C1B19 0%, #111111 55%, #0B0B0B 100%);
+  background: linear-gradient(160deg, #1A1A18 0%, #101010 55%, #080808 100%);
 }
 
-.login__photo {
+.login-cli__photo {
   position: absolute;
   inset: 0;
-  background-image: url("https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=80");
+  background-image: url("https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1600&q=80");
   background-size: cover;
-  background-position: center 28%;
-  /* Desaturación parcial: acerca la fotografía a una portada de revista */
-  filter: grayscale(28%) contrast(1.04);
+  background-position: center 30%;
+  filter: grayscale(20%) contrast(1.06);
 }
 
-/* Velo oscuro que garantiza la legibilidad del texto sobre la imagen */
-.login__scrim {
+.login-cli__scrim {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(10, 10, 10, 0.55) 0%,
-    rgba(10, 10, 10, 0.28) 42%,
-    rgba(10, 10, 10, 0.82) 100%
+    rgba(12, 12, 12, 0.52) 0%,
+    rgba(12, 12, 12, 0.28) 40%,
+    rgba(12, 12, 12, 0.85) 100%
   );
 }
 
-.login__canvas-content {
-  position: relative; /* por encima de la imagen y del velo */
+.login-cli__canvas-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -61,46 +55,41 @@
   color: #FFFFFF;
 }
 
-/* --- Logotipo --- */
-.login__brand {
+.login-cli__brand {
   display: flex;
   align-items: center;
   gap: var(--fs-space-4);
 }
 
-.login__brand-name {
+.login-cli__brand-name {
   font-size: 17px;
   color: #FFFFFF;
 }
 
-/* La segunda mitad del nombre en cursiva marca el contraste de alta costura */
-.login__brand-name em {
+.login-cli__brand-name em {
   font-style: italic;
   font-weight: 400;
   color: var(--fs-gold);
 }
 
-/* Filete dorado de 1px que separa logotipo y descriptor */
-.login__brand-rule {
+.login-cli__brand-rule {
   width: 34px;
   height: 1px;
   background-color: rgba(197, 168, 128, 0.7);
 }
 
-.login__brand-tag {
+.login-cli__brand-tag {
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.62);
 }
 
-/* --- Pie editorial --- */
-.login__canvas-foot {
-  max-width: 30ch;
+.login-cli__canvas-foot {
+  max-width: 32ch;
 }
 
-/* Numeral de sección: recurso editorial de revista */
-.login__index {
+.login-cli__index {
   display: block;
   font-size: 11px;
   letter-spacing: 0.2em;
@@ -109,17 +98,17 @@
   margin-bottom: var(--fs-space-4);
 }
 
-.login__quote {
+.login-cli__quote {
   font-family: var(--fs-font-display);
   font-style: italic;
   font-weight: 400;
-  font-size: 30px;
-  line-height: 1.28;
+  font-size: 28px;
+  line-height: 1.3;
   letter-spacing: -0.01em;
   color: #FFFFFF;
 }
 
-.login__caption {
+.login-cli__caption {
   display: block;
   margin-top: var(--fs-space-4);
   padding-top: var(--fs-space-4);
@@ -132,54 +121,50 @@
 /* -----------------------------------------------------------------------------
    COLUMNA DERECHA — FORMULARIO
    -------------------------------------------------------------------------- */
-.login__panel {
+.login-cli__panel {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--fs-space-6);
   background-color: var(--fs-surface);
-  /* Filete de 1px en lugar de una sombra difusa entre las dos columnas */
   border-left: 1px solid var(--fs-border);
   overflow-y: auto;
 }
 
-.login__form-wrap {
+.login-cli__form-wrap {
   width: 100%;
-  max-width: 372px;
+  max-width: 380px;
 }
 
-/* --- Encabezado --- */
-.login__head {
+.login-cli__head {
   margin-bottom: var(--fs-space-6);
 }
 
-.login__title {
+.login-cli__title {
   margin-top: var(--fs-space-3);
   font-size: 38px;
 }
 
-.login__subtitle {
-  margin-top: var(--fs-space-3);
-  font-size: 14px;
+.login-cli__subtitle {
+  margin-top: var(--fs-space-2);
+  font-size: 13.5px;
   color: var(--fs-ink-soft);
   max-width: 34ch;
 }
 
-/* --- Cuerpo del formulario --- */
-.login__form {
+.login-cli__form {
   display: flex;
   flex-direction: column;
   gap: var(--fs-space-5);
 }
 
-/* Fila que alinea la etiqueta con el botón "Ver / Ocultar" */
-.login__label-row {
+.login-cli__label-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
 }
 
-.login__toggle {
+.login-cli__toggle {
   padding: 0;
   background: none;
   border: none;
@@ -193,12 +178,11 @@
   transition: color var(--fs-transition);
 }
 
-.login__toggle:hover {
+.login-cli__toggle:hover {
   color: var(--fs-gold-deep);
 }
 
-/* Cuadro dorado que precede al texto de error, en lugar de un icono genérico */
-.login__alert-mark {
+.login-cli__alert-mark {
   flex-shrink: 0;
   width: 3px;
   height: 3px;
@@ -207,71 +191,70 @@
   transform: rotate(45deg);
 }
 
-.login__submit {
+.login-cli__submit {
   width: 100%;
   margin-top: var(--fs-space-1);
+  padding: 13px 20px;
 }
 
-/* --- Enlaces secundarios --- */
-.login__links {
+.login-cli__links {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--fs-space-2);
 }
 
-.login__link-sep {
-  color: var(--fs-border-dark);
+.login-cli__links-text {
   font-size: 13px;
-}
-
-.login__link-muted {
-  font-size: 12.5px;
   color: var(--fs-ink-muted);
 }
 
-.login__link {
+.login-cli__link {
   font-size: 13px;
   color: var(--fs-ink-soft);
   border-bottom: 1px solid transparent;
   transition: color var(--fs-transition), border-color var(--fs-transition);
 }
 
-.login__link:hover {
+.login-cli__link:hover {
   color: var(--fs-ink);
   border-bottom-color: var(--fs-gold);
 }
 
-.login__link--highlight {
+.login-cli__link--highlight {
   font-weight: 600;
   color: var(--fs-gold-deep);
 }
 
-.login__link--highlight:hover {
+.login-cli__link--highlight:hover {
   border-bottom-color: var(--fs-gold-deep);
 }
 
-.login__links--sub {
+.login-cli__links--reg {
+  margin-top: calc(-1 * var(--fs-space-2));
+}
+
+.login-cli__links--sub {
   margin-top: var(--fs-space-1);
 }
 
-.login__link-back {
+.login-cli__link-back {
   font-size: 12px;
   color: var(--fs-ink-muted);
   text-decoration: none;
   transition: color var(--fs-transition);
 }
 
-.login__link-back:hover {
+.login-cli__link-back:hover {
   color: var(--fs-ink);
 }
 
-/* --- Pie legal --- */
-.login__foot {
+/* --- Pie legal y enlace staff --- */
+.login-cli__foot {
   margin-top: var(--fs-space-7);
 }
 
-.login__foot-rule {
+.login-cli__foot-rule {
   display: block;
   width: 100%;
   height: 1px;
@@ -279,54 +262,59 @@
   margin-bottom: var(--fs-space-4);
 }
 
-.login__foot-text {
+.login-cli__foot-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+}
+
+.login-cli__foot-text {
   font-size: 11.5px;
-  line-height: 1.6;
+  line-height: 1.5;
   color: var(--fs-ink-muted);
 }
 
+.login-cli__staff-link {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--fs-ink-muted);
+  text-decoration: underline;
+  transition: color var(--fs-transition);
+}
+
+.login-cli__staff-link:hover {
+  color: var(--fs-ink);
+}
+
 /* -----------------------------------------------------------------------------
-   ADAPTACIÓN RESPONSIVA (RNF05)
+   RESPONSIVIDAD
    -------------------------------------------------------------------------- */
-
-/* Tablet: se reduce el peso de la columna visual */
 @media (max-width: 1180px) {
-  .login {
+  .login-cli {
     grid-template-columns: 46fr 54fr;
-  }
-
-  .login__canvas-content {
-    padding: var(--fs-space-6);
-  }
-
-  .login__quote {
-    font-size: 25px;
   }
 }
 
-/* Móvil y tablet vertical: la fotografía se oculta y el formulario ocupa todo */
 @media (max-width: 980px) {
   :host {
     height: auto;
-    min-height: 100vh;
   }
 
-  .login {
+  .login-cli {
     grid-template-columns: 1fr;
-    min-height: 100vh;
   }
 
-  .login__canvas {
+  .login-cli__canvas {
     display: none;
   }
 
-  .login__panel {
+  .login-cli__panel {
     border-left: none;
     padding: var(--fs-space-6) var(--fs-space-5);
     background-color: var(--fs-bg);
   }
 
-  .login__title {
+  .login-cli__title {
     font-size: 32px;
   }
 }

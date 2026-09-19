@@ -55,6 +55,32 @@ export const routes: Routes = [
       ),
   },
   {
+    // CU05 / CU01 - Registro de nuevo cliente (auto-registro público)
+    path: 'registro',
+    canActivate: [invitadoGuard],
+    title: 'Crear cuenta · FashionStore',
+    loadComponent: () =>
+      import('./features/auth/registro/registro').then((m) => m.Registro),
+  },
+  {
+    // Alias de conveniencia para la ruta de registro
+    path: 'registro-cliente',
+    redirectTo: 'registro',
+  },
+  {
+    // CU01 / CU14 - Inicio de sesión exclusivo para clientes
+    path: 'login-cliente',
+    canActivate: [invitadoGuard],
+    title: 'Iniciar sesión · FashionStore Clientes',
+    loadComponent: () =>
+      import('./features/auth/login-cliente/login-cliente').then((m) => m.LoginCliente),
+  },
+  {
+    // Alias alternativo para inicio de sesión de clientes
+    path: 'cliente-login',
+    redirectTo: 'login-cliente',
+  },
+  {
     // Layout administrativo: sidebar + cabecera. Todas sus rutas hijas quedan
     // protegidas por authGuard, que exige un token JWT vigente.
     path: 'panel',

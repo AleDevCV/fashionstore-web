@@ -129,6 +129,13 @@ export class Login {
       next: () => {
         this.cargando.set(false);
 
+        // Si el usuario autenticado es un Cliente, se redirige al catálogo
+        const rol = this.authService.obtenerRol();
+        if (rol === 'Cliente') {
+          this.router.navigateByUrl('/catalogo');
+          return;
+        }
+
         // Si el guardián interceptó una ruta protegida, se vuelve a ella.
         const returnUrl =
           this.rutaActiva.snapshot.queryParamMap.get('returnUrl') ?? '/panel';

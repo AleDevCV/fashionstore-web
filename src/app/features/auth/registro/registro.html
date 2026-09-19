@@ -1,0 +1,282 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - PLANTILLA DE AUTO-REGISTRO DE CLIENTES (CU05 / CU01)
+  -----------------------------------------------------------------------------
+  Composición editorial asimétrica en armonía con Login y Recuperación.
+  =============================================================================
+-->
+<div class="registro">
+  <!-- ======================= COLUMNA IZQUIERDA: LIENZO ====================== -->
+  <aside class="registro__canvas" aria-hidden="true">
+    <div class="registro__photo"></div>
+    <div class="registro__scrim"></div>
+
+    <div class="registro__canvas-content">
+      <header class="registro__brand">
+        <span class="fs-wordmark registro__brand-name">Fashion<em>Store</em></span>
+        <span class="registro__brand-rule"></span>
+        <span class="registro__brand-tag">Alta Costura · Comunidad</span>
+      </header>
+
+      <footer class="registro__canvas-foot">
+        <span class="registro__index">01 — Nuevo Cliente</span>
+        <p class="registro__quote">
+          El estilo es una forma<br />
+          de decir quién eres sin<br />
+          tener que hablar.
+        </p>
+        <span class="registro__caption">Experiencia de compra omnicanal y colecciones exclusivas</span>
+      </footer>
+    </div>
+  </aside>
+
+  <!-- ======================= COLUMNA DERECHA: FORMULARIO ==================== -->
+  <main class="registro__panel">
+    <div class="registro__form-wrap">
+      <!-- Encabezado -->
+      <div class="registro__head">
+        <span class="fs-eyebrow">Experiencia FashionStore</span>
+        <h1 class="registro__title">Crear cuenta</h1>
+        <p class="registro__subtitle">
+          Regístrate para realizar compras, rastrear tus pedidos y acceder a recomendaciones exclusivas.
+        </p>
+      </div>
+
+      <!-- ================== ESTADO DE ÉXITO TRAS REGISTRO ================== -->
+      @if (registroCompletado()) {
+        <div class="registro__exito-card">
+          <div class="registro__exito-icon" aria-hidden="true">✓</div>
+          <h2 class="registro__exito-title">¡Bienvenido a FashionStore!</h2>
+          <p class="registro__exito-desc">
+            Estimado/a <strong>{{ clienteRegistrado() }}</strong>, su registro se ha completado exitosamente y su sesión ha sido iniciada.
+          </p>
+
+          <div class="registro__exito-aviso">
+            <span class="fs-badge fs-badge--activo">Cuenta Activa</span>
+            <p>
+              Ahora puede explorar nuestro catálogo exclusivo, armar su carrito de compras y recibir asesoría de moda asistida por Inteligencia Artificial.
+            </p>
+          </div>
+
+          <div class="registro__exito-acciones">
+            <button type="button" class="fs-btn fs-btn--primary" (click)="irAlCatalogo()">
+              Explorar el catálogo
+            </button>
+            <a routerLink="/login-cliente" class="fs-btn fs-btn--ghost">
+              Ir al inicio de sesión
+            </a>
+          </div>
+        </div>
+      } @else {
+        <!-- ================== FORMULARIO REACTIVO ================== -->
+        <form
+          class="registro__form"
+          [formGroup]="formulario"
+          (ngSubmit)="registrar()"
+          novalidate
+        >
+          <!-- Fila: Nombre y Apellido -->
+          <div class="registro__grid-2">
+            <div class="fs-field">
+              <label class="fs-eyebrow" for="nombre">Nombre *</label>
+              <input
+                id="nombre"
+                type="text"
+                class="fs-input"
+                formControlName="nombre"
+                placeholder="Ej. Valeria"
+                autocomplete="given-name"
+                [class.is-invalid]="campoInvalido('nombre')"
+              />
+              @if (campoInvalido('nombre')) {
+                <span class="fs-field-error">El nombre es requerido.</span>
+              }
+            </div>
+
+            <div class="fs-field">
+              <label class="fs-eyebrow" for="apellido">Apellido *</label>
+              <input
+                id="apellido"
+                type="text"
+                class="fs-input"
+                formControlName="apellido"
+                placeholder="Ej. Justiniano"
+                autocomplete="family-name"
+                [class.is-invalid]="campoInvalido('apellido')"
+              />
+              @if (campoInvalido('apellido')) {
+                <span class="fs-field-error">El apellido es requerido.</span>
+              }
+            </div>
+          </div>
+
+          <!-- Fila: CI y Teléfono -->
+          <div class="registro__grid-2">
+            <div class="fs-field">
+              <label class="fs-eyebrow" for="ci">Cédula de Identidad (CI) *</label>
+              <input
+                id="ci"
+                type="text"
+                class="fs-input"
+                formControlName="ci"
+                placeholder="Ej. 8472910"
+                [class.is-invalid]="campoInvalido('ci')"
+              />
+              @if (campoInvalido('ci')) {
+                <span class="fs-field-error">
+                  @if (ci.errors?.['required']) { CI requerida. }
+                  @else if (ci.errors?.['minlength']) { Mínimo 4 caracteres. }
+                  @else { Formato de CI no válido. }
+                </span>
+              }
+            </div>
+
+            <div class="fs-field">
+              <label class="fs-eyebrow" for="telefono">Teléfono / Celular</label>
+              <input
+                id="telefono"
+                type="tel"
+                class="fs-input"
+                formControlName="telefono"
+                placeholder="Ej. +591 77012345"
+                autocomplete="tel"
+                [class.is-invalid]="campoInvalido('telefono')"
+              />
+            </div>
+          </div>
+
+          <!-- Correo electrónico -->
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="correo">Correo electrónico *</label>
+            <input
+              id="correo"
+              type="email"
+              class="fs-input"
+              formControlName="correo"
+              placeholder="cliente@fashionstore.com"
+              autocomplete="email"
+              [class.is-invalid]="campoInvalido('correo')"
+            />
+            @if (campoInvalido('correo')) {
+              <span class="fs-field-error">
+                @if (correo.errors?.['required']) { Correo obligatorio. }
+                @else { Ingrese un correo electrónico válido. }
+              </span>
+            }
+          </div>
+
+          <!-- Dirección de entrega -->
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="direccion_envio">Dirección de Envío (Opcional)</label>
+            <input
+              id="direccion_envio"
+              type="text"
+              class="fs-input"
+              formControlName="direccion_envio"
+              placeholder="Ej. Av. San Martín #450, Equipetrol, Santa Cruz"
+              autocomplete="street-address"
+            />
+          </div>
+
+          <!-- Contraseña y Confirmación -->
+          <div class="registro__grid-2">
+            <div class="fs-field">
+              <div class="registro__label-row">
+                <label class="fs-eyebrow" for="password">Contraseña *</label>
+                <button
+                  type="button"
+                  class="registro__toggle"
+                  (click)="alternarPassword()"
+                >
+                  {{ mostrarPassword() ? 'Ocultar' : 'Ver' }}
+                </button>
+              </div>
+              <input
+                id="password"
+                [type]="mostrarPassword() ? 'text' : 'password'"
+                class="fs-input"
+                formControlName="password"
+                placeholder="••••••••"
+                autocomplete="new-password"
+                [class.is-invalid]="campoInvalido('password')"
+              />
+              @if (campoInvalido('password')) {
+                <span class="fs-field-error">Mínimo 6 caracteres.</span>
+              }
+            </div>
+
+            <div class="fs-field">
+              <div class="registro__label-row">
+                <label class="fs-eyebrow" for="confirmarPassword">Confirmar *</label>
+                <button
+                  type="button"
+                  class="registro__toggle"
+                  (click)="alternarConfirmarPassword()"
+                >
+                  {{ mostrarConfirmarPassword() ? 'Ocultar' : 'Ver' }}
+                </button>
+              </div>
+              <input
+                id="confirmarPassword"
+                [type]="mostrarConfirmarPassword() ? 'text' : 'password'"
+                class="fs-input"
+                formControlName="confirmarPassword"
+                placeholder="••••••••"
+                autocomplete="new-password"
+                [class.is-invalid]="campoInvalido('confirmarPassword') || errorPasswordsNoCoinciden"
+              />
+              @if (errorPasswordsNoCoinciden) {
+                <span class="fs-field-error">Las contraseñas no coinciden.</span>
+              } @else if (campoInvalido('confirmarPassword')) {
+                <span class="fs-field-error">Confirme la contraseña.</span>
+              }
+            </div>
+          </div>
+
+          <!-- Mensaje de error de la API -->
+          @if (mensajeError()) {
+            <div class="fs-alert fs-alert--error" role="alert">
+              <span class="registro__alert-mark" aria-hidden="true"></span>
+              <span>{{ mensajeError() }}</span>
+            </div>
+          }
+
+          <!-- Botón de Envío -->
+          <button
+            type="submit"
+            class="fs-btn fs-btn--primary registro__submit"
+            [disabled]="cargando()"
+          >
+            @if (cargando()) {
+              <span class="fs-spinner" aria-hidden="true"></span>
+              <span>Registrando cliente…</span>
+            } @else {
+              <span>Completar registro</span>
+            }
+          </button>
+
+          <!-- Enlaces de pie de formulario -->
+          <div class="registro__links">
+            <span class="registro__links-text">¿Ya tienes cuenta?</span>
+            <a routerLink="/login-cliente" class="registro__link">Inicia sesión</a>
+          </div>
+
+          <div class="registro__links registro__links--sub">
+            <a routerLink="/catalogo" class="registro__link-back">
+              ← Volver al catálogo público
+            </a>
+          </div>
+        </form>
+      }
+
+      <!-- Pie legal -->
+      <footer class="registro__foot">
+        <span class="registro__foot-rule"></span>
+        <p class="registro__foot-text">
+          Al registrarse, usted acepta las políticas de privacidad y condiciones de servicio de FashionStore.
+          Sus datos quedan resguardados con cifrado estándar y auditados bajo el módulo de seguridad del sistema.
+        </p>
+      </footer>
+    </div>
+  </main>
+</div>

@@ -47,6 +47,21 @@
   color: var(--fs-ink-muted);
 }
 
+.catalogo__staff-link {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+  border-bottom: 1px dashed var(--fs-border-dark);
+  padding-bottom: 1px;
+  transition: color var(--fs-transition), border-color var(--fs-transition);
+}
+
+.catalogo__staff-link:hover {
+  color: var(--fs-ink);
+  border-bottom-style: solid;
+}
+
 /* -----------------------------------------------------------------------------
    ESTRUCTURA: FILTROS + RESULTADOS
    -------------------------------------------------------------------------- */

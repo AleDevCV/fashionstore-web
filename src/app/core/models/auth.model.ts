@@ -135,3 +135,37 @@ export interface RespuestaRestablecerPassword {
   mensaje: string;
 }
 
+/**
+ * =============================================================================
+ * CU05 / CU01 - CONTRATOS PARA AUTO-REGISTRO DE CLIENTES
+ * =============================================================================
+ */
+
+/**
+ * Datos que envía un cliente para crear su cuenta de usuario y ficha de cliente.
+ */
+export interface SolicitudRegistroCliente {
+  nombre: string;
+  apellido: string;
+  ci: string;
+  correo: string;
+  password: string;
+  telefono?: string;
+  direccion_envio?: string;
+}
+
+/**
+ * Respuesta del backend al completar exitosamente el registro.
+ */
+export interface RespuestaRegistroCliente {
+  mensaje: string;
+  id_cliente: number;
+  id_usuario: number;
+  nombre_completo: string;
+  correo: string;
+  rol: string;
+  access_token: string;
+  token_type: string;
+}
+
+
