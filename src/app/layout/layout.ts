@@ -80,6 +80,12 @@ export class Layout {
       ruta: '/panel/roles-permisos',
       roles: ['Administrador'],
     },
+    {
+      etiqueta: 'Bitácora (Auditoría)',
+      caso: 'CU25',
+      ruta: '/panel/bitacora',
+      roles: ['Administrador'],
+    },
     { etiqueta: 'Clientes', caso: 'CU05', ruta: '/panel/clientes', roles: null },
     {
       etiqueta: 'Sucursales',
