@@ -62,6 +62,12 @@ export class Layout {
   private readonly menuCompleto: ItemMenu[] = [
     { etiqueta: 'Inicio', caso: '', ruta: '/panel/inicio', roles: null },
     {
+      etiqueta: 'Dashboard KPIs',
+      caso: 'CU24',
+      ruta: '/panel/dashboard',
+      roles: ['Administrador', 'Encargado de Sucursal'],
+    },
+    {
       etiqueta: 'Usuarios y Roles',
       caso: 'CU02',
       ruta: '/panel/usuarios',
@@ -122,6 +128,12 @@ export class Layout {
       etiqueta: 'Atención Reservas',
       caso: 'CU17',
       ruta: '/panel/reservas-atencion',
+      roles: ['Administrador', 'Encargado de Sucursal', 'Cajero'],
+    },
+    {
+      etiqueta: 'Terminal POS (Caja)',
+      caso: 'CU19',
+      ruta: '/panel/pos',
       roles: ['Administrador', 'Encargado de Sucursal', 'Cajero'],
     },
     {
