@@ -249,6 +249,34 @@ export const routes: Routes = [
       import('./features/catalogo/catalogo').then((m) => m.Catalogo),
   },
   {
+    // CU15 - Checkout Digital (carrito → reserva → pago → comprobante)
+    path: 'checkout',
+    title: 'Checkout · FashionStore',
+    loadComponent: () =>
+      import('./features/checkout/checkout').then((m) => m.Checkout),
+  },
+  {
+    // CU20 - Retorno exitoso de Stripe
+    path: 'pago/exitoso',
+    title: 'Pago Confirmado · FashionStore',
+    loadComponent: () =>
+      import('./features/pago/pago-exitoso/pago-exitoso').then((m) => m.PagoExitoso),
+  },
+  {
+    // CU20 - Retorno cancelado de Stripe
+    path: 'pago/cancelado',
+    title: 'Pago Cancelado · FashionStore',
+    loadComponent: () =>
+      import('./features/pago/pago-cancelado/pago-cancelado').then((m) => m.PagoCancelado),
+  },
+  {
+    // CU15 - Historial de pedidos del cliente
+    path: 'mi-cuenta/pedidos',
+    title: 'Mis Pedidos · FashionStore',
+    loadComponent: () =>
+      import('./features/cliente/mis-pedidos/mis-pedidos').then((m) => m.MisPedidos),
+  },
+  {
     // Cualquier ruta desconocida vuelve al inicio.
     path: '**',
     redirectTo: '',

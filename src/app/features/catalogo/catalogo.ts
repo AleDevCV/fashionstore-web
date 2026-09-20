@@ -19,23 +19,26 @@ import { RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 
 import { CatalogoService } from '../../core/services/catalogo.service';
+import { CarritoService } from '../../core/services/carrito.service';
 import {
   FiltrosDisponibles,
   PrendaCatalogo,
 } from '../../core/models/catalogo.model';
 import { PrendaDetalle } from './prenda-detalle/prenda-detalle';
+import { CarritoSidebar } from '../carrito/carrito-sidebar/carrito-sidebar';
 
 /** Tamaño de página de la vitrina. */
 const TAMANO_PAGINA = 12;
 
 @Component({
   selector: 'app-catalogo',
-  imports: [RouterLink, PrendaDetalle],
+  imports: [RouterLink, PrendaDetalle, CarritoSidebar],
   templateUrl: './catalogo.html',
   styleUrl: './catalogo.scss',
 })
 export class Catalogo implements OnInit, OnDestroy {
   private readonly catalogoService = inject(CatalogoService);
+  readonly carritoSvc = inject(CarritoService);
 
   // ---------------------------------------------------------------------------
   // ESTADO
@@ -77,6 +80,12 @@ export class Catalogo implements OnInit, OnDestroy {
 
   /** Señal de cierre que cancela la suscripción del buscador. */
   private readonly destruido = new Subject<void>();
+
+  /** Controla la visibilidad del panel lateral del carrito. */
+  readonly carritoAbierto = signal(false);
+
+  /** Mensaje de feedback al agregar al carrito. */
+  readonly feedbackCarrito = signal<string | null>(null);
 
   // ---------------------------------------------------------------------------
   // CONSTRUCTOR
@@ -297,6 +306,50 @@ export class Catalogo implements OnInit, OnDestroy {
   /** Cierra el modal de detalle. */
   cerrarDetalle(): void {
     this.prendaSeleccionada.set(null);
+  }
+
+  // ---------------------------------------------------------------------------
+  // CARRITO (CU15)
+  // ---------------------------------------------------------------------------
+
+  /** Abre el panel lateral del carrito. */
+  abrirCarrito(): void {
+    this.carritoAbierto.set(true);
+  }
+
+  /** Cierra el panel lateral del carrito. */
+  cerrarCarrito(): void {
+    this.carritoAbierto.set(false);
+  }
+
+  /**
+   * Agrega una prenda al carrito usando la primera variante disponible.
+   * Muestra un feedback visual de 2 segundos.
+   */
+  agregarAlCarrito(prenda: PrendaCatalogo, event: Event): void {
+    event.stopPropagation(); // no abrir el modal de detalle
+
+    // Usar la primera variante con precio disponible
+    const variante = prenda.variantes?.[0];
+    if (!variante) {
+      this.feedbackCarrito.set('Sin variantes disponibles');
+      setTimeout(() => this.feedbackCarrito.set(null), 2000);
+      return;
+    }
+
+    this.carritoSvc.agregarItem({
+      id_variante_prenda: variante.id_variante_prenda,
+      sku_variante: prenda.sku,
+      prenda_nombre: prenda.nombre,
+      talla: variante.talla,
+      color: variante.color,
+      precio_unitario: Number(variante.precio ?? prenda.precio_base ?? 0),
+      cantidad: 1,
+    });
+
+    this.feedbackCarrito.set(`✓ "${prenda.nombre}" agregado al carrito`);
+    setTimeout(() => this.feedbackCarrito.set(null), 2500);
+    this.abrirCarrito();
   }
 
   // ---------------------------------------------------------------------------
