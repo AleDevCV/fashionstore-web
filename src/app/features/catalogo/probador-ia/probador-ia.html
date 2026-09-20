@@ -1,0 +1,472 @@
+<!--
+  =============================================================================
+  MODAL VESTIDOR VIRTUAL FOTOREALISTA CON IA (FASE 2)
+  -----------------------------------------------------------------------------
+  Permite al cliente probarse virtualmente cualquier prenda de FashionStore
+  mediante cámara web en vivo o carga de imagen, con comparativa antes/después
+  y reserva directa en tienda física (CU16).
+  =============================================================================
+-->
+<div class="probador-velo" (click)="cerrarModal()">
+  <div
+    class="probador-modal"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="probadorTitulo"
+  >
+    <!-- CABECERA PRINCIPAL -->
+    <header class="probador-modal__head">
+      <div class="probador-modal__titular">
+        <span class="fs-eyebrow">Vestidor Virtual con IA · Fase 2</span>
+        <h2 id="probadorTitulo" class="probador-modal__titulo">
+          Probador Fotorealista — {{ prenda().nombre }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrarModal()"
+        aria-label="Cerrar probador"
+      >
+        ×
+      </button>
+    </header>
+
+    <!-- CUERPO DEL MODAL -->
+    <div class="probador-modal__cuerpo">
+
+      <!-- =====================================================================
+           ESTADO 1: CAPTURA (CÁMARA WEB O SUBIR FOTO)
+           ===================================================================== -->
+      @if (estado() === 'CAPTURA') {
+        <div class="captura-tabs">
+          <button
+            type="button"
+            class="captura-tab"
+            [class.captura-tab--activa]="modoCaptura() === 'webcam'"
+            (click)="cambiarModoCaptura('webcam')"
+          >
+            📸 Cámara Web en Vivo
+          </button>
+          <button
+            type="button"
+            class="captura-tab"
+            [class.captura-tab--activa]="modoCaptura() === 'archivo'"
+            (click)="cambiarModoCaptura('archivo')"
+          >
+            📁 Subir Fotografía
+          </button>
+        </div>
+
+        @if (error()) {
+          <div class="fs-alert fs-alert--error" role="alert">
+            <span class="fs-alert__icono" aria-hidden="true">⚠️</span>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <!-- PESTAÑA 1: CÁMARA WEB EN VIVO -->
+        @if (modoCaptura() === 'webcam') {
+          <div class="webcam-box">
+            @if (camaraError()) {
+              <div class="fs-alert fs-alert--error webcam-alerta" role="alert">
+                <p class="webcam-alerta__texto">{{ camaraError() }}</p>
+                <div class="webcam-alerta__acciones">
+                  <button type="button" class="fs-btn fs-btn--ghost" (click)="iniciarCamara()">
+                    Reintentar Conexión
+                  </button>
+                  <button type="button" class="fs-btn fs-btn--primary" (click)="cambiarModoCaptura('archivo')">
+                    Subir Foto desde Archivo
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div class="webcam-viewport">
+                <video
+                  #videoPlayer
+                  autoplay
+                  playsinline
+                  muted
+                  class="webcam-video"
+                ></video>
+
+                <!-- GUÍA VISUAL DE SILUETA / ENCUADRE DE TORSO -->
+                <div class="webcam-guide" aria-hidden="true">
+                  <div class="webcam-guide__torso"></div>
+                  <span class="webcam-guide__hint">Alinea tu torso dentro del recuadro</span>
+                </div>
+
+                @if (!camaraIniciada()) {
+                  <div class="webcam-cargando">
+                    <span class="fs-spinner"></span>
+                    <span>Activando cámara web…</span>
+                  </div>
+                }
+              </div>
+
+              <div class="webcam-acciones">
+                <button
+                  type="button"
+                  class="fs-btn fs-btn--primary webcam-disparador"
+                  [disabled]="!camaraIniciada()"
+                  (click)="capturarFotoWebcam()"
+                >
+                  <span class="btn-shutter" aria-hidden="true">⚪</span>
+                  <span>Capturar y Probar Prenda</span>
+                </button>
+                <p class="webcam-nota">
+                  La fotografía se procesa de forma privada en el servidor para ajustar la prenda a tu cuerpo.
+                </p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- PESTAÑA 2: SUBIR FOTO LOCAL -->
+        @if (modoCaptura() === 'archivo') {
+          <div
+            class="upload-box"
+            [class.upload-box--dragover]="isDraggingFile()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onFileDrop($event)"
+          >
+            <div class="upload-dropzone" (click)="abrirSelectorArchivo()">
+              <span class="upload-icon" aria-hidden="true">🖼️</span>
+              <p class="upload-title">
+                Arrastra tu fotografía aquí o haz clic para explorar
+              </p>
+              <p class="upload-sub">
+                Para mejores resultados, utiliza una foto de frente con buena iluminación.
+              </p>
+              <span class="fs-eyebrow">Formatos permitidos: JPG, PNG o WEBP (máx. 15MB)</span>
+
+              <button
+                type="button"
+                class="fs-btn fs-btn--primary upload-btn"
+                (click)="$event.stopPropagation(); abrirSelectorArchivo()"
+              >
+                Explorar Archivos
+              </button>
+
+              <input
+                #fileInput
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                (change)="onArchivoSeleccionado($event)"
+                class="upload-input-oculto"
+                aria-label="Seleccionar imagen local"
+              />
+            </div>
+          </div>
+        }
+      }
+
+      <!-- CANVAS OCULTO PARA CAPTURA DE FRAMES -->
+      <canvas #canvasCapture style="display: none;"></canvas>
+
+      <!-- =====================================================================
+           ESTADO 2: PROCESANDO CON IA GENERATIVA (BARRA MULTI-FASE)
+           ===================================================================== -->
+      @if (estado() === 'PROCESANDO') {
+        <div class="procesando-box">
+          <div class="procesando-spinner-wrap">
+            <span class="fs-spinner fs-spinner--large" aria-hidden="true"></span>
+          </div>
+
+          <span class="fs-eyebrow">Fusión Fotorealista con Redes Neuronales</span>
+          <h3 class="procesando-titulo">Componiendo Prenda sobre tu Silueta</h3>
+          <p class="procesando-mensaje">{{ mensajeProgreso() }}</p>
+
+          <!-- BARRA DE PROGRESO ANIMADA -->
+          <div class="progreso-track" role="progressbar" [attr.aria-valuenow]="porcentajeProgreso()" aria-valuemin="0" aria-valuemax="100">
+            <div class="progreso-bar" [style.width.%]="porcentajeProgreso()"></div>
+          </div>
+
+          <!-- INDICADOR VISUAL DE 3 PASOS -->
+          <div class="procesando-pasos">
+            <div class="paso-item" [class.paso-item--activo]="faseActiva() >= 1">
+              <span class="paso-num">1</span>
+              <span class="paso-label">Detectando silueta...</span>
+            </div>
+            <div class="paso-item" [class.paso-item--activo]="faseActiva() >= 2">
+              <span class="paso-num">2</span>
+              <span class="paso-label">Adaptando tejido y caída...</span>
+            </div>
+            <div class="paso-item" [class.paso-item--activo]="faseActiva() >= 3">
+              <span class="paso-num">3</span>
+              <span class="paso-label">Componiendo sombras realistas...</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- =====================================================================
+           ESTADO 3: RESULTADO COMPARATIVO (SLIDER ANTES/DESPUÉS Y LADO A LADO)
+           ===================================================================== -->
+      @if (estado() === 'RESULTADO' && respuestaTryOn(); as res) {
+        <div class="resultado-box">
+          
+          <!-- CONTROL DE MODO DE COMPARACIÓN -->
+          <div class="resultado-topbar">
+            <div class="resultado-topbar__titular">
+              <span class="fs-eyebrow">Resultado de Calce Virtual</span>
+              <h3 class="resultado-topbar__nombre">{{ prenda().nombre }}</h3>
+            </div>
+
+            <div class="comparador-selector">
+              <button
+                type="button"
+                class="comparador-selector-btn"
+                [class.comparador-selector-btn--activo]="modoComparacion() === 'slider'"
+                (click)="modoComparacion.set('slider')"
+              >
+                Deslizador Dividido
+              </button>
+              <button
+                type="button"
+                class="comparador-selector-btn"
+                [class.comparador-selector-btn--activo]="modoComparacion() === 'lado_a_lado'"
+                (click)="modoComparacion.set('lado_a_lado')"
+              >
+                Lado a Lado
+              </button>
+            </div>
+          </div>
+
+          <!-- VISTA 1: SLIDER COMPARATIVO DIVIDIDO -->
+          @if (modoComparacion() === 'slider') {
+            <div class="comparador-wrap">
+              <div class="comparador">
+                <!-- Imagen con prenda puesta (Fondo completo) -->
+                <img
+                  [src]="res.imagen_resultado"
+                  alt="Resultado de la prenda puesta sobre el cuerpo"
+                  class="comparador-img"
+                />
+
+                <!-- Capa recortada con foto original (Antes) -->
+                <div class="comparador-antes" [style.width.%]="posicionSlider()">
+                  @if (fotoOriginalBase64()) {
+                    <img
+                      [src]="fotoOriginalBase64()"
+                      alt="Fotografía original del usuario"
+                      class="comparador-img comparador-img--original"
+                    />
+                  }
+                </div>
+
+                <!-- Línea y Manija central divisoria -->
+                <div class="comparador-linea" [style.left.%]="posicionSlider()">
+                  <div class="comparador-manija">
+                    <span class="manija-flecha">‹</span>
+                    <span class="manija-flecha">›</span>
+                  </div>
+                </div>
+
+                <!-- Input range transparente interactivo -->
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  [value]="posicionSlider()"
+                  (input)="actualizarSlider($event)"
+                  class="comparador-range"
+                  aria-label="Deslizador comparativo entre foto original y resultado con prenda"
+                />
+              </div>
+
+              <div class="comparador-etiquetas">
+                <span class="etiqueta etiqueta--antes">Foto Original</span>
+                <span class="etiqueta etiqueta--instruccion">← Arrastra el divisor para comparar →</span>
+                <span class="etiqueta etiqueta--despues">Con {{ prenda().nombre }}</span>
+              </div>
+            </div>
+          }
+
+          <!-- VISTA 2: COMPARACIÓN LADO A LADO -->
+          @if (modoComparacion() === 'lado_a_lado') {
+            <div class="lado-a-lado">
+              <div class="lado-card">
+                <span class="fs-eyebrow">Foto Original</span>
+                <div class="lado-card__img-wrap">
+                  <img [src]="fotoOriginalBase64()" alt="Foto original" class="lado-img" />
+                </div>
+              </div>
+
+              <div class="lado-card">
+                <span class="fs-eyebrow">Con {{ prenda().nombre }}</span>
+                <div class="lado-card__img-wrap">
+                  <img [src]="res.imagen_resultado" alt="Prenda ajustada con IA" class="lado-img" />
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- TELEMETRÍA Y METADATOS DE CALCE -->
+          <div class="resultado-meta">
+            <span class="fs-badge fs-badge--activo">
+              Calce natural: {{ formatearCalce(res.confianza_calce || res.metadatos_calce.confianza_calce) }}
+            </span>
+            <span class="fs-badge fs-badge--carbon">
+              Tiempo: {{ res.tiempo_procesamiento_ms }} ms
+            </span>
+            <span class="fs-badge fs-badge--oro">
+              {{ res.metadatos_calce.metodo === 'gemini_vision' ? 'Gemini 2.5 Flash Vision' : 'Warping Afín + Sombras HSV' }}
+            </span>
+          </div>
+
+          <!-- BARRA DE ACCIONES DE RESULTADO -->
+          <div class="resultado-acciones">
+            <button
+              type="button"
+              class="fs-btn fs-btn--ghost"
+              (click)="descargarResultado()"
+              title="Descargar foto resultante a tu dispositivo"
+            >
+              📥 Guardar / Descargar Imagen
+            </button>
+
+            <button
+              type="button"
+              class="fs-btn fs-btn--primary"
+              (click)="iniciarReserva()"
+              title="Separar la prenda en tu sucursal física más cercana"
+            >
+              👗 Reservar en Tienda (CU16)
+            </button>
+
+            <button
+              type="button"
+              class="fs-accion btn-reintentar"
+              (click)="reintentarCaptura()"
+            >
+              ↺ Probar con otra foto
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- =====================================================================
+           ESTADO 4: RESERVA EN TIENDA FÍSICA (CU16)
+           ===================================================================== -->
+      @if (estado() === 'RESERVA_CU16') {
+        <div class="reserva-box">
+          @if (ticketReserva(); as ticket) {
+            <!-- CONFIRMACIÓN DE RESERVA CON TICKET Y QR -->
+            <div class="ticket-confirmado">
+              <span class="fs-badge fs-badge--activo">Reserva Confirmada</span>
+              <span class="fs-eyebrow">Ticket de Probador en Sucursal</span>
+              <h3 class="ticket-codigo">{{ ticket.codigo_ticket }}</h3>
+
+              <div class="ticket-info">
+                <p><strong>Sucursal:</strong> {{ ticket.sucursal_nombre || 'Sucursal FashionStore' }}</p>
+                <p><strong>Vigencia:</strong> 24 horas (hasta {{ ticket.fecha_limite | date:'medium' }})</p>
+                <p><strong>Prenda:</strong> {{ prenda().nombre }} — {{ varianteSeleccionada()?.talla }} / {{ varianteSeleccionada()?.color }}</p>
+              </div>
+
+              @if (ticket.qr_base64) {
+                <div class="ticket-qr">
+                  <img
+                    [src]="'data:image/png;base64,' + ticket.qr_base64"
+                    alt="Código QR de Reserva de Probador"
+                  />
+                </div>
+              }
+
+              <p class="ticket-nota">
+                Presenta este código o el QR en caja para que nuestro personal tenga tu probador y prenda listos.
+              </p>
+
+              <button type="button" class="fs-btn fs-btn--primary" (click)="cerrarModal()">
+                Entendido y Finalizar
+              </button>
+            </div>
+          } @else {
+            <!-- FORMULARIO DE RESERVA -->
+            <div class="reserva-form">
+              <span class="fs-eyebrow">Reserva de Atención en Tienda (CU16)</span>
+              <h3 class="reserva-titulo">Reserva "{{ prenda().nombre }}" en tu Sucursal</h3>
+              <p class="reserva-lead">
+                Apartamos tu talla elegida durante 24 horas sin costo para que te la pruebes físicamente cuando gustes.
+              </p>
+
+              @if (errorReserva()) {
+                <div class="fs-alert fs-alert--error" role="alert">
+                  <span>{{ errorReserva() }}</span>
+                </div>
+              }
+
+              <!-- SELECTOR DE SUCURSAL FÍSICA -->
+              <div class="fs-field">
+                <label class="fs-eyebrow" for="sucursalReserva">Selecciona Sucursal de Retiro</label>
+                <select
+                  id="sucursalReserva"
+                  class="fs-input fs-select"
+                  [ngModel]="sucursalSeleccionadaId()"
+                  (ngModelChange)="sucursalSeleccionadaId.set($any($event))"
+                >
+                  @for (s of sucursales(); track s.id_sucursal) {
+                    <option [value]="s.id_sucursal">
+                      {{ s.nombre }} — {{ s.ciudad }} ({{ s.direccion }})
+                    </option>
+                  }
+                </select>
+              </div>
+
+              <!-- SELECTOR DE TALLA Y COLOR -->
+              <div class="fs-field">
+                <label class="fs-eyebrow">Selecciona Talla y Color</label>
+                <div class="variantes-grid">
+                  @for (v of prenda().variantes; track v.id_variante_prenda) {
+                    <button
+                      type="button"
+                      class="variante-pill"
+                      [class.variante-pill--activa]="varianteSeleccionada()?.id_variante_prenda === v.id_variante_prenda"
+                      [disabled]="v.stock_total === 0"
+                      (click)="varianteSeleccionada.set(v)"
+                    >
+                      <span class="variante-talla-color">{{ v.talla }} / {{ v.color }}</span>
+                      <small class="variante-precio">Bs {{ v.precio }}</small>
+                      @if (v.stock_total === 0) {
+                        <small class="variante-agotada">Agotado</small>
+                      }
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- ACCIONES DE RESERVA -->
+              <div class="reserva-acciones">
+                <button
+                  type="button"
+                  class="fs-btn fs-btn--ghost"
+                  (click)="volverAResultado()"
+                >
+                  ← Regresar al Resultado
+                </button>
+
+                <button
+                  type="button"
+                  class="fs-btn fs-btn--primary"
+                  [disabled]="reservando() || !varianteSeleccionada() || !sucursalSeleccionadaId()"
+                  (click)="confirmarReserva()"
+                >
+                  @if (reservando()) {
+                    <span class="fs-spinner" aria-hidden="true"></span>
+                    <span>Confirmando Reserva…</span>
+                  } @else {
+                    <span>Confirmar Reserva en Tienda (CU16)</span>
+                  }
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  </div>
+</div>

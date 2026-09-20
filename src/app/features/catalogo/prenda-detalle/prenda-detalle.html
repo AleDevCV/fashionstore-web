@@ -69,6 +69,18 @@
             @if (p.descripcion) {
               <p class="prenda-detalle__descripcion">{{ p.descripcion }}</p>
             }
+
+            <div class="prenda-detalle__tryon-accion">
+              <button
+                type="button"
+                class="fs-btn fs-btn--primary prenda-detalle__btn-tryon"
+                (click)="abrirProbador()"
+                title="Probar esta prenda virtualmente con IA sobre tu fotografía"
+              >
+                <span class="btn-tryon-icon" aria-hidden="true">✨</span>
+                <span>Probador Fotorealista (IA)</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -122,3 +134,11 @@
     }
   </div>
 </div>
+
+@if (probadorAbierto() && prenda(); as p) {
+  <app-probador-ia
+    [prenda]="p"
+    (cerrado)="cerrarProbador()"
+  />
+}
+

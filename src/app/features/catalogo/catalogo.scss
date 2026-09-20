@@ -208,13 +208,20 @@
 .catalogo__card-img {
   aspect-ratio: 3 / 4;
   background-color: var(--fs-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fs-space-3);
+  overflow: hidden;
 }
 
 .catalogo__card-img img {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 .catalogo__sin-img {

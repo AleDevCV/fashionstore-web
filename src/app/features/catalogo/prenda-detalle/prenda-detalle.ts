@@ -15,10 +15,11 @@ import { Component, OnInit, inject, input, output, signal } from '@angular/core'
 
 import { CatalogoService } from '../../../core/services/catalogo.service';
 import { PrendaCatalogo } from '../../../core/models/catalogo.model';
+import { ProbadorIa } from '../probador-ia/probador-ia';
 
 @Component({
   selector: 'app-prenda-detalle',
-  imports: [],
+  imports: [ProbadorIa],
   templateUrl: './prenda-detalle.html',
   styleUrl: './prenda-detalle.scss',
 })
@@ -48,6 +49,9 @@ export class PrendaDetalle implements OnInit {
   /** Error de carga; null si todo fue bien. */
   readonly error = signal<string | null>(null);
 
+  /** Indica si el modal del Probador Virtual con IA está abierto. */
+  readonly probadorAbierto = signal(false);
+
   // ---------------------------------------------------------------------------
   // CICLO DE VIDA
   // ---------------------------------------------------------------------------
@@ -69,10 +73,21 @@ export class PrendaDetalle implements OnInit {
   // ACCIONES
   // ---------------------------------------------------------------------------
 
-  /** Cierra el modal. */
+  /** Cierra el modal de detalle. */
   cerrar(): void {
     this.cerrado.emit();
   }
+
+  /** Abre el modal del Probador Virtual con IA. */
+  abrirProbador(): void {
+    this.probadorAbierto.set(true);
+  }
+
+  /** Cierra el modal del Probador Virtual con IA. */
+  cerrarProbador(): void {
+    this.probadorAbierto.set(false);
+  }
+
 
   // ---------------------------------------------------------------------------
   // AYUDAS DE PRESENTACIÓN
