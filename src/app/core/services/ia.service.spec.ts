@@ -1,4 +1,4 @@
-﻿/**
+/**
  * =============================================================================
  * FASHIONSTORE - PRUEBAS UNITARIAS DEL SERVICIO IA (Bloque 4)
  * CU22 - Recomendador de Moda / CU23 - Analitica por Voz
@@ -220,4 +220,72 @@ describe('IaService (Bloque 4)', () => {
       { status: 400, statusText: 'Bad Request' },
     );
   });
+
+  // -------------------------------------------------------------------------
+  // FASE 2 - generarTryOn()
+  // -------------------------------------------------------------------------
+
+  it('generarTryOn() envia POST /api/ia/try-on con payload de imagen y retorna composicion', () => {
+    const payload = {
+      foto_usuario: 'data:image/jpeg;base64,/9j/4AAQSkZJRg...',
+      id_prenda: 5,
+      url_prenda: 'https://example.com/prenda.png',
+      usar_ia_generativa: true,
+      ajuste_holgura: 1.0,
+    };
+
+    const mockRespuesta = {
+      estado: 'exito',
+      imagen_resultado: 'data:image/jpeg;base64,/9j/4AAQSkZJRgFINAL...',
+      tiempo_procesamiento_ms: 1240,
+      metadatos_calce: {
+        metodo: 'gemini_vision',
+        anclaje_torso: { cuello: [360, 200] },
+        ajuste_luz: { factor_brillo: 1.05 },
+        prenda_id: 5,
+        es_fallback: false,
+        tiempo_procesamiento_ms: 1240,
+        confianza_calce: 0.96,
+      },
+      mensaje: 'Composición completada exitosamente',
+      confianza_calce: 0.96,
+    };
+
+    servicio.generarTryOn(payload).subscribe((res) => {
+      expect(res.estado).toBe('exito');
+      expect(res.imagen_resultado).toContain('FINAL');
+      expect(res.tiempo_procesamiento_ms).toBe(1240);
+      expect(res.metadatos_calce.metodo).toBe('gemini_vision');
+    });
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/api/ia/try-on`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(payload);
+    req.flush(mockRespuesta);
+  });
+
+  it('procesarTryOn() funciona como alias de generarTryOn()', () => {
+    const payload = {
+      foto_usuario: 'data:image/jpeg;base64,TEST',
+      id_prenda: 10,
+    };
+
+    const mockRespuesta = {
+      estado: 'exito',
+      imagen_resultado: 'data:image/jpeg;base64,RESULTADO',
+      tiempo_procesamiento_ms: 850,
+      metadatos_calce: { metodo: 'warping_hsv_local' },
+      mensaje: 'Prueba completada',
+    };
+
+    servicio.procesarTryOn(payload).subscribe((res) => {
+      expect(res.estado).toBe('exito');
+      expect(res.imagen_resultado).toBe('data:image/jpeg;base64,RESULTADO');
+    });
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/api/ia/try-on`);
+    expect(req.request.method).toBe('POST');
+    req.flush(mockRespuesta);
+  });
 });
+

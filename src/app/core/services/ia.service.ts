@@ -1,4 +1,4 @@
-﻿/**
+/**
  * =============================================================================
  * FASHIONSTORE - SERVICIO DE INTELIGENCIA ARTIFICIAL (Bloque 4)
  * Sistemas de Informacion II - UAGRM
@@ -20,6 +20,8 @@ import {
   RespuestaRecomendador,
   AnaliticaVozPayload,
   RespuestaAnaliticaVoz,
+  TryOnPeticion,
+  TryOnRespuesta,
 } from '../models/ia.model';
 
 @Injectable({ providedIn: 'root' })
@@ -54,4 +56,25 @@ export class IaService {
       .post<RespuestaAnaliticaVoz>(`${this.baseUrl}/analitica-voz/`, payload)
       .pipe(catchError(traducirErrorApi));
   }
+
+  /**
+   * Genera la prueba virtual fotorealista de una prenda sobre la fotografía del usuario (Fase 2).
+   * Endpoint: POST /api/ia/try-on
+   *
+   * @param peticion Payload con foto_usuario en Base64, id_prenda o url_prenda, y opciones.
+   * @returns Observable con la imagen compuesta resultante, tiempo de cómputo y metadatos de calce.
+   */
+  generarTryOn(peticion: TryOnPeticion): Observable<TryOnRespuesta> {
+    return this.http
+      .post<TryOnRespuesta>(`${this.baseUrl}/try-on`, peticion)
+      .pipe(catchError(traducirErrorApi));
+  }
+
+  /**
+   * Alias de conveniencia para generarTryOn.
+   */
+  procesarTryOn(peticion: TryOnPeticion): Observable<TryOnRespuesta> {
+    return this.generarTryOn(peticion);
+  }
 }
+
