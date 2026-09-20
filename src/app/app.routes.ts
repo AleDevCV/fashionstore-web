@@ -111,6 +111,14 @@ export const routes: Routes = [
         redirectTo: 'dashboard',
       },
       {
+        // CU25 - Bitácora de Auditoría del Sistema (Trazabilidad Forense)
+        path: 'bitacora',
+        canActivate: [rolGuard(['Administrador'], 'Bitácora de Auditoría')],
+        title: 'Bitácora de Auditoría · FashionStore',
+        loadComponent: () =>
+          import('./features/bitacora/bitacora').then((m) => m.Bitacora),
+      },
+      {
         // CU02 - Administrar usuarios y asignar roles.
         // Doble barrera: authGuard (heredado del padre) exige sesión, y
         // rolGuard restringe la sección al rol "Administrador". El backend

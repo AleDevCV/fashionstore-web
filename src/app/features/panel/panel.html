@@ -38,5 +38,22 @@
         </div>
       </dl>
     </div>
+
+    <!-- Accesos rápidos para el Administrador -->
+    @if (u.rol === 'Administrador') {
+      <div class="panel__quick-actions">
+        <h3 class="fs-eyebrow">Acciones Rápidas del Administrador</h3>
+        <div class="panel__buttons-group">
+          <a routerLink="/panel/bitacora" class="btn btn--primary btn-action">
+            <span class="material-symbols-outlined">security</span>
+            Ver Bitácora de Auditoría del Sistema (CU25)
+          </a>
+          <a routerLink="/panel/dashboard" class="btn btn--outline btn-action">
+            <span class="material-symbols-outlined">analytics</span>
+            Ver Dashboard de KPIs (CU24)
+          </a>
+        </div>
+      </div>
+    }
   }
 </section>

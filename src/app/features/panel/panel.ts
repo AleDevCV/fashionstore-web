@@ -13,12 +13,13 @@
  */
 
 import { Component, inject } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-panel',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './panel.html',
   styleUrl: './panel.scss',
 })
