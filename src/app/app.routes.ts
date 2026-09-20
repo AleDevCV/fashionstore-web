@@ -90,13 +90,25 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'inicio',
+        redirectTo: 'dashboard',
       },
       {
         path: 'inicio',
         title: 'Panel · FashionStore',
         loadComponent: () =>
           import('./features/panel/panel').then((m) => m.Panel),
+      },
+      {
+        // CU24 - Dashboard de Indicadores y KPIs Gerenciales
+        path: 'dashboard',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Dashboard Gerencial')],
+        title: 'Dashboard de Indicadores y KPIs · FashionStore',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+      },
+      {
+        path: 'kpis',
+        redirectTo: 'dashboard',
       },
       {
         // CU02 - Administrar usuarios y asignar roles.
@@ -248,6 +260,18 @@ export const routes: Routes = [
       {
         path: 'reservas',
         redirectTo: 'reservas-atencion',
+      },
+      {
+        // CU19 - Terminal POS de Ventas Presenciales y Caja
+        path: 'pos',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal', 'Cajero'], 'Terminal POS')],
+        title: 'Terminal POS · FashionStore',
+        loadComponent: () =>
+          import('./features/pos/pos').then((m) => m.Pos),
+      },
+      {
+        path: 'caja',
+        redirectTo: 'pos',
       },
     ],
   },

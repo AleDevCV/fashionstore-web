@@ -8,7 +8,7 @@ export const environment = {
   produccion: true,
 
   /** URL base de la API REST de FastAPI. */
-  apiUrl: 'https://api.fashionstore.example.com',
+  apiUrl: 'http://127.0.0.1:8000',
 
   /** Clave con la que se guarda el token JWT en el localStorage del navegador. */
   claveTokenJwt: 'fashionstore_token',
