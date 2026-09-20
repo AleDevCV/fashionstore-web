@@ -1,0 +1,421 @@
+.atencion-reservas {
+  padding: 1.5rem 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__titulo {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--fs-ink, #1a1a1a);
+    margin: 0.2rem 0 0;
+  }
+
+  &__sucursal-filtro {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  &__estado {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 3rem;
+    justify-content: center;
+    color: var(--fs-ink-soft, #555);
+  }
+
+  &__vacio {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    background: var(--fs-surface, #fff);
+    border: 1px dashed var(--fs-border, #ddd);
+    border-radius: var(--fs-radius-md, 8px);
+    color: var(--fs-ink-muted, #888);
+  }
+}
+
+// ── Barra de Escáner / Búsqueda QR ──────────────────────────────────────────
+.escaner-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  background: var(--fs-surface, #fff);
+  padding: 0.75rem;
+  border: 1.5px solid var(--fs-border-dark, #ccc);
+  border-radius: var(--fs-radius-md, 8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  &__input-wrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 0.6rem;
+    padding: 0 0.5rem;
+  }
+
+  &__icono {
+    font-size: 1.25rem;
+  }
+
+  &__input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    color: var(--fs-ink, #1a1a1a);
+    background: transparent;
+
+    &::placeholder {
+      color: var(--fs-ink-muted, #888);
+    }
+  }
+}
+
+// ── Pestañas de Estados ─────────────────────────────────────────────────────
+.atencion-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.atencion-tab {
+  background: var(--fs-surface, #fff);
+  border: 1px solid var(--fs-border, #e5e5e5);
+  border-radius: var(--fs-radius-sm, 6px);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--fs-ink-soft, #555);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--fs-border-strong, #333);
+    color: var(--fs-ink, #1a1a1a);
+  }
+
+  &.activo {
+    background: var(--fs-ink, #1a1a1a);
+    color: #fff;
+    border-color: var(--fs-ink, #1a1a1a);
+    font-weight: 600;
+  }
+}
+
+// ── Tabla de Reservas ───────────────────────────────────────────────────────
+.atencion-tabla-wrap {
+  background: var(--fs-surface, #fff);
+  border: 1px solid var(--fs-border, #e5e5e5);
+  border-radius: var(--fs-radius-md, 8px);
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.atencion-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th {
+    background: var(--fs-surface-alt, #fafafa);
+    color: var(--fs-ink-soft, #555);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--fs-border, #e5e5e5);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--fs-border, #f0f0f0);
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: var(--fs-surface-alt, #fcfcfc);
+  }
+
+  .fila-probador td {
+    background: #fdfbf7;
+  }
+}
+
+.ticket-codigo {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: var(--fs-ink, #1a1a1a);
+}
+
+.cliente-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.cliente-nombre {
+  font-weight: 600;
+  color: var(--fs-ink, #1a1a1a);
+}
+
+.cliente-tel {
+  font-size: 0.78rem;
+  color: var(--fs-ink-muted, #888);
+}
+
+.fecha-limite {
+  font-size: 0.85rem;
+  color: var(--fs-ink-soft, #555);
+}
+
+.badge-prendas {
+  background: var(--fs-surface-alt, #f0f0f0);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+// ── Badges de Estado ────────────────────────────────────────────────────────
+.badge-pendiente {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+
+.badge-probador {
+  background: #ffedd5;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+  font-weight: 600;
+}
+
+.badge-atendido {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.badge-cancelado {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+// ── Botones de Acción ───────────────────────────────────────────────────────
+.acciones-celda {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.btn-accion {
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &--probador {
+    background: #ea580c;
+    color: #fff;
+    &:hover { background: #c2410c; }
+  }
+
+  &--venta {
+    background: #16a34a;
+    color: #fff;
+    &:hover { background: #15803d; }
+  }
+
+  &--cancelar {
+    background: var(--fs-surface-alt, #f3f4f6);
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    &:hover { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+  }
+}
+
+// ── Modal de Ticket ─────────────────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-ticket {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 620px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: scaleUp 0.25s ease;
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #efefef;
+  }
+
+  &__titulo {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0.2rem 0 0;
+    color: var(--fs-ink, #1a1a1a);
+  }
+
+  &__cerrar {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #888;
+    cursor: pointer;
+    &:hover { color: #111; }
+  }
+
+  &__body {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    align-items: center;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+  }
+
+  &__qr-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+  }
+
+  &__qr-img {
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+  }
+
+  &__qr-sub {
+    font-size: 0.72rem;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__prendas {
+    padding: 1.5rem;
+  }
+
+  &__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.2rem 1.5rem;
+    border-top: 1px solid #efefef;
+    background: #fff;
+  }
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  border-bottom: 1px dashed #e5e5e5;
+  padding-bottom: 4px;
+
+  .info-label { color: #666; }
+  .info-valor { font-weight: 500; color: #111; }
+}
+
+.prendas-titulo {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 0.8rem;
+  color: #1a1a1a;
+}
+
+.prendas-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th {
+    background: #f4f4f4;
+    padding: 6px 10px;
+    text-align: left;
+    font-size: 0.75rem;
+    color: #666;
+  }
+
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  tfoot td {
+    padding-top: 10px;
+    border-top: 2px solid #1a1a1a;
+    font-size: 0.95rem;
+  }
+}
+
+.text-right {
+  text-align: right;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 600px) {
+  .modal-ticket__body {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}

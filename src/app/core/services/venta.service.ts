@@ -10,7 +10,11 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   ReservaPeticion,
+  ReservaProbadorCrear,
+  ReservaProbadorEstadoActualizar,
   ReservaRespuesta,
+  ReservaSucursalItem,
+  TicketReservaRespuesta,
   VentaConfirmarPeticion,
   VentaDetalladaRespuesta,
   VentaRespuesta,
@@ -48,4 +52,23 @@ export class VentaService {
   listarVentas(params?: { id_cliente?: number; id_sucursal?: number; skip?: number; limit?: number }): Observable<VentaRespuesta[]> {
     return this.http.get<VentaRespuesta[]>(`${this.base}/`, { params: params as any });
   }
+
+  // ── RESERVAS DE PROBADOR Y ATENCIÓN EN SUCURSAL (CU16, CU17) ────────────────
+
+  crearReservaProbador(datos: ReservaProbadorCrear): Observable<TicketReservaRespuesta> {
+    return this.http.post<TicketReservaRespuesta>(`${this.base}/reservas-probador`, datos);
+  }
+
+  obtenerTicketReserva(codigoOId: string | number): Observable<TicketReservaRespuesta> {
+    return this.http.get<TicketReservaRespuesta>(`${this.base}/reservas-probador/${codigoOId}`);
+  }
+
+  listarReservasSucursal(params?: { id_sucursal?: number; estado?: string; skip?: number; limit?: number }): Observable<ReservaSucursalItem[]> {
+    return this.http.get<ReservaSucursalItem[]>(`${this.base}/reservas-probador`, { params: params as any });
+  }
+
+  actualizarEstadoReservaProbador(idReserva: number, datos: ReservaProbadorEstadoActualizar): Observable<TicketReservaRespuesta> {
+    return this.http.patch<TicketReservaRespuesta>(`${this.base}/reservas-probador/${idReserva}/estado`, datos);
+  }
 }
+

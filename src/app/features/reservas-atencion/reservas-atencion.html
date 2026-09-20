@@ -1,0 +1,373 @@
+<div class="atencion-reservas">
+  <!-- Cabecera y Título -->
+  <div class="atencion-reservas__head">
+    <div>
+      <span class="fs-eyebrow">Operaciones Omnicanal · CU17</span>
+      <h1 class="atencion-reservas__titulo">Atención de Reservas en Sucursal</h1>
+    </div>
+    <div class="atencion-reservas__sucursal-filtro">
+      <label for="sucursalSelect" class="fs-label-sm">Sucursal activa:</label>
+      <select
+        id="sucursalSelect"
+        class="fs-input fs-select fs-select--sm"
+        [value]="idSucursalSeleccionada() ?? ''"
+        (change)="cambiarSucursal($event)"
+      >
+        <option value="">Todas las sucursales</option>
+        @for (s of sucursales(); track s.id_sucursal) {
+          <option [value]="s.id_sucursal">{{ s.nombre }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Barra de Escaneo / Búsqueda de Ticket QR -->
+  <div class="escaner-bar">
+    <div class="escaner-bar__input-wrapper">
+      <span class="escaner-bar__icono">📷</span>
+      <input
+        type="text"
+        class="escaner-bar__input"
+        placeholder="Escanear código QR o ingresar código de ticket (Ej: TKT-000105 o #105)…"
+        [ngModel]="inputEscaner()"
+        (ngModelChange)="inputEscaner.set($event)"
+        (keyup.enter)="procesarInputEscaner()"
+        aria-label="Escaneo de ticket de reserva"
+      />
+    </div>
+    <button
+      type="button"
+      class="fs-btn fs-btn--primary"
+      (click)="procesarInputEscaner()"
+      [disabled]="!inputEscaner().trim() || cargandoTicket()"
+    >
+      @if (cargandoTicket()) {
+        <span>Buscando…</span>
+      } @else {
+        <span>🔍 Buscar Ticket</span>
+      }
+    </button>
+  </div>
+
+  <!-- Alertas de Feedback -->
+  @if (mensajeExito()) {
+    <div class="fs-alert fs-alert--success" role="status">
+      <span>✅ {{ mensajeExito() }}</span>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span>⚠️ {{ error() }}</span>
+      <button type="button" class="fs-accion" (click)="error.set(null)">✕</button>
+    </div>
+  }
+
+  <!-- Pestañas de Estados -->
+  <div class="atencion-tabs">
+    <button
+      class="atencion-tab"
+      [class.activo]="filtroEstado() === 'Todos'"
+      (click)="cambiarFiltroEstado('Todos')"
+    >
+      Todos
+    </button>
+    <button
+      class="atencion-tab"
+      [class.activo]="filtroEstado() === 'Pendiente'"
+      (click)="cambiarFiltroEstado('Pendiente')"
+    >
+      ⏳ Pendientes (Por Llegar)
+    </button>
+    <button
+      class="atencion-tab"
+      [class.activo]="filtroEstado() === 'Preparado'"
+      (click)="cambiarFiltroEstado('Preparado')"
+    >
+      🚪 En Probador
+    </button>
+    <button
+      class="atencion-tab"
+      [class.activo]="filtroEstado() === 'Atendido'"
+      (click)="cambiarFiltroEstado('Atendido')"
+    >
+      ✅ Atendidos (Completados)
+    </button>
+    <button
+      class="atencion-tab"
+      [class.activo]="filtroEstado() === 'Cancelado'"
+      (click)="cambiarFiltroEstado('Cancelado')"
+    >
+      ❌ Cancelados / Liberados
+    </button>
+  </div>
+
+  <!-- Contenido / Tabla de Reservas -->
+  @if (cargando()) {
+    <div class="atencion-reservas__estado">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando reservas de sucursal…</span>
+    </div>
+  } @else if (reservas().length === 0) {
+    <div class="atencion-reservas__vacio">
+      <p>No se encontraron reservas con los filtros seleccionados.</p>
+    </div>
+  } @else {
+    <div class="atencion-tabla-wrap">
+      <table class="atencion-tabla">
+        <thead>
+          <tr>
+            <th>Ticket</th>
+            <th>Cliente</th>
+            <th>Sucursal</th>
+            <th>Fecha Límite</th>
+            <th>Prendas</th>
+            <th>Total Estimado</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of reservas(); track r.id_reserva) {
+            <tr [class.fila-probador]="r.estado === 'Preparado'">
+              <td>
+                <strong class="ticket-codigo">TKT-{{ ('000000' + r.id_reserva).slice(-6) }}</strong>
+              </td>
+              <td>
+                <div class="cliente-info">
+                  <span class="cliente-nombre">{{ r.cliente_nombre || 'Cliente #' + r.id_cliente }}</span>
+                  @if (r.cliente_telefono) {
+                    <small class="cliente-tel">📞 {{ r.cliente_telefono }}</small>
+                  }
+                </div>
+              </td>
+              <td>{{ r.sucursal_nombre || 'Sucursal #' + r.id_sucursal }}</td>
+              <td>
+                <span class="fecha-limite">
+                  {{ r.fecha_limite | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+              </td>
+              <td>
+                <span class="badge-prendas">{{ r.total_prendas }} prenda(s)</span>
+              </td>
+              <td>
+                <strong>Bs {{ r.total | number:'1.2-2' }}</strong>
+              </td>
+              <td>
+                <span
+                  class="fs-badge"
+                  [class.badge-pendiente]="r.estado === 'Pendiente'"
+                  [class.badge-probador]="r.estado === 'Preparado'"
+                  [class.badge-atendido]="r.estado === 'Atendido'"
+                  [class.badge-cancelado]="r.estado === 'Cancelado'"
+                >
+                  @if (r.estado === 'Preparado') { En Probador }
+                  @else { {{ r.estado }} }
+                </span>
+              </td>
+              <td>
+                <div class="acciones-celda">
+                  <button
+                    type="button"
+                    class="fs-btn fs-btn--ghost fs-btn--sm"
+                    (click)="abrirDetalleTicket(r.id_reserva)"
+                    title="Ver detalle del ticket y código QR"
+                  >
+                    👁️ Ver
+                  </button>
+
+                  @if (r.estado === 'Pendiente') {
+                    <button
+                      type="button"
+                      class="btn-accion btn-accion--probador"
+                      (click)="cambiarEstado(r.id_reserva, 'Preparado', 'Cliente ingresó a probarse las prendas')"
+                      title="Marcar prendas en probador"
+                    >
+                      🚪 A Probador
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-accion btn-accion--cancelar"
+                      (click)="cambiarEstado(r.id_reserva, 'Cancelado', 'Cliente no se presentó o canceló')"
+                      title="Liberar prendas al inventario"
+                    >
+                      ✕ Liberar
+                    </button>
+                  }
+
+                  @if (r.estado === 'Preparado') {
+                    <button
+                      type="button"
+                      class="btn-accion btn-accion--venta"
+                      (click)="cambiarEstado(r.id_reserva, 'Atendido', 'Venta confirmada en caja mostrador')"
+                      title="Cobrar y consolidar venta"
+                    >
+                      💳 Cobrar
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-accion btn-accion--cancelar"
+                      (click)="cambiarEstado(r.id_reserva, 'Cancelado', 'Prendas no adquiridas, reingresadas a tienda')"
+                      title="Devolver al inventario"
+                    >
+                      ✕ Devolver
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- ================================================================
+       MODAL DE TICKET Y DETALLE DE PRENDAS
+       ================================================================ -->
+  @if (ticketSeleccionado(); as t) {
+    <div class="modal-overlay" (click)="cerrarModalTicket()">
+      <div class="modal-ticket" (click)="$event.stopPropagation()">
+        <!-- Cabecera del modal -->
+        <div class="modal-ticket__head">
+          <div>
+            <span class="fs-eyebrow">Ticket Digital Omnicanal</span>
+            <h2 class="modal-ticket__titulo">{{ t.codigo_ticket }}</h2>
+          </div>
+          <button
+            type="button"
+            class="modal-ticket__cerrar"
+            (click)="cerrarModalTicket()"
+            aria-label="Cerrar modal"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Cuerpo del ticket -->
+        <div class="modal-ticket__body">
+          <div class="modal-ticket__qr-box">
+            <img
+              [src]="'data:image/png;base64,' + t.qr_base64"
+              alt="Código QR de la reserva"
+              class="modal-ticket__qr-img"
+            />
+            <span class="modal-ticket__qr-sub">Escaneo para probador</span>
+          </div>
+
+          <div class="modal-ticket__info">
+            <div class="info-row">
+              <span class="info-label">Cliente:</span>
+              <strong class="info-valor">{{ t.cliente_nombre || 'Cliente #' + t.id_cliente }}</strong>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Sucursal:</span>
+              <span class="info-valor">{{ t.sucursal_nombre || 'Sucursal #' + t.id_sucursal }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Fecha de Reserva:</span>
+              <span class="info-valor">{{ t.fecha_reserva | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Vigente Hasta:</span>
+              <span class="info-valor">{{ t.fecha_limite | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Estado:</span>
+              <span
+                class="fs-badge"
+                [class.badge-pendiente]="t.estado === 'Pendiente'"
+                [class.badge-probador]="t.estado === 'Preparado'"
+                [class.badge-atendido]="t.estado === 'Atendido'"
+                [class.badge-cancelado]="t.estado === 'Cancelado'"
+              >
+                @if (t.estado === 'Preparado') { En Probador }
+                @else { {{ t.estado }} }
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desglose de prendas -->
+        <div class="modal-ticket__prendas">
+          <h3 class="prendas-titulo">Prendas Separadas para Prueba Física</h3>
+          <table class="prendas-tabla">
+            <thead>
+              <tr>
+                <th>Prenda</th>
+                <th>SKU</th>
+                <th>Talla / Color</th>
+                <th class="text-right">Cant.</th>
+                <th class="text-right">P. Unit.</th>
+                <th class="text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of t.items; track item.id_variante_prenda) {
+                <tr>
+                  <td><strong>{{ item.prenda_nombre || 'Prenda' }}</strong></td>
+                  <td><code>{{ item.sku_variante || 'N/A' }}</code></td>
+                  <td>{{ item.talla || 'Única' }} · {{ item.color || 'Único' }}</td>
+                  <td class="text-right">{{ item.cantidad }}</td>
+                  <td class="text-right">Bs {{ item.precio_unitario | number:'1.2-2' }}</td>
+                  <td class="text-right"><strong>Bs {{ item.subtotal | number:'1.2-2' }}</strong></td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" class="text-right"><strong>Total:</strong></td>
+                <td class="text-right"><strong>Bs {{ t.total | number:'1.2-2' }}</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Acciones del modal -->
+        <div class="modal-ticket__foot">
+          <button
+            type="button"
+            class="fs-btn fs-btn--ghost"
+            (click)="cerrarModalTicket()"
+          >
+            Cerrar
+          </button>
+
+          @if (t.estado === 'Pendiente') {
+            <button
+              type="button"
+              class="fs-btn btn-accion--probador"
+              (click)="cambiarEstado(t.id_reserva, 'Preparado', 'Cliente ingresó a probador')"
+            >
+              🚪 Marcar en Probador
+            </button>
+            <button
+              type="button"
+              class="fs-btn btn-accion--cancelar"
+              (click)="cambiarEstado(t.id_reserva, 'Cancelado', 'Cancelado y stock liberado')"
+            >
+              ✕ Liberar Stock
+            </button>
+          }
+
+          @if (t.estado === 'Preparado') {
+            <button
+              type="button"
+              class="fs-btn btn-accion--venta"
+              (click)="cambiarEstado(t.id_reserva, 'Atendido', 'Venta confirmada en caja')"
+            >
+              💳 Cobrar en Caja
+            </button>
+            <button
+              type="button"
+              class="fs-btn btn-accion--cancelar"
+              (click)="cambiarEstado(t.id_reserva, 'Cancelado', 'Prendas devueltas a inventario')"
+            >
+              ✕ Devolver a Tienda
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

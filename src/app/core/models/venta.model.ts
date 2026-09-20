@@ -67,6 +67,50 @@ export interface ReservaRespuesta {
   items: DetalleReservaRespuesta[];
 }
 
+export type EstadoReservaProbador = 'Pendiente' | 'Preparado' | 'Atendido' | 'Cancelado';
+
+export interface ReservaProbadorCrear {
+  id_cliente: number;
+  id_sucursal: number;
+  items: DetalleReservaPeticion[];
+  horas_vigencia?: number;
+}
+
+export interface ReservaProbadorEstadoActualizar {
+  nuevo_estado: EstadoReservaProbador;
+  motivo?: string;
+}
+
+export interface TicketReservaRespuesta {
+  id_reserva: number;
+  codigo_ticket: string;
+  qr_base64: string;
+  id_cliente: number;
+  cliente_nombre?: string;
+  id_sucursal: number;
+  sucursal_nombre?: string;
+  fecha_reserva: string;
+  fecha_limite: string;
+  estado: EstadoReservaProbador;
+  total: number;
+  items: DetalleReservaRespuesta[];
+}
+
+export interface ReservaSucursalItem {
+  id_reserva: number;
+  id_cliente: number;
+  cliente_nombre?: string;
+  cliente_telefono?: string;
+  id_sucursal: number;
+  sucursal_nombre?: string;
+  fecha_reserva: string;
+  fecha_limite: string;
+  estado: EstadoReservaProbador;
+  total: number;
+  total_prendas: number;
+}
+
+
 // ─────────────────────────────────────────────────────────────────────────────
 // VENTA
 // ─────────────────────────────────────────────────────────────────────────────

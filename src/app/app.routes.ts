@@ -237,6 +237,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/ia/analitica-voz/analitica-voz').then((m) => m.AnaliticaVoz),
       },
+      {
+        // CU17 - Atención de Reservas en Sucursal y Probadores Físicos
+        path: 'reservas-atencion',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal', 'Cajero'], 'Atención de Reservas')],
+        title: 'Atención de Reservas · FashionStore',
+        loadComponent: () =>
+          import('./features/reservas-atencion/reservas-atencion').then((m) => m.ReservasAtencion),
+      },
+      {
+        path: 'reservas',
+        redirectTo: 'reservas-atencion',
+      },
     ],
   },
   {

@@ -119,6 +119,12 @@ export class Layout {
       roles: ['Administrador', 'Encargado de Sucursal'],
     },
     {
+      etiqueta: 'Atención Reservas',
+      caso: 'CU17',
+      ruta: '/panel/reservas-atencion',
+      roles: ['Administrador', 'Encargado de Sucursal', 'Cajero'],
+    },
+    {
       etiqueta: 'Asistente de Moda IA',
       caso: 'CU22',
       ruta: '/panel/ia/asistente-moda',
