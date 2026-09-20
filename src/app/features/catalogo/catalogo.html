@@ -1,11 +1,13 @@
-<!--
-  =============================================================================
-  FASHIONSTORE - CATÁLOGO PÚBLICO (CU14)
-  -----------------------------------------------------------------------------
-  Página de vitrina con barra superior, panel lateral de filtros y cuadrícula
-  de tarjetas. El detalle de disponibilidad se abre en un modal.
-  =============================================================================
--->
+<!-- Panel lateral del carrito -->
+@if (carritoAbierto()) {
+  <app-carrito-sidebar (cerrar)="cerrarCarrito()" />
+}
+
+<!-- Feedback toast al agregar -->
+@if (feedbackCarrito()) {
+  <div class="carrito-toast">{{ feedbackCarrito() }}</div>
+}
+
 <div class="catalogo">
   <!-- ========================= BARRA SUPERIOR ========================= -->
   <header class="catalogo__topbar">
@@ -13,6 +15,12 @@
 
     <nav class="catalogo__nav">
       <span class="catalogo__tag">Catálogo público</span>
+      <button class="catalogo__carrito-btn" (click)="abrirCarrito()" aria-label="Ver carrito">
+        🛍️
+        @if (carritoSvc.totalUnidades > 0) {
+          <span class="carrito-badge">{{ carritoSvc.totalUnidades }}</span>
+        }
+      </button>
       <a class="fs-btn fs-btn--primary fs-btn--sm" routerLink="/registro">Registrarse</a>
       <a class="fs-btn fs-btn--ghost fs-btn--sm" routerLink="/login-cliente">Iniciar sesión</a>
       <a class="catalogo__staff-link" routerLink="/login" title="Acceso al panel administrativo para colaboradores">Personal</a>
@@ -169,6 +177,16 @@
                     {{ prenda.stock_total > 0 ? 'Disponible' : 'Agotado' }}
                   </span>
                 </div>
+
+                @if (prenda.stock_total > 0) {
+                  <button
+                    class="catalogo__btn-carrito"
+                    (click)="agregarAlCarrito(prenda, $event)"
+                    aria-label="Agregar {{ prenda.nombre }} al carrito"
+                  >
+                    🛒 Agregar al carrito
+                  </button>
+                }
               </div>
             </article>
           } @empty {
