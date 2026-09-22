@@ -67,7 +67,7 @@ export class Registro {
         ],
       ],
       correo: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
-      telefono: ['', [Validators.maxLength(30)]],
+      telefono: ['', [Validators.pattern(/^[0-9+() -]*$/), Validators.maxLength(20)]],
       direccion_envio: ['', [Validators.maxLength(255)]],
       password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(100)]],
       confirmarPassword: ['', [Validators.required]],
@@ -143,7 +143,7 @@ export class Registro {
     this.authService.registrarCliente(datosRegistro).subscribe({
       next: (resp) => {
         this.cargando.set(false);
-        this.clienteRegistrado.set(resp.nombre_completo || (val.nombre + ' ' + val.apellido));
+        this.clienteRegistrado.set(resp.nombre_completo || val.nombre + ' ' + val.apellido);
         this.registroCompletado.set(true);
       },
       error: (err: Error) => {

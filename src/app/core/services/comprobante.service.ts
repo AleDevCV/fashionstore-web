@@ -13,7 +13,7 @@ import { ComprobanteGenerarPeticion, ComprobanteRespuesta } from '../models/vent
 @Injectable({ providedIn: 'root' })
 export class ComprobanteService {
   private readonly http = inject(HttpClient);
-  private readonly base = `${environment.apiUrl}/comprobantes`;
+  private readonly base = `${environment.apiUrl}/api/comprobantes`;
 
   generarComprobante(datos: ComprobanteGenerarPeticion): Observable<ComprobanteRespuesta> {
     return this.http.post<ComprobanteRespuesta>(`${this.base}/generar`, datos);

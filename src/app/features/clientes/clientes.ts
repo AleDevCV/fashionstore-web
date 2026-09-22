@@ -13,11 +13,13 @@
  * =============================================================================
  */
 
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 
 import { ClienteService } from '../../core/services/cliente.service';
 import { NotificacionService } from '../../core/services/notificacion.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ROLES } from '../../core/models/auth.model';
 import { Cliente } from '../../core/models/catalogo.model';
 import { ClienteModal } from './cliente-modal/cliente-modal';
 
@@ -30,6 +32,7 @@ import { ClienteModal } from './cliente-modal/cliente-modal';
 export class Clientes implements OnInit, OnDestroy {
   private readonly clienteService = inject(ClienteService);
   private readonly notificacion = inject(NotificacionService);
+  private readonly authService = inject(AuthService);
 
   // ---------------------------------------------------------------------------
   // ESTADO
@@ -37,6 +40,20 @@ export class Clientes implements OnInit, OnDestroy {
 
   /** Fichas descargadas del backend. */
   readonly clientes = signal<Cliente[]>([]);
+
+  /** Ficha propia resuelta desde la identidad autenticada. */
+  readonly clientePropio = signal<Cliente | null>(null);
+
+  /** El Cliente ve autogestión; nunca la tabla administrativa. */
+  readonly esAutogestion = computed(() => this.authService.rolActual() === ROLES.CLIENTE);
+
+  /** Capacidades de la interfaz, alineadas con la matriz RBAC existente. */
+  readonly puedeCrear = computed(() =>
+    this.authService.tieneRol(ROLES.ADMINISTRADOR, ROLES.CAJERO),
+  );
+  readonly puedeEditar = computed(() => this.authService.tieneRol(ROLES.ADMINISTRADOR));
+  readonly puedeInactivar = computed(() => this.authService.tieneRol(ROLES.ADMINISTRADOR));
+  readonly muestraAcciones = computed(() => this.puedeEditar() || this.puedeInactivar());
 
   /** Texto del buscador reactivo (CI o nombre). */
   readonly busqueda = signal('');
@@ -99,7 +116,29 @@ export class Clientes implements OnInit, OnDestroy {
    * @returns void
    */
   cargar(): void {
+    if (this.esAutogestion()) {
+      this.consultarFichaPropia();
+      return;
+    }
     this.consultar(this.busqueda());
+  }
+
+  /** Consulta /me: el navegador no elige el id de la ficha. */
+  private consultarFichaPropia(): void {
+    this.cargando.set(true);
+    this.errorCarga.set(null);
+
+    this.clienteService.obtenerPropio().subscribe({
+      next: (cliente) => {
+        this.clientePropio.set(cliente);
+        this.cargando.set(false);
+      },
+      error: (error: Error) => {
+        this.clientePropio.set(null);
+        this.cargando.set(false);
+        this.errorCarga.set(error.message);
+      },
+    });
   }
 
   /**
@@ -112,18 +151,16 @@ export class Clientes implements OnInit, OnDestroy {
     this.cargando.set(true);
     this.errorCarga.set(null);
 
-    this.clienteService
-      .listar(termino || undefined, this.estado() ?? undefined)
-      .subscribe({
-        next: (lista) => {
-          this.clientes.set(lista);
-          this.cargando.set(false);
-        },
-        error: (error: Error) => {
-          this.cargando.set(false);
-          this.errorCarga.set(error.message);
-        },
-      });
+    this.clienteService.listar(termino || undefined, this.estado() ?? undefined).subscribe({
+      next: (lista) => {
+        this.clientes.set(lista);
+        this.cargando.set(false);
+      },
+      error: (error: Error) => {
+        this.cargando.set(false);
+        this.errorCarga.set(error.message);
+      },
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -161,12 +198,28 @@ export class Clientes implements OnInit, OnDestroy {
 
   /** Abre el modal en modo alta. */
   abrirAlta(): void {
+    if (!this.puedeCrear()) {
+      return;
+    }
     this.clienteEnEdicion.set(null);
     this.modalAbierto.set(true);
   }
 
   /** Abre el modal en modo edición con la ficha indicada. */
   abrirEdicion(cliente: Cliente): void {
+    if (!this.puedeEditar()) {
+      return;
+    }
+    this.clienteEnEdicion.set(cliente);
+    this.modalAbierto.set(true);
+  }
+
+  /** Abre exclusivamente la ficha obtenida desde /me. */
+  abrirEdicionPropia(): void {
+    const cliente = this.clientePropio();
+    if (!this.esAutogestion() || cliente === null) {
+      return;
+    }
     this.clienteEnEdicion.set(cliente);
     this.modalAbierto.set(true);
   }
@@ -202,6 +255,9 @@ export class Clientes implements OnInit, OnDestroy {
    * @returns void
    */
   inhabilitar(cliente: Cliente): void {
+    if (!this.puedeInactivar()) {
+      return;
+    }
     this.inhabilitandoId.set(cliente.id_cliente);
 
     this.clienteService.inhabilitar(cliente.id_cliente).subscribe({
@@ -224,22 +280,21 @@ export class Clientes implements OnInit, OnDestroy {
    * @returns void
    */
   reactivar(cliente: Cliente): void {
+    if (!this.puedeInactivar()) {
+      return;
+    }
     this.inhabilitandoId.set(cliente.id_cliente);
 
-    this.clienteService
-      .actualizar(cliente.id_cliente, { estado: 'Activo' })
-      .subscribe({
-        next: (actualizado) => {
-          this.inhabilitandoId.set(null);
-          this.notificacion.exito(
-            `La ficha de ${actualizado.nombre_completo} fue reactivada.`,
-          );
-          this.cargar();
-        },
-        error: (error: Error) => {
-          this.inhabilitandoId.set(null);
-          this.notificacion.error(error.message);
-        },
-      });
+    this.clienteService.actualizar(cliente.id_cliente, { estado: 'Activo' }).subscribe({
+      next: (actualizado) => {
+        this.inhabilitandoId.set(null);
+        this.notificacion.exito(`La ficha de ${actualizado.nombre_completo} fue reactivada.`);
+        this.cargar();
+      },
+      error: (error: Error) => {
+        this.inhabilitandoId.set(null);
+        this.notificacion.error(error.message);
+      },
+    });
   }
 }

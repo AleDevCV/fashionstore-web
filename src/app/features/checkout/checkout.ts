@@ -20,6 +20,7 @@ import { VentaService } from '../../core/services/venta.service';
 import { PagoService } from '../../core/services/pago.service';
 import { ComprobanteService } from '../../core/services/comprobante.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ClienteService } from '../../core/services/cliente.service';
 import { ReservaRespuesta, VentaDetalladaRespuesta, ComprobanteRespuesta } from '../../core/models/venta.model';
 
 type Paso = 1 | 2 | 3 | 4;
@@ -39,6 +40,7 @@ export class Checkout implements OnInit {
   private readonly pago = inject(PagoService);
   private readonly comprobante = inject(ComprobanteService);
   private readonly auth = inject(AuthService);
+  private readonly clienteService = inject(ClienteService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
@@ -100,7 +102,7 @@ export class Checkout implements OnInit {
     this.cargando.set(true);
     this.error.set(null);
     try {
-      const idCliente = this._obtenerIdCliente();
+      const idCliente = await this._obtenerIdCliente();
       const reserva = await this.venta.crearReserva({
         id_cliente: idCliente,
         id_sucursal: this.ID_SUCURSAL,
@@ -142,14 +144,18 @@ export class Checkout implements OnInit {
     this.error.set(null);
 
     try {
-      const idCliente = this._obtenerIdCliente();
+      const idCliente = await this._obtenerIdCliente();
 
       if (metodo === 'Stripe') {
+        const fiscal = this.formFiscal.value;
         const res = await this.pago.crearSesionStripe({
           id_reserva: reservaActual.id_reserva,
           id_cliente: idCliente,
           url_exito: `${window.location.origin}/pago/exitoso?reserva=${reservaActual.id_reserva}`,
           url_cancelacion: `${window.location.origin}/pago/cancelado?reserva=${reservaActual.id_reserva}`,
+          nit_ci: fiscal.nit_ci || '',
+          razon_social: fiscal.razon_social || '',
+          enviar_email: !!fiscal.enviar_email,
         }).toPromise();
         // Redirigir al portal de Stripe
         window.location.href = res!.url_pago;
@@ -182,7 +188,7 @@ export class Checkout implements OnInit {
     this.error.set(null);
 
     try {
-      const idCliente = this._obtenerIdCliente();
+      const idCliente = await this._obtenerIdCliente();
       const ventaRes = await this.pago.confirmarQR({
         referencia: ref,
         id_reserva: reservaActual.id_reserva,
@@ -192,7 +198,15 @@ export class Checkout implements OnInit {
 
       this.venta_confirmada.set(ventaRes as VentaDetalladaRespuesta);
       await this._generarComprobante(ventaRes.id_venta);
-      this.carrito.vaciarCarrito();
+      
+      // Eliminar solo los items que efectivamente se compraron
+      this.carrito.limpiarComprados(
+        ventaRes.items.map((i: any) => ({
+          id_variante_prenda: i.id_variante_prenda,
+          cantidad: i.cantidad,
+        }))
+      );
+      
       this.pasoActual.set(4);
     } catch (err: any) {
       this.error.set(err?.error?.detail || 'Error al confirmar el pago QR.');
@@ -225,15 +239,23 @@ export class Checkout implements OnInit {
     this.router.navigate(['/catalogo']);
   }
 
-  private _obtenerIdCliente(): number {
-    // Obtener el id_cliente del token JWT almacenado
+  private async _obtenerIdCliente(): Promise<number> {
+    const usuario = this.auth.usuarioActual();
+    if (!usuario) {
+      this.router.navigate(['/login']);
+      throw new Error('Debe iniciar sesión para continuar.');
+    }
+
     try {
-      const token = localStorage.getItem('fashionstore_token');
-      if (!token) throw new Error('Sin token');
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.id_cliente || payload.sub || 61; // fallback
+      const cliente = await this.clienteService.obtenerPropio().toPromise();
+      if (!cliente || !cliente.id_cliente) {
+        this.router.navigate(['/login']);
+        throw new Error('No se pudo verificar su identidad de cliente.');
+      }
+      return cliente.id_cliente;
     } catch {
-      return 61; // fallback de desarrollo
+      this.router.navigate(['/login']);
+      throw new Error('No se pudo verificar su identidad de cliente.');
     }
   }
 }

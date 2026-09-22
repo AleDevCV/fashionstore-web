@@ -40,7 +40,7 @@
             </div>
             <div class="resumen-item__qty">× {{ item.cantidad }}</div>
             <div class="resumen-item__precio">
-              Bs {{ (item.precio_unitario * item.cantidad).toFixed(2) }}
+              Bs {{ (item.precio_unitario * item.cantidad) | number:'1.2-2' }}
             </div>
           </li>
         }
@@ -48,7 +48,7 @@
 
       <div class="resumen-total">
         <span>Total estimado</span>
-        <strong>Bs {{ subtotal.toFixed(2) }}</strong>
+        <strong>Bs {{ subtotal | number:'1.2-2' }}</strong>
       </div>
 
       <div class="checkout-actions">
@@ -135,7 +135,7 @@
   @if (pasoActual() === 3) {
     <section class="checkout-card">
       <h2 class="checkout-card__titulo">💳 Método de pago</h2>
-      <p class="checkout-card__subtitulo">Total a pagar: <strong>Bs {{ reserva()?.total?.toFixed(2) }}</strong></p>
+      <p class="checkout-card__subtitulo">Total a pagar: <strong>Bs {{ reserva()?.total | number:'1.2-2' }}</strong></p>
 
       <!-- Selector de método -->
       <div class="metodo-selector">
@@ -214,7 +214,7 @@
       @if (venta_confirmada()) {
         <div class="exito-detalles">
           <p>N° de venta: <strong>#{{ venta_confirmada()!.id_venta }}</strong></p>
-          <p>Total pagado: <strong>Bs {{ venta_confirmada()!.total.toFixed(2) }}</strong></p>
+          <p>Total pagado: <strong>Bs {{ venta_confirmada()!.total | number:'1.2-2' }}</strong></p>
           <p>Método: <strong>{{ venta_confirmada()!.metodo_pago }}</strong></p>
         </div>
       }

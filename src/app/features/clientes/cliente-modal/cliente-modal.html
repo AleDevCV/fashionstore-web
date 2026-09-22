@@ -7,29 +7,25 @@
   =============================================================================
 -->
 <div class="fs-modal-velo" (click)="cerrar()">
-  <div
-    class="fs-modal"
-    (click)="$event.stopPropagation()"
-    role="dialog"
-    aria-modal="true"
-  >
+  <div class="fs-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
     <!-- ========================= CABECERA ========================= -->
     <div class="fs-modal__head">
       <div>
         <span class="fs-eyebrow">
-          {{ esEdicion() ? 'Editar registro' : 'Nuevo registro' }}
+          {{ autogestion() ? 'Mi perfil' : esEdicion() ? 'Editar registro' : 'Nuevo registro' }}
         </span>
         <h2 class="fs-modal__titulo modal__titulo">
-          {{ esEdicion() ? 'Editar cliente' : 'Registrar cliente' }}
+          {{
+            autogestion()
+              ? 'Editar mis datos'
+              : esEdicion()
+                ? 'Editar cliente'
+                : 'Registrar cliente'
+          }}
         </h2>
       </div>
 
-      <button
-        type="button"
-        class="fs-modal__cerrar"
-        (click)="cerrar()"
-        aria-label="Cerrar"
-      >
+      <button type="button" class="fs-modal__cerrar" (click)="cerrar()" aria-label="Cerrar">
         ×
       </button>
     </div>
@@ -91,7 +87,7 @@
             />
             @if (campoInvalido('telefono')) {
               <span class="fs-field-error">
-                El teléfono debe contener solo números.
+                Use solo números, espacios y los signos +, -, ( ).
               </span>
             }
           </div>
@@ -109,7 +105,11 @@
             />
             @if (campoInvalido('correo')) {
               <span class="fs-field-error">
-                Introduzca un correo con formato válido.
+                @if (errores('correo')?.['required']) {
+                  El correo de la cuenta es obligatorio.
+                } @else {
+                  Introduzca un correo con formato válido.
+                }
               </span>
             }
           </div>
@@ -128,7 +128,7 @@
         </div>
 
         <!-- Estado: solo se gestiona en edición -->
-        @if (esEdicion()) {
+        @if (esEdicion() && !autogestion()) {
           <div class="fs-field">
             <label class="fs-eyebrow" for="estado">Estado</label>
             <select id="estado" class="fs-input fs-select" formControlName="estado">
@@ -158,11 +158,7 @@
           Cancelar
         </button>
 
-        <button
-          type="submit"
-          class="fs-btn fs-btn--primary"
-          [disabled]="cargando()"
-        >
+        <button type="submit" class="fs-btn fs-btn--primary" [disabled]="cargando()">
           @if (cargando()) {
             <span class="fs-spinner" aria-hidden="true"></span>
             <span>Guardando</span>

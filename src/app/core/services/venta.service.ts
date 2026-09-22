@@ -23,7 +23,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class VentaService {
   private readonly http = inject(HttpClient);
-  private readonly base = `${environment.apiUrl}/ventas`;
+  private readonly base = `${environment.apiUrl}/api/ventas`;
 
   crearReserva(datos: ReservaPeticion): Observable<ReservaRespuesta> {
     return this.http.post<ReservaRespuesta>(`${this.base}/reserva`, datos);

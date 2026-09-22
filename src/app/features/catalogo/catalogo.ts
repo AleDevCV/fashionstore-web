@@ -14,12 +14,14 @@
  * =============================================================================
  */
 
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 
 import { CatalogoService } from '../../core/services/catalogo.service';
 import { CarritoService } from '../../core/services/carrito.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ROLES } from '../../core/models/auth.model';
 import {
   FiltrosDisponibles,
   PrendaCatalogo,
@@ -38,7 +40,15 @@ const TAMANO_PAGINA = 12;
 })
 export class Catalogo implements OnInit, OnDestroy {
   private readonly catalogoService = inject(CatalogoService);
+  private readonly authService = inject(AuthService);
   readonly carritoSvc = inject(CarritoService);
+
+  /** Estado de sesión compartido; se conserva al navegar y al recargar. */
+  readonly usuario = this.authService.usuarioActual;
+  readonly esCliente = computed(() => this.authService.rolActual() === ROLES.CLIENTE);
+  readonly rutaCuenta = computed(() =>
+    this.esCliente() ? '/panel/clientes' : '/panel/inicio',
+  );
 
   // ---------------------------------------------------------------------------
   // ESTADO
@@ -320,6 +330,11 @@ export class Catalogo implements OnInit, OnDestroy {
   /** Cierra el panel lateral del carrito. */
   cerrarCarrito(): void {
     this.carritoAbierto.set(false);
+  }
+
+  /** Cierra la sesión sin abandonar el catálogo público. */
+  cerrarSesion(): void {
+    this.authService.logout();
   }
 
   /**

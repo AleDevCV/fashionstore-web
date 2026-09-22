@@ -15,12 +15,7 @@
  */
 
 import { Component, OnInit, inject, input, output, signal } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ClienteService } from '../../../core/services/cliente.service';
 import { Cliente } from '../../../core/models/catalogo.model';
@@ -41,6 +36,9 @@ export class ClienteModal implements OnInit {
 
   /** Cliente a editar. Si es null, el modal opera en modo alta. */
   readonly cliente = input<Cliente | null>(null);
+
+  /** Usa el endpoint seguro /me y oculta controles administrativos. */
+  readonly autogestion = input(false);
 
   /** Se emite cuando el usuario cierra el modal sin guardar. */
   readonly cerrado = output<void>();
@@ -83,14 +81,13 @@ export class ClienteModal implements OnInit {
       ],
       telefono: [
         clienteActual?.telefono ?? '',
-        // Solo dígitos; el patrón admite vacío porque el campo es opcional.
-        [Validators.pattern(/^[0-9]*$/), Validators.maxLength(20)],
+        [Validators.pattern(/^[0-9+() -]*$/), Validators.maxLength(20)],
       ],
-      correo: [clienteActual?.correo ?? '', [Validators.email]],
-      direccion_envio: [
-        clienteActual?.direccion_envio ?? '',
-        [Validators.maxLength(255)],
+      correo: [
+        clienteActual?.correo ?? '',
+        this.autogestion() ? [Validators.required, Validators.email] : [Validators.email],
       ],
+      direccion_envio: [clienteActual?.direccion_envio ?? '', [Validators.maxLength(255)]],
       estado: [clienteActual?.estado ?? 'Activo'],
     });
   }
@@ -162,28 +159,31 @@ export class ClienteModal implements OnInit {
 
     if (clienteActual) {
       // ----- MODO EDICIÓN -----
-      this.clienteService
-        .actualizar(clienteActual.id_cliente, { ...cuerpo, estado: valores.estado })
-        .subscribe({
-          next: (actualizado) => {
-            this.cargando.set(false);
-            this.guardado.emit(
-              `La ficha de ${actualizado.nombre_completo} se actualizó correctamente.`,
-            );
-          },
-          error: (error: Error) => {
-            this.cargando.set(false);
-            this.mensajeError.set(error.message);
-          },
-        });
+      const peticion = this.autogestion()
+        ? this.clienteService.actualizarPropio(cuerpo)
+        : this.clienteService.actualizar(clienteActual.id_cliente, {
+            ...cuerpo,
+            estado: valores.estado,
+          });
+
+      peticion.subscribe({
+        next: (actualizado) => {
+          this.cargando.set(false);
+          this.guardado.emit(
+            `La ficha de ${actualizado.nombre_completo} se actualizó correctamente.`,
+          );
+        },
+        error: (error: Error) => {
+          this.cargando.set(false);
+          this.mensajeError.set(error.message);
+        },
+      });
     } else {
       // ----- MODO ALTA -----
       this.clienteService.crear(cuerpo).subscribe({
         next: (creado) => {
           this.cargando.set(false);
-          this.guardado.emit(
-            `El cliente ${creado.nombre_completo} fue registrado correctamente.`,
-          );
+          this.guardado.emit(`El cliente ${creado.nombre_completo} fue registrado correctamente.`);
         },
         error: (error: Error) => {
           this.cargando.set(false);

@@ -103,6 +103,11 @@
   color: var(--fs-ink-soft);
 }
 
+.clientes__direccion {
+  min-width: 190px;
+  color: var(--fs-ink-soft);
+}
+
 .clientes__acciones {
   display: flex;
   gap: var(--fs-space-4);
@@ -112,6 +117,47 @@
   margin-top: var(--fs-space-3);
   font-size: 11.5px;
   color: var(--fs-ink-muted);
+}
+
+/* -----------------------------------------------------------------------------
+   FICHA PROPIA DEL CLIENTE
+   -------------------------------------------------------------------------- */
+.clientes__perfil {
+  padding: var(--fs-space-6);
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+}
+
+.clientes__perfil-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--fs-space-5);
+  margin: 0;
+}
+
+.clientes__perfil-grid div {
+  min-width: 0;
+}
+
+.clientes__perfil-grid dt {
+  margin-bottom: var(--fs-space-2);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+}
+
+.clientes__perfil-grid dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  color: var(--fs-ink);
+}
+
+.clientes__perfil-direccion {
+  grid-column: 1 / -1;
 }
 
 /* -----------------------------------------------------------------------------
@@ -132,5 +178,13 @@
 
   .clientes__estado {
     width: 100%;
+  }
+
+  .clientes__perfil-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .clientes__perfil-direccion {
+    grid-column: auto;
   }
 }

@@ -12,7 +12,7 @@ export const environment = {
   produccion: false,
 
   /** URL base de la API REST de FastAPI levantada con docker compose. */
-  apiUrl: 'http://127.0.0.1:8000',
+  apiUrl: 'http://localhost:8000',
 
   /** Clave con la que se guarda el token JWT en el localStorage del navegador. */
   claveTokenJwt: 'fashionstore_token',
