@@ -10,15 +10,24 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FilesetResolver, PoseLandmarker, PoseLandmarkerResult } from '@mediapipe/tasks-vision';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 interface Prenda3D {
   id: number;
   nombre: string;
   categoria: string;
   colorHex: string;
-  tipoMalla: 'chaqueta' | 'sueter' | 'polera' | 'vestido';
+  tipoMalla: 'gltf' | 'chaqueta' | 'sueter' | 'polera' | 'vestido';
   precio: number;
   fotoUrl: string;
+  glbUrl?: string;
+  esRigged?: boolean;
+  offsetYNormalizado?: number;
+  escalaBaseFactor?: number;
+  descripcion?: string;
+  rotacionFija?: [number, number, number];
+  posicionFija?: [number, number, number];
+  anchoReferencia?: number;
 }
 
 interface MetricasCuerpo {
@@ -156,7 +165,14 @@ interface MetricasCuerpo {
                   </div>
                   <div class="garment-info">
                     <div class="garment-name">{{ prenda.nombre }}</div>
-                    <div class="garment-price">Bs. {{ prenda.precio | number:'1.2-2' }}</div>
+                    <div class="garment-meta-flex">
+                      <span class="garment-price">Bs. {{ prenda.precio | number:'1.2-2' }}</span>
+                      @if (prenda.esRigged) {
+                        <span class="garment-tag rigged">⚡ Rigged</span>
+                      } @else if (prenda.glbUrl) {
+                        <span class="garment-tag gltf">✨ 3D Real</span>
+                      }
+                    </div>
                   </div>
                 </div>
               }
@@ -267,14 +283,23 @@ interface MetricasCuerpo {
               <div><span>Anclaje 3D X:</span> <strong>{{ coordThreeX | number:'1.2-2' }}</strong></div>
               <div><span>Anclaje 3D Y:</span> <strong>{{ coordThreeY | number:'1.2-2' }}</strong></div>
               <div><span>Profundidad Z:</span> <strong>{{ coordThreeZ | number:'1.2-2' }}</strong></div>
-              <div><span>Motor Gráfico:</span> <em>Three.js r180 + WebGL</em></div>
+              <div><span>Estado Malla:</span> <strong>{{ estadoModelo3D() }}</strong></div>
+              @if (huesosDetectados() > 0) {
+                <div><span>Articulaciones:</span> <strong style="color: #c084fc;">{{ huesosDetectados() }} huesos activos</strong></div>
+              }
+              <div><span>Motor Gráfico:</span> <em>Three.js r186 + WebGL</em></div>
             </div>
           </div>
 
           <!-- Tarjeta 3: Resumen de Prenda Activa -->
           <div class="ar-card active-garment-card">
-            <div class="active-garment-badge">Prenda en Visualización</div>
+            <div class="active-garment-badge">
+              {{ prendaSeleccionada().esRigged ? '⚡ Prenda 3D Rigged' : (prendaSeleccionada().glbUrl ? '✨ Malla 3D PBR' : 'Prenda en Visualización') }}
+            </div>
             <h3 class="active-garment-title">{{ prendaSeleccionada().nombre }}</h3>
+            @if (prendaSeleccionada().descripcion) {
+              <p class="garment-desc-text">{{ prendaSeleccionada().descripcion }}</p>
+            }
             <div class="active-garment-meta">
               <span>Categoría: {{ prendaSeleccionada().categoria }}</span>
               <span class="price-tag">Bs. {{ prendaSeleccionada().precio | number:'1.2-2' }}</span>
@@ -648,6 +673,39 @@ interface MetricasCuerpo {
       color: #34d399;
     }
 
+    .garment-meta-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.25rem;
+      margin-top: 0.15rem;
+    }
+
+    .garment-tag {
+      font-size: 0.58rem;
+      font-weight: 700;
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.25rem;
+      letter-spacing: 0.02em;
+    }
+    .garment-tag.rigged {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+    .garment-tag.gltf {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .garment-desc-text {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      line-height: 1.35;
+      margin: 0.35rem 0 0.75rem;
+    }
+
     /* Sidebar */
     .ar-sidebar {
       display: flex;
@@ -813,8 +871,80 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
   offsetVertical = signal<number>(0);
   opacidadTela = signal<number>(0.95);
 
-  // Catálogo de Prendas para Probar
+  cargandoPrenda = signal<boolean>(false);
+  estadoModelo3D = signal<string>('Inicializando');
+  huesosDetectados = signal<number>(0);
+
+  // Catálogo de Prendas para Probar (Modelos 3D Reales GLB + Procedurales)
   catalogoPrendas: Prenda3D[] = [
+    {
+      id: 201,
+      nombre: 'Hoodie Urbano V2 (Rigged 3D)',
+      categoria: 'Polerones & Hoodies',
+      colorHex: '#334155',
+      tipoMalla: 'gltf',
+      glbUrl: '/modelos3d/hoodie.glb',
+      esRigged: true,
+      offsetYNormalizado: 0,
+      escalaBaseFactor: 1.0,
+      rotacionFija: [0, 0, Math.PI],
+      posicionFija: [0, 4.8, 0],
+      anchoReferencia: 4.8,
+      precio: 299.0,
+      fotoUrl: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400&auto=format&fit=crop&q=80',
+      descripcion: 'Polerón con capucha y 17 huesos articulados. Las mangas se flexionan automáticamente con tus brazos.',
+    },
+    {
+      id: 202,
+      nombre: 'Camiseta Monalisa Streetwear 3D',
+      categoria: 'Poleras & Camisetas',
+      colorHex: '#0f172a',
+      tipoMalla: 'gltf',
+      glbUrl: '/modelos3d/offwhite_tshirt.glb',
+      esRigged: false,
+      offsetYNormalizado: 0.0,
+      escalaBaseFactor: 1.0,
+      rotacionFija: [0, 0, 0],
+      posicionFija: [0.075, -12.75, -0.32],
+      anchoReferencia: 4.4,
+      precio: 189.0,
+      fotoUrl: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400&auto=format&fit=crop&q=80',
+      descripcion: 'Camiseta de corte slim con arrugas de tela y estampado gráfico frontal de la Gioconda.',
+    },
+    {
+      id: 203,
+      nombre: 'Combat Shirt Táctica (Rigged Metahuman)',
+      categoria: 'Chaquetas & Camisas',
+      colorHex: '#475569',
+      tipoMalla: 'gltf',
+      glbUrl: '/modelos3d/combat_shirt.glb',
+      esRigged: true,
+      offsetYNormalizado: 0.0,
+      escalaBaseFactor: 1.0,
+      rotacionFija: [0, 0, Math.PI],
+      posicionFija: [0, 1.37, 0],
+      anchoReferencia: 0.3026,
+      precio: 349.0,
+      fotoUrl: 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=400&auto=format&fit=crop&q=80',
+      descripcion: 'Camisa militar con armature completo Metahuman adaptado a seguimiento biomecánico.',
+    },
+    {
+      id: 204,
+      nombre: 'Camisa a Cuadros Scott (Rigged)',
+      categoria: 'Camisas Casuales',
+      colorHex: '#991b1b',
+      tipoMalla: 'gltf',
+      glbUrl: '/modelos3d/shirt_scott.glb',
+      esRigged: true,
+      offsetYNormalizado: 0.0,
+      escalaBaseFactor: 1.0,
+      rotacionFija: [0, 0, 0],
+      posicionFija: [0, -1.45, 0],
+      anchoReferencia: 0.838,
+      precio: 259.0,
+      fotoUrl: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&auto=format&fit=crop&q=80',
+      descripcion: 'Camisa informal abotonada a cuadros con mangas enrolladas y armature 3D.',
+    },
     {
       id: 180,
       nombre: 'Suéter Tejido Urbano Marrón',
@@ -823,6 +953,7 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
       tipoMalla: 'sueter',
       precio: 249.0,
       fotoUrl: 'https://pngimg.com/uploads/sweater/sweater_PNG83.png',
+      descripcion: 'Suéter clásico de invierno (Malla básica)',
     },
     {
       id: 182,
@@ -832,6 +963,7 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
       tipoMalla: 'chaqueta',
       precio: 389.0,
       fotoUrl: 'https://pngimg.com/uploads/sweater/sweater_PNG80.png',
+      descripcion: 'Abrigo largo clásico (Malla básica)',
     },
     {
       id: 178,
@@ -841,6 +973,7 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
       tipoMalla: 'vestido',
       precio: 449.0,
       fotoUrl: 'https://pngimg.com/uploads/dress/dress_PNG196.png',
+      descripcion: 'Vestido acampanado de gala (Malla básica)',
     },
     {
       id: 101,
@@ -850,6 +983,7 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
       tipoMalla: 'polera',
       precio: 149.0,
       fotoUrl: 'https://pngimg.com/uploads/running_shoes/running_shoes_PNG5821.png',
+      descripcion: 'Polera sintética ligera (Malla básica)',
     },
   ];
 
@@ -882,6 +1016,14 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
   private meshPrendaGroup = new THREE.Group();
   private texturaPrendaLoader = new THREE.TextureLoader();
   private materialPrenda!: THREE.MeshStandardMaterial;
+
+  // GLTF Loader & Rigged Bones
+  private gltfLoader = new GLTFLoader();
+  private modeloGLTFActual: THREE.Group | null = null;
+  private bonesMap = new Map<string, THREE.Bone>();
+  private restBonesRotations = new Map<string, THREE.Euler>();
+  private restBonesPositions = new Map<string, THREE.Vector3>();
+  private skinnedMeshes: THREE.SkinnedMesh[] = [];
 
   private readonly IMAGEN_DEMO_1 = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop&q=80';
   private readonly IMAGEN_DEMO_2 = 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&auto=format&fit=crop&q=80';
@@ -920,6 +1062,7 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
       canvas: canvas,
       alpha: true, // Fondo transparente
       antialias: true,
+      preserveDrawingBuffer: true,
     });
     this.renderer.setSize(w, h);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -947,6 +1090,131 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
       const obj = this.meshPrendaGroup.children[0];
       this.meshPrendaGroup.remove(obj);
     }
+    this.bonesMap.clear();
+    this.restBonesRotations.clear();
+    this.restBonesPositions.clear();
+    this.skinnedMeshes = [];
+    this.modeloGLTFActual = null;
+
+    // 1. CARGA DE MODELO 3D REAL (GLTF / GLB)
+    if (prenda.tipoMalla === 'gltf' && prenda.glbUrl) {
+      this.cargandoPrenda.set(true);
+      this.estadoModelo3D.set('Descargando archivo GLB 3D...');
+
+      this.gltfLoader.load(
+        prenda.glbUrl,
+        (gltf) => {
+          this.cargandoPrenda.set(false);
+          const rootScene = gltf.scene;
+          this.modeloGLTFActual = rootScene;
+
+          // Recopilar huesos y optimizar materiales
+          rootScene.traverse((child) => {
+            if ((child as THREE.SkinnedMesh).isSkinnedMesh) {
+              const sm = child as THREE.SkinnedMesh;
+              this.skinnedMeshes.push(sm);
+              sm.frustumCulled = false;
+              if (sm.material) {
+                const mats = Array.isArray(sm.material) ? sm.material : [sm.material];
+                mats.forEach((m) => {
+                  m.side = THREE.DoubleSide;
+                  m.transparent = true;
+                  m.opacity = this.opacidadTela();
+                  m.needsUpdate = true;
+                });
+              }
+            }
+            if ((child as THREE.Mesh).isMesh && !(child as THREE.SkinnedMesh).isSkinnedMesh) {
+              const mesh = child as THREE.Mesh;
+              mesh.castShadow = true;
+              mesh.receiveShadow = true;
+              if (mesh.material) {
+                const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                mats.forEach((m) => {
+                  m.side = THREE.DoubleSide;
+                  m.transparent = true;
+                  m.opacity = this.opacidadTela();
+                  m.needsUpdate = true;
+                });
+              }
+            }
+            if ((child as THREE.Bone).isBone || child.type === 'Bone') {
+              const bone = child as THREE.Bone;
+              this.bonesMap.set(child.name, bone);
+              this.restBonesRotations.set(child.name, bone.rotation.clone());
+              this.restBonesPositions.set(child.name, bone.position.clone());
+            }
+          });
+
+          this.huesosDetectados.set(this.bonesMap.size);
+
+          // Normalización geométrica: aplicar rotación y posición calibradas por modelo
+          rootScene.position.set(0, 0, 0);
+          rootScene.rotation.set(0, 0, 0);
+          rootScene.scale.set(1, 1, 1);
+          rootScene.updateMatrixWorld(true);
+
+          if (prenda.rotacionFija) {
+            rootScene.rotation.set(prenda.rotacionFija[0], prenda.rotacionFija[1], prenda.rotacionFija[2]);
+          }
+
+          if (prenda.posicionFija) {
+            rootScene.position.set(prenda.posicionFija[0], prenda.posicionFija[1], prenda.posicionFija[2]);
+          } else {
+            const box = new THREE.Box3().setFromObject(rootScene);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            rootScene.position.sub(center);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            if (size.z > size.y * 1.3) {
+              rootScene.rotation.x = -Math.PI / 2;
+            }
+          }
+
+          // Auto-detección de ancho de referencia si no fue preconfigurado
+          if (!prenda.anchoReferencia) {
+            const bL = this.findArmBone(true, 'upper');
+            const bR = this.findArmBone(false, 'upper');
+            if (bL && bR) {
+              const pL = new THREE.Vector3();
+              const pR = new THREE.Vector3();
+              bL.getWorldPosition(pL);
+              bR.getWorldPosition(pR);
+              prenda.anchoReferencia = Math.max(pL.distanceTo(pR), 0.1);
+            } else {
+              const box = new THREE.Box3().setFromObject(rootScene);
+              const size = new THREE.Vector3();
+              box.getSize(size);
+              prenda.anchoReferencia = Math.max(size.x * 0.45, 0.5);
+            }
+          }
+
+          const pivot = new THREE.Group();
+          pivot.add(rootScene);
+          this.meshPrendaGroup.add(pivot);
+          this.estadoModelo3D.set(
+            prenda.esRigged
+              ? `SkinnedMesh Rigged (${this.bonesMap.size} huesos)`
+              : 'Malla 3D PBR (Real)'
+          );
+
+          this.renderer.render(this.scene, this.camera);
+          this.reprocesarActual();
+        },
+        undefined,
+        (err) => {
+          console.error('Error cargando modelo GLTF:', err);
+          this.cargandoPrenda.set(false);
+          this.estadoModelo3D.set('Error de lectura 3D');
+        }
+      );
+      return;
+    }
+
+    // 2. PROCEDURAL (FALLBACK)
+    this.estadoModelo3D.set('Malla Procedural');
+    this.huesosDetectados.set(0);
 
     // Material de tela con sombreado PBR
     this.materialPrenda = new THREE.MeshStandardMaterial({
@@ -1300,11 +1568,13 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
     this.coordThreeY = -(normY - 0.5) * planeHeight;
     this.coordThreeZ = 0;
 
-    // 1. Posición
-    this.meshPrendaGroup.position.set(this.coordThreeX, this.coordThreeY, this.coordThreeZ);
+    // 1. Posición con offset vertical específico de la prenda
+    const offsetPrenda = (this.prendaSeleccionada().offsetYNormalizado ?? 0) * planeHeight;
+    this.meshPrendaGroup.position.set(this.coordThreeX, this.coordThreeY + offsetPrenda, this.coordThreeZ);
 
-    // 2. Escala (Proporcional a la distancia de hombros)
-    const escalaBase = (anchoHombros / w) * (planeWidth / 2.2) * this.escalaManual();
+    // 2. Escala Dinámica: Proporcional a la distancia de hombros y al ancho de referencia del modelo
+    const refWidth = this.prendaSeleccionada().anchoReferencia || 2.2;
+    const escalaBase = ((anchoHombros / w) * planeWidth / refWidth) * this.escalaManual();
     this.meshPrendaGroup.scale.set(escalaBase, escalaBase, escalaBase);
 
     // 3. Rotaciones (Roll en Z, Yaw en Y, Pitch en X)
@@ -1314,6 +1584,11 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
     // Yaw: Giro de hombros hacia adelante/atrás usando la profundidad Z de MediaPipe
     const zDiff = (hombroDer.z - hombroIzq.z) * 2.5;
     this.meshPrendaGroup.rotation.y = THREE.MathUtils.clamp(zDiff, -0.6, 0.6);
+
+    // 4. Cinemática de Articulaciones / Huesos en SkinnedMesh
+    if (this.prendaSeleccionada().esRigged && this.bonesMap.size > 0) {
+      this.actualizarHuesosMediaPipe(landmarks);
+    }
 
     // Renderizar escena Three.js
     this.renderer.render(this.scene, this.camera);
@@ -1401,5 +1676,165 @@ export class ProbadorArComponent implements AfterViewInit, OnDestroy {
         this.procesarImagenEstatica(img);
       }
     }
+  }
+
+  // =========================================================================
+  // ANIMACIÓN BIOMECÁNICA DE HUESOS (SKINNED MESH) CON MEDIAPIPE
+  // =========================================================================
+  private actualizarHuesosMediaPipe(landmarks: any[]): void {
+    const hombroIzq = landmarks[11];
+    const hombroDer = landmarks[12];
+    const codoIzq = landmarks[13];
+    const codoDer = landmarks[14];
+    const munecaIzq = landmarks[15];
+    const munecaDer = landmarks[16];
+
+    // Función auxiliar para restaurar la pose de reposo si los landmarks no son fiables
+    const restoreRestPose = (bone: THREE.Bone | undefined) => {
+      if (!bone) return;
+      const rest = this.restBonesRotations.get(bone.name);
+      if (rest) bone.rotation.copy(rest);
+    };
+
+    // Brazo Izquierdo (Hombro -> Codo)
+    const lUpperArm = this.findArmBone(true, 'upper');
+    if (lUpperArm) {
+      if (hombroIzq && codoIzq && (hombroIzq.visibility ?? 1) > 0.4 && (codoIzq.visibility ?? 1) > 0.4) {
+        const dx = codoIzq.x - hombroIzq.x;
+        const dy = codoIzq.y - hombroIzq.y;
+        const angle = Math.atan2(dy, dx);
+        if (!isNaN(angle)) {
+          const isMetarig = lUpperArm.name.toLowerCase().includes('metarig');
+          if (isMetarig) {
+            lUpperArm.rotation.z = -1.62 + (Math.PI / 2 - angle);
+          } else {
+            // Metahuman / Standard rig en pose A-pose/T-pose
+            lUpperArm.rotation.z = -(Math.PI / 2 - angle);
+          }
+        }
+      } else {
+        restoreRestPose(lUpperArm);
+      }
+    }
+
+    // Antebrazo Izquierdo (Codo -> Muñeca)
+    const lForearm = this.findArmBone(true, 'forearm');
+    if (lForearm) {
+      if (codoIzq && munecaIzq && (codoIzq.visibility ?? 1) > 0.4 && (munecaIzq.visibility ?? 1) > 0.4) {
+        const dxUpper = codoIzq.x - (hombroIzq?.x ?? codoIzq.x);
+        const dyUpper = codoIzq.y - (hombroIzq?.y ?? codoIzq.y);
+        const angleUpper = Math.atan2(dyUpper, dxUpper);
+
+        const dxFore = munecaIzq.x - codoIzq.x;
+        const dyFore = munecaIzq.y - codoIzq.y;
+        const angleFore = Math.atan2(dyFore, dxFore);
+        if (!isNaN(angleUpper) && !isNaN(angleFore)) {
+          lForearm.rotation.z = (angleFore - angleUpper) * 0.8;
+        }
+      } else {
+        restoreRestPose(lForearm);
+      }
+    }
+
+    // Brazo Derecho (Hombro -> Codo)
+    const rUpperArm = this.findArmBone(false, 'upper');
+    if (rUpperArm) {
+      if (hombroDer && codoDer && (hombroDer.visibility ?? 1) > 0.4 && (codoDer.visibility ?? 1) > 0.4) {
+        const dx = codoDer.x - hombroDer.x;
+        const dy = codoDer.y - hombroDer.y;
+        const angle = Math.atan2(dy, dx);
+        if (!isNaN(angle)) {
+          const isMetarig = rUpperArm.name.toLowerCase().includes('metarig');
+          if (isMetarig) {
+            rUpperArm.rotation.z = 1.62 - (angle - Math.PI / 2);
+          } else {
+            rUpperArm.rotation.z = (angle - Math.PI / 2);
+          }
+        }
+      } else {
+        restoreRestPose(rUpperArm);
+      }
+    }
+
+    // Antebrazo Derecho (Codo -> Muñeca)
+    const rForearm = this.findArmBone(false, 'forearm');
+    if (rForearm) {
+      if (codoDer && munecaDer && (codoDer.visibility ?? 1) > 0.4 && (munecaDer.visibility ?? 1) > 0.4) {
+        const dxUpper = codoDer.x - (hombroDer?.x ?? codoDer.x);
+        const dyUpper = codoDer.y - (hombroDer?.y ?? codoDer.y);
+        const angleUpper = Math.atan2(dyUpper, dxUpper);
+
+        const dxFore = munecaDer.x - codoDer.x;
+        const dyFore = munecaDer.y - codoDer.y;
+        const angleFore = Math.atan2(dyFore, dxFore);
+        if (!isNaN(angleUpper) && !isNaN(angleFore)) {
+          rForearm.rotation.z = (angleFore - angleUpper) * 0.8;
+        }
+      } else {
+        restoreRestPose(rForearm);
+      }
+    }
+  }
+
+  private findArmBone(isLeft: boolean, type: 'upper' | 'forearm'): THREE.Bone | undefined {
+    const isExcluded = (name: string): boolean => {
+      const l = name.toLowerCase();
+      return (
+        l.includes('twist') ||
+        l.includes('corrective') ||
+        l.includes('dyn') ||
+        l.includes('bicep') ||
+        l.includes('tricep') ||
+        l.includes('scap') ||
+        l.includes('pec') ||
+        l.includes('roll') ||
+        l.includes('clavicle') ||
+        l.includes('adj') ||
+        l.includes('_end') ||
+        l.includes('face')
+      );
+    };
+
+    const candidates: { bone: THREE.Bone; priority: number }[] = [];
+
+    for (const [name, bone] of this.bonesMap.entries()) {
+      const l = name.toLowerCase();
+      if (isExcluded(l)) continue;
+
+      const hasL =
+        l.includes('_l_') ||
+        l.includes('arml') ||
+        l.includes('arm_l') ||
+        l.endsWith('_l') ||
+        l.includes('left');
+      const hasR =
+        l.includes('_r_') ||
+        l.includes('armr') ||
+        l.includes('arm_r') ||
+        l.endsWith('_r') ||
+        l.includes('right');
+
+      const sideMatch = isLeft ? hasL && !hasR : hasR && !hasL;
+      if (!sideMatch) continue;
+
+      if (type === 'upper') {
+        if (l.includes('upperarm') || l.includes('upper_arm') || l.includes('upper_ctrl')) {
+          candidates.push({ bone, priority: 1 });
+        } else if (l.includes('shoulder')) {
+          candidates.push({ bone, priority: 2 });
+        } else if (l.includes('arm') && !l.includes('lower') && !l.includes('fore') && !l.includes('elbow')) {
+          candidates.push({ bone, priority: 3 });
+        }
+      } else if (type === 'forearm') {
+        if (l.includes('lowerarm') || l.includes('lower_arm') || l.includes('forearm') || l.includes('fore_arm')) {
+          candidates.push({ bone, priority: 1 });
+        } else if (l.includes('elbow')) {
+          candidates.push({ bone, priority: 2 });
+        }
+      }
+    }
+
+    candidates.sort((a, b) => a.priority - b.priority);
+    return candidates[0]?.bone;
   }
 }
