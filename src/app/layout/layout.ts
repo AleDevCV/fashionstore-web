@@ -17,6 +17,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 
 import { AuthService } from '../core/services/auth.service';
 import { NotificacionService } from '../core/services/notificacion.service';
+import { ROLES } from '../core/models/auth.model';
 
 /** Entrada del menú lateral. */
 interface ItemMenu {
@@ -86,14 +87,30 @@ export class Layout {
       ruta: '/panel/bitacora',
       roles: ['Administrador'],
     },
-    { etiqueta: 'Clientes', caso: 'CU05', ruta: '/panel/clientes', roles: null },
+    {
+      etiqueta: 'Clientes',
+      caso: 'CU05',
+      ruta: '/panel/clientes',
+      roles: [ROLES.ADMINISTRADOR, ROLES.ENCARGADO, ROLES.CAJERO],
+    },
+    {
+      etiqueta: 'Mi ficha',
+      caso: 'CU05',
+      ruta: '/panel/clientes',
+      roles: [ROLES.CLIENTE],
+    },
     {
       etiqueta: 'Sucursales',
       caso: 'CU06',
       ruta: '/panel/sucursales',
       roles: ['Administrador'],
     },
-    { etiqueta: 'Categorías', caso: 'CU07', ruta: '/panel/categorias', roles: null },
+    {
+      etiqueta: 'Categorías',
+      caso: 'CU07',
+      ruta: '/panel/categorias',
+      roles: [ROLES.ADMINISTRADOR],
+    },
     {
       etiqueta: 'Prendas',
       caso: 'CU08',

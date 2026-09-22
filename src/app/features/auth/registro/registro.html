@@ -25,7 +25,9 @@
           de decir quién eres sin<br />
           tener que hablar.
         </p>
-        <span class="registro__caption">Experiencia de compra omnicanal y colecciones exclusivas</span>
+        <span class="registro__caption"
+          >Experiencia de compra omnicanal y colecciones exclusivas</span
+        >
       </footer>
     </div>
   </aside>
@@ -38,7 +40,8 @@
         <span class="fs-eyebrow">Experiencia FashionStore</span>
         <h1 class="registro__title">Crear cuenta</h1>
         <p class="registro__subtitle">
-          Regístrate para realizar compras, rastrear tus pedidos y acceder a recomendaciones exclusivas.
+          Regístrate para realizar compras, rastrear tus pedidos y acceder a recomendaciones
+          exclusivas.
         </p>
       </div>
 
@@ -48,13 +51,15 @@
           <div class="registro__exito-icon" aria-hidden="true">✓</div>
           <h2 class="registro__exito-title">¡Bienvenido a FashionStore!</h2>
           <p class="registro__exito-desc">
-            Estimado/a <strong>{{ clienteRegistrado() }}</strong>, su registro se ha completado exitosamente y su sesión ha sido iniciada.
+            Estimado/a <strong>{{ clienteRegistrado() }}</strong
+            >, su registro se ha completado exitosamente y su sesión ha sido iniciada.
           </p>
 
           <div class="registro__exito-aviso">
             <span class="fs-badge fs-badge--activo">Cuenta Activa</span>
             <p>
-              Ahora puede explorar nuestro catálogo exclusivo, armar su carrito de compras y recibir asesoría de moda asistida por Inteligencia Artificial.
+              Ahora puede explorar nuestro catálogo exclusivo, armar su carrito de compras y recibir
+              asesoría de moda asistida por Inteligencia Artificial.
             </p>
           </div>
 
@@ -62,19 +67,12 @@
             <button type="button" class="fs-btn fs-btn--primary" (click)="irAlCatalogo()">
               Explorar el catálogo
             </button>
-            <a routerLink="/login-cliente" class="fs-btn fs-btn--ghost">
-              Ir al inicio de sesión
-            </a>
+            <a routerLink="/login-cliente" class="fs-btn fs-btn--ghost"> Ir al inicio de sesión </a>
           </div>
         </div>
       } @else {
         <!-- ================== FORMULARIO REACTIVO ================== -->
-        <form
-          class="registro__form"
-          [formGroup]="formulario"
-          (ngSubmit)="registrar()"
-          novalidate
-        >
+        <form class="registro__form" [formGroup]="formulario" (ngSubmit)="registrar()" novalidate>
           <!-- Fila: Nombre y Apellido -->
           <div class="registro__grid-2">
             <div class="fs-field">
@@ -124,9 +122,13 @@
               />
               @if (campoInvalido('ci')) {
                 <span class="fs-field-error">
-                  @if (ci.errors?.['required']) { CI requerida. }
-                  @else if (ci.errors?.['minlength']) { Mínimo 4 caracteres. }
-                  @else { Formato de CI no válido. }
+                  @if (ci.errors?.['required']) {
+                    CI requerida.
+                  } @else if (ci.errors?.['minlength']) {
+                    Mínimo 4 caracteres.
+                  } @else {
+                    Formato de CI no válido.
+                  }
                 </span>
               }
             </div>
@@ -142,6 +144,11 @@
                 autocomplete="tel"
                 [class.is-invalid]="campoInvalido('telefono')"
               />
+              @if (campoInvalido('telefono')) {
+                <span class="fs-field-error">
+                  Use hasta 20 caracteres: números, espacios y los signos +, -, ( ).
+                </span>
+              }
             </div>
           </div>
 
@@ -159,8 +166,11 @@
             />
             @if (campoInvalido('correo')) {
               <span class="fs-field-error">
-                @if (correo.errors?.['required']) { Correo obligatorio. }
-                @else { Ingrese un correo electrónico válido. }
+                @if (correo.errors?.['required']) {
+                  Correo obligatorio.
+                } @else {
+                  Ingrese un correo electrónico válido.
+                }
               </span>
             }
           </div>
@@ -183,11 +193,7 @@
             <div class="fs-field">
               <div class="registro__label-row">
                 <label class="fs-eyebrow" for="password">Contraseña *</label>
-                <button
-                  type="button"
-                  class="registro__toggle"
-                  (click)="alternarPassword()"
-                >
+                <button type="button" class="registro__toggle" (click)="alternarPassword()">
                   {{ mostrarPassword() ? 'Ocultar' : 'Ver' }}
                 </button>
               </div>
@@ -262,9 +268,7 @@
           </div>
 
           <div class="registro__links registro__links--sub">
-            <a routerLink="/catalogo" class="registro__link-back">
-              ← Volver al catálogo público
-            </a>
+            <a routerLink="/catalogo" class="registro__link-back"> ← Volver al catálogo público </a>
           </div>
         </form>
       }
@@ -273,8 +277,9 @@
       <footer class="registro__foot">
         <span class="registro__foot-rule"></span>
         <p class="registro__foot-text">
-          Al registrarse, usted acepta las políticas de privacidad y condiciones de servicio de FashionStore.
-          Sus datos quedan resguardados con cifrado estándar y auditados bajo el módulo de seguridad del sistema.
+          Al registrarse, usted acepta las políticas de privacidad y condiciones de servicio de
+          FashionStore. Sus datos quedan resguardados con cifrado estándar y auditados bajo el
+          módulo de seguridad del sistema.
         </p>
       </footer>
     </div>

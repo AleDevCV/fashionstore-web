@@ -9,35 +9,111 @@
 }
 
 <div class="catalogo">
+
   <!-- ========================= BARRA SUPERIOR ========================= -->
   <header class="catalogo__topbar">
-    <span class="fs-wordmark catalogo__brand">Fashion<em>Store</em></span>
+
+    <span class="fs-wordmark catalogo__brand">
+      Fashion<em>Store</em>
+    </span>
 
     <nav class="catalogo__nav">
+
       <span class="catalogo__tag">Catálogo público</span>
-      <button class="catalogo__carrito-btn" (click)="abrirCarrito()" aria-label="Ver carrito">
+
+      <button
+        class="catalogo__carrito-btn"
+        (click)="abrirCarrito()"
+        aria-label="Ver carrito"
+      >
         🛍️
+
         @if (carritoSvc.totalUnidades > 0) {
-          <span class="carrito-badge">{{ carritoSvc.totalUnidades }}</span>
+          <span class="carrito-badge">
+            {{ carritoSvc.totalUnidades }}
+          </span>
         }
+
       </button>
-      <a class="fs-btn fs-btn--sm" routerLink="/probador-ar" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); color: white; border: none; font-weight: 600; display: inline-flex; items-center; gap: 0.35rem;">
+
+      <!-- Probador AR: funcionalidad conservada de main -->
+      <a
+        class="fs-btn fs-btn--sm"
+        routerLink="/probador-ar"
+        style="background: linear-gradient(135deg, #4f46e5, #06b6d4); color: white; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;"
+      >
         <span>✨</span> Probador AR
       </a>
-      <a class="fs-btn fs-btn--primary fs-btn--sm" routerLink="/registro">Registrarse</a>
-      <a class="fs-btn fs-btn--ghost fs-btn--sm" routerLink="/login-cliente">Iniciar sesión</a>
-      <a class="catalogo__staff-link" routerLink="/login" title="Acceso al panel administrativo para colaboradores">Personal</a>
+
+      <!-- Opciones según el estado de autenticación -->
+      @if (usuario(); as usuarioActual) {
+
+        <span class="catalogo__usuario-nombre">
+          {{ usuarioActual.nombre }}
+        </span>
+
+        <a
+          class="fs-btn fs-btn--ghost fs-btn--sm"
+          [routerLink]="rutaCuenta()"
+        >
+          {{ esCliente() ? 'Mi ficha' : 'Mi cuenta' }}
+        </a>
+
+        <button
+          type="button"
+          class="catalogo__cerrar-sesion"
+          (click)="cerrarSesion()"
+        >
+          Cerrar sesión
+        </button>
+
+      } @else {
+
+        <a
+          class="fs-btn fs-btn--primary fs-btn--sm"
+          routerLink="/registro"
+        >
+          Registrarse
+        </a>
+
+        <a
+          class="fs-btn fs-btn--ghost fs-btn--sm"
+          routerLink="/login-cliente"
+        >
+          Iniciar sesión
+        </a>
+
+        <a
+          class="catalogo__staff-link"
+          routerLink="/login"
+          title="Acceso al panel administrativo para colaboradores"
+        >
+          Personal
+        </a>
+
+      }
+
     </nav>
+
   </header>
 
   <div class="catalogo__layout">
+
     <!-- ==================== PANEL LATERAL DE FILTROS ==================== -->
     <aside class="catalogo__filtros">
+
       <div class="catalogo__filtros-head">
+
         <h1 class="catalogo__titulo">Catálogo</h1>
-        <button type="button" class="fs-accion" (click)="limpiarFiltros()">
+
+        <button
+          type="button"
+          class="fs-accion"
+          (click)="limpiarFiltros()"
+        >
           Limpiar filtros
         </button>
+
       </div>
 
       <input
@@ -50,65 +126,108 @@
       />
 
       @if (filtros(); as f) {
+
+        <!-- Categoría -->
         <div class="catalogo__grupo">
+
           <span class="fs-eyebrow">Categoría</span>
+
           <select
             class="fs-input fs-select"
             [value]="idCategoria() ?? ''"
             (change)="cambiarCategoria($event)"
           >
+
             <option value="">Todas</option>
+
             @for (categoria of f.categorias; track categoria.id_categoria) {
-              <option [value]="categoria.id_categoria">{{ categoria.nombre }}</option>
+              <option [value]="categoria.id_categoria">
+                {{ categoria.nombre }}
+              </option>
             }
+
           </select>
+
         </div>
 
+        <!-- Género -->
         <div class="catalogo__grupo">
+
           <span class="fs-eyebrow">Género</span>
+
           <select
             class="fs-input fs-select"
             [value]="genero() ?? ''"
             (change)="cambiarGenero($event)"
           >
+
             <option value="">Todos</option>
+
             @for (g of f.generos; track g) {
-              <option [value]="g">{{ g }}</option>
+              <option [value]="g">
+                {{ g }}
+              </option>
             }
+
           </select>
+
         </div>
 
+        <!-- Talla -->
         <div class="catalogo__grupo">
+
           <span class="fs-eyebrow">Talla</span>
+
           <select
             class="fs-input fs-select"
             [value]="idTalla() ?? ''"
             (change)="cambiarTalla($event)"
           >
+
             <option value="">Todas</option>
+
             @for (talla of f.tallas; track talla.id_talla) {
-              <option [value]="talla.id_talla">{{ talla.nombre }}</option>
+              <option [value]="talla.id_talla">
+                {{ talla.nombre }}
+              </option>
             }
+
           </select>
+
         </div>
 
+        <!-- Color -->
         <div class="catalogo__grupo">
+
           <span class="fs-eyebrow">Color</span>
+
           <select
             class="fs-input fs-select"
             [value]="idColor() ?? ''"
             (change)="cambiarColor($event)"
           >
+
             <option value="">Todos</option>
+
             @for (color of f.colores; track color.id_color) {
-              <option [value]="color.id_color">{{ color.nombre }}</option>
+              <option [value]="color.id_color">
+                {{ color.nombre }}
+              </option>
             }
+
           </select>
+
         </div>
 
+        <!-- Rango de precio -->
         <div class="catalogo__grupo">
-          <span class="fs-eyebrow">Rango de precio (Bs)</span>
+
+          <span class="fs-eyebrow">
+            Rango de precio (Bs)
+          </span>
+
           <div class="catalogo__rango">
+
             <input
               type="number"
               min="0"
@@ -117,7 +236,9 @@
               [value]="precioMin() ?? ''"
               (change)="cambiarPrecioMin($event)"
             />
+
             <span class="catalogo__rango-sep">—</span>
+
             <input
               type="number"
               min="0"
@@ -126,52 +247,105 @@
               [value]="precioMax() ?? ''"
               (change)="cambiarPrecioMax($event)"
             />
+
           </div>
+
         </div>
+
       }
+
     </aside>
 
     <!-- ==================== CUADRÍCULA DE RESULTADOS ==================== -->
     <main class="catalogo__resultados">
+
       @if (cargando()) {
+
         <div class="catalogo__estado">
-          <span class="fs-spinner" aria-hidden="true"></span>
+
+          <span
+            class="fs-spinner"
+            aria-hidden="true"
+          ></span>
+
           <span>Cargando catálogo…</span>
+
         </div>
+
       } @else if (errorCarga()) {
-        <div class="fs-alert fs-alert--error" role="alert">
-          <span>{{ errorCarga() }}</span>
-          <button type="button" class="fs-accion" (click)="consultar()">
+
+        <div
+          class="fs-alert fs-alert--error"
+          role="alert"
+        >
+
+          <span>
+            {{ errorCarga() }}
+          </span>
+
+          <button
+            type="button"
+            class="fs-accion"
+            (click)="consultar()"
+          >
             Reintentar
           </button>
+
         </div>
+
       } @else {
-        <p class="catalogo__contador">{{ total() }} prenda(s) disponibles</p>
+
+        <p class="catalogo__contador">
+          {{ total() }} prenda(s) disponibles
+        </p>
 
         <div class="catalogo__grid">
+
           @for (prenda of prendas(); track prenda.id_prenda) {
+
             <article
               class="catalogo__card"
               (click)="abrirDetalle(prenda.id_prenda)"
               tabindex="0"
               (keyup.enter)="abrirDetalle(prenda.id_prenda)"
             >
+
               <div class="catalogo__card-img">
+
                 @if (prenda.url_imagen) {
-                  <img [src]="prenda.url_imagen" [alt]="prenda.nombre" loading="lazy" />
+
+                  <img
+                    [src]="prenda.url_imagen"
+                    [alt]="prenda.nombre"
+                    loading="lazy"
+                  />
+
                 } @else {
-                  <span class="catalogo__sin-img">Sin imagen</span>
+
+                  <span class="catalogo__sin-img">
+                    Sin imagen
+                  </span>
+
                 }
+
               </div>
 
               <div class="catalogo__card-cuerpo">
-                <span class="fs-eyebrow">{{ prenda.categoria || 'Sin categoría' }}</span>
-                <h2 class="catalogo__card-nombre">{{ prenda.nombre }}</h2>
+
+                <span class="fs-eyebrow">
+                  {{ prenda.categoria || 'Sin categoría' }}
+                </span>
+
+                <h2 class="catalogo__card-nombre">
+                  {{ prenda.nombre }}
+                </h2>
 
                 <div class="catalogo__card-pie">
+
                   <span class="catalogo__precio">
                     Bs {{ formatearPrecio(prenda.precio_base) }}
                   </span>
+
                   <span
                     class="fs-badge"
                     [class.fs-badge--activo]="prenda.stock_total > 0"
@@ -179,9 +353,11 @@
                   >
                     {{ prenda.stock_total > 0 ? 'Disponible' : 'Agotado' }}
                   </span>
+
                 </div>
 
                 @if (prenda.stock_total > 0) {
+
                   <button
                     class="catalogo__btn-carrito"
                     (click)="agregarAlCarrito(prenda, $event)"
@@ -189,18 +365,27 @@
                   >
                     🛒 Agregar al carrito
                   </button>
+
                 }
+
               </div>
+
             </article>
+
           } @empty {
+
             <div class="catalogo__vacio">
               No hay prendas que coincidan con los filtros elegidos.
             </div>
+
           }
+
         </div>
 
         @if (total() > 0) {
+
           <div class="catalogo__paginador">
+
             <button
               type="button"
               class="fs-btn fs-btn--ghost"
@@ -209,7 +394,11 @@
             >
               Anterior
             </button>
-            <span class="catalogo__rango">{{ rangoActual() }}</span>
+
+            <span class="catalogo__rango">
+              {{ rangoActual() }}
+            </span>
+
             <button
               type="button"
               class="fs-btn fs-btn--ghost"
@@ -218,14 +407,23 @@
             >
               Siguiente
             </button>
+
           </div>
+
         }
+
       }
+
     </main>
+
   </div>
+
 </div>
 
 <!-- ==================== MODAL DE DETALLE ==================== -->
 @if (prendaSeleccionada(); as id) {
-  <app-prenda-detalle [prendaId]="id" (cerrado)="cerrarDetalle()" />
+  <app-prenda-detalle
+    [prendaId]="id"
+    (cerrado)="cerrarDetalle()"
+  />
 }

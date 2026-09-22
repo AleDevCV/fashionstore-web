@@ -47,6 +47,11 @@ export class ClienteService {
       .pipe(catchError(traducirErrorApi));
   }
 
+  /** Recupera la ficha resuelta por el backend desde la sesión autenticada. */
+  obtenerPropio(): Observable<Cliente> {
+    return this.http.get<Cliente>(`${this.baseUrl}/me`).pipe(catchError(traducirErrorApi));
+  }
+
   /**
    * Registra la ficha maestra de un comprador.
    *
@@ -55,9 +60,7 @@ export class ClienteService {
    *          duplicada el backend responde 400 con el texto de la excepción A.
    */
   crear(datos: ClienteCrear): Observable<Cliente> {
-    return this.http
-      .post<Cliente>(`${this.baseUrl}/`, datos)
-      .pipe(catchError(traducirErrorApi));
+    return this.http.post<Cliente>(`${this.baseUrl}/`, datos).pipe(catchError(traducirErrorApi));
   }
 
   /**
@@ -71,6 +74,11 @@ export class ClienteService {
     return this.http
       .put<Cliente>(`${this.baseUrl}/${idCliente}`, datos)
       .pipe(catchError(traducirErrorApi));
+  }
+
+  /** Actualiza la ficha propia sin enviar un id de cliente como prueba de propiedad. */
+  actualizarPropio(datos: Partial<ClienteCrear>): Observable<Cliente> {
+    return this.http.put<Cliente>(`${this.baseUrl}/me`, datos).pipe(catchError(traducirErrorApi));
   }
 
   /**

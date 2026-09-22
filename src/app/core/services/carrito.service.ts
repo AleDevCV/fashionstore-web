@@ -84,9 +84,35 @@ export class CarritoService {
     this._actualizar(actuales);
   }
 
-  /** Vacía por completo el carrito (ej: después de una compra exitosa). */
+  /** Vacía por completo el carrito (ej: cancelación general, logout). */
   vaciarCarrito(): void {
     this._actualizar([]);
+  }
+
+  /**
+   * Elimina del carrito únicamente las cantidades especificadas de cada variante.
+   * Útil para compras parciales o cuando solo se procesaron algunos ítems.
+   */
+  limpiarComprados(comprados: { id_variante_prenda: number; cantidad: number }[]): void {
+    const actuales = [...this._items$.value];
+
+    for (const comprado of comprados) {
+      const idx = actuales.findIndex(
+        (it) => it.id_variante_prenda === comprado.id_variante_prenda,
+      );
+      if (idx >= 0) {
+        actuales[idx] = {
+          ...actuales[idx],
+          cantidad: actuales[idx].cantidad - comprado.cantidad,
+        };
+        // Si la cantidad llega a 0 o menos, quitamos el ítem
+        if (actuales[idx].cantidad <= 0) {
+          actuales.splice(idx, 1);
+        }
+      }
+    }
+
+    this._actualizar(actuales);
   }
 
   // ─────────────────────────────────────────────────────────────────────────

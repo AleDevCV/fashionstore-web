@@ -39,6 +39,9 @@ export class AuthService {
   /** Clave bajo la cual se almacena el JWT en el localStorage. */
   private readonly claveToken = environment.claveTokenJwt;
 
+  /** Temporizador que limpia la sesión exactamente al vencer el JWT. */
+  private temporizadorExpiracion: ReturnType<typeof setTimeout> | null = null;
+
   /**
    * Estado reactivo con el usuario de la sesión actual.
    * Se inicializa leyendo el token que pudiera haber quedado guardado de una
@@ -54,6 +57,12 @@ export class AuthService {
 
   /** Señal derivada: rol jerárquico del usuario activo, o null si no hay sesión. */
   readonly rolActual = computed(() => this._usuarioActual()?.rol ?? null);
+
+  constructor() {
+    if (this._usuarioActual() !== null) {
+      this.programarExpiracion(this.obtenerToken());
+    }
+  }
 
   // ---------------------------------------------------------------------------
   // OPERACIONES PÚBLICAS DE SESIÓN
@@ -92,6 +101,10 @@ export class AuthService {
    * @returns void
    */
   logout(): void {
+    if (this.temporizadorExpiracion !== null) {
+      clearTimeout(this.temporizadorExpiracion);
+      this.temporizadorExpiracion = null;
+    }
     try {
       localStorage.removeItem(this.claveToken);
     } catch {
@@ -192,13 +205,20 @@ export class AuthService {
    * @returns void
    */
   guardarToken(token: string): void {
+    const usuario = this.decodificarToken(token);
+    if (usuario === null || this.tokenExpirado(token)) {
+      this.logout();
+      return;
+    }
+
     try {
       localStorage.setItem(this.claveToken, token);
     } catch {
       // Si el almacenamiento no está disponible, la sesión vivirá solo en
       // memoria hasta que se recargue la página.
     }
-    this._usuarioActual.set(this.decodificarToken(token));
+    this._usuarioActual.set(usuario);
+    this.programarExpiracion(token);
   }
 
   /**
@@ -310,6 +330,38 @@ export class AuthService {
     }
 
     return this.decodificarToken(token);
+  }
+
+  /**
+   * Programa la limpieza reactiva de la sesión al alcanzar el claim `exp`.
+   * Para demoras superiores al máximo de setTimeout, vuelve a comprobar por
+   * tramos sin considerar vigente un token malformado.
+   */
+  private programarExpiracion(token: string | null): void {
+    if (this.temporizadorExpiracion !== null) {
+      clearTimeout(this.temporizadorExpiracion);
+      this.temporizadorExpiracion = null;
+    }
+
+    const payload = token ? this.decodificarToken(token) : null;
+    if (!payload?.exp) {
+      return;
+    }
+
+    const demora = payload.exp * 1000 - Date.now();
+    if (demora <= 0) {
+      this.logout();
+      return;
+    }
+
+    const demoraMaxima = 2_147_483_647;
+    this.temporizadorExpiracion = setTimeout(() => {
+      if (this.tokenExpirado(token ?? undefined)) {
+        this.logout();
+      } else {
+        this.programarExpiracion(token);
+      }
+    }, Math.min(demora, demoraMaxima));
   }
 
   /**

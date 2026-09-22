@@ -17,6 +17,7 @@ import { Routes } from '@angular/router';
 
 import { authGuard, invitadoGuard } from './core/guards/auth.guard';
 import { rolGuard } from './core/guards/rol.guard';
+import { ROLES } from './core/models/auth.model';
 
 export const routes: Routes = [
   {
@@ -31,8 +32,7 @@ export const routes: Routes = [
     path: 'login',
     canActivate: [invitadoGuard],
     title: 'Iniciar sesión · FashionStore',
-    loadComponent: () =>
-      import('./features/auth/login/login').then((m) => m.Login),
+    loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
   },
   {
     // CU04 - Solicitud de recuperación de contraseña ("Olvidé mi contraseña")
@@ -59,8 +59,7 @@ export const routes: Routes = [
     path: 'registro',
     canActivate: [invitadoGuard],
     title: 'Crear cuenta · FashionStore',
-    loadComponent: () =>
-      import('./features/auth/registro/registro').then((m) => m.Registro),
+    loadComponent: () => import('./features/auth/registro/registro').then((m) => m.Registro),
   },
   {
     // Alias de conveniencia para la ruta de registro
@@ -95,16 +94,14 @@ export const routes: Routes = [
       {
         path: 'inicio',
         title: 'Panel · FashionStore',
-        loadComponent: () =>
-          import('./features/panel/panel').then((m) => m.Panel),
+        loadComponent: () => import('./features/panel/panel').then((m) => m.Panel),
       },
       {
         // CU24 - Dashboard de Indicadores y KPIs Gerenciales
         path: 'dashboard',
         canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Dashboard Gerencial')],
         title: 'Dashboard de Indicadores y KPIs · FashionStore',
-        loadComponent: () =>
-          import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+        loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
       },
       {
         path: 'kpis',
@@ -115,8 +112,7 @@ export const routes: Routes = [
         path: 'bitacora',
         canActivate: [rolGuard(['Administrador'], 'Bitácora de Auditoría')],
         title: 'Bitácora de Auditoría · FashionStore',
-        loadComponent: () =>
-          import('./features/bitacora/bitacora').then((m) => m.Bitacora),
+        loadComponent: () => import('./features/bitacora/bitacora').then((m) => m.Bitacora),
       },
       {
         // CU02 - Administrar usuarios y asignar roles.
@@ -127,8 +123,7 @@ export const routes: Routes = [
         path: 'usuarios',
         canActivate: [rolGuard(['Administrador'], 'Usuarios y Roles')],
         title: 'Usuarios y Roles · FashionStore',
-        loadComponent: () =>
-          import('./features/usuarios/usuarios').then((m) => m.Usuarios),
+        loadComponent: () => import('./features/usuarios/usuarios').then((m) => m.Usuarios),
       },
       {
         // CU03 - Matriz de Roles y Permisos (RBAC granular).
@@ -137,18 +132,20 @@ export const routes: Routes = [
         canActivate: [rolGuard(['Administrador'], 'Roles y Permisos')],
         title: 'Roles y Permisos · FashionStore',
         loadComponent: () =>
-          import('./features/admin/roles-permisos/roles-permisos').then(
-            (m) => m.RolesPermisos,
-          ),
+          import('./features/admin/roles-permisos/roles-permisos').then((m) => m.RolesPermisos),
       },
       {
-        // CU05 - Fichas de clientes. Accesible para cualquier sesión activa:
-        // el Cajero registra y consulta fichas en el mostrador, por lo que
-        // esta sección no restringe el rol en el frontend.
+        // CU05 - El personal autorizado usa la gestión administrativa y el
+        // Cliente accede a la misma ruta en modo de autogestión de su ficha.
         path: 'clientes',
+        canActivate: [
+          rolGuard(
+            [ROLES.ADMINISTRADOR, ROLES.ENCARGADO, ROLES.CAJERO, ROLES.CLIENTE],
+            'Fichas de Clientes',
+          ),
+        ],
         title: 'Clientes · FashionStore',
-        loadComponent: () =>
-          import('./features/clientes/clientes').then((m) => m.Clientes),
+        loadComponent: () => import('./features/clientes/clientes').then((m) => m.Clientes),
       },
       {
         // CU06 - Ciudades y sucursales. Solo el Administrador ve la sección:
@@ -156,17 +153,15 @@ export const routes: Routes = [
         path: 'sucursales',
         canActivate: [rolGuard(['Administrador'], 'Sucursales')],
         title: 'Sucursales · FashionStore',
-        loadComponent: () =>
-          import('./features/sucursales/sucursales').then((m) => m.Sucursales),
+        loadComponent: () => import('./features/sucursales/sucursales').then((m) => m.Sucursales),
       },
       {
-        // CU07 - Categorías de prendas. Accesible para cualquier sesión activa:
-        // el Encargado de Sucursal también organiza la clasificación del
-        // inventario que gestiona, por lo que no se restringe el rol.
+        // CU07 - Gestión administrativa de categorías, exclusiva del Administrador.
+        // El catálogo público obtiene sus filtros desde /api/catalogo/filtros.
         path: 'categorias',
+        canActivate: [rolGuard([ROLES.ADMINISTRADOR], 'Categorías de Prendas')],
         title: 'Categorías · FashionStore',
-        loadComponent: () =>
-          import('./features/categorias/categorias').then((m) => m.Categorias),
+        loadComponent: () => import('./features/categorias/categorias').then((m) => m.Categorias),
       },
       {
         // CU08 - Prendas del catálogo. Solo el Administrador edita el catálogo
@@ -174,21 +169,21 @@ export const routes: Routes = [
         path: 'prendas',
         canActivate: [rolGuard(['Administrador'], 'Prendas')],
         title: 'Prendas · FashionStore',
-        loadComponent: () =>
-          import('./features/prendas/prendas').then((m) => m.Prendas),
+        loadComponent: () => import('./features/prendas/prendas').then((m) => m.Prendas),
       },
       {
         // CU09 - Gestión de Temporadas y Colecciones
         path: 'temporadas',
         canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Temporadas')],
         title: 'Temporadas y Colecciones · FashionStore',
-        loadComponent: () =>
-          import('./features/temporadas/temporadas').then((m) => m.Temporadas),
+        loadComponent: () => import('./features/temporadas/temporadas').then((m) => m.Temporadas),
       },
       {
         // CU10 - Monitoreo de Inventario Multisucursal
         path: 'inventario/monitoreo',
-        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Monitoreo de Inventario')],
+        canActivate: [
+          rolGuard(['Administrador', 'Encargado de Sucursal'], 'Monitoreo de Inventario'),
+        ],
         title: 'Monitoreo de Inventario · FashionStore',
         loadComponent: () =>
           import('./features/inventario-monitoreo/inventario-monitoreo').then(
@@ -211,7 +206,9 @@ export const routes: Routes = [
       {
         // CU11 - Movimientos de Inventario
         path: 'movimientos-inventario',
-        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Movimientos de Inventario')],
+        canActivate: [
+          rolGuard(['Administrador', 'Encargado de Sucursal'], 'Movimientos de Inventario'),
+        ],
         title: 'Movimientos de Inventario · FashionStore',
         loadComponent: () =>
           import('./features/inventario-movimientos/movimientos').then((m) => m.Movimientos),
@@ -226,8 +223,7 @@ export const routes: Routes = [
         path: 'compras',
         canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Compras')],
         title: 'Compras · FashionStore',
-        loadComponent: () =>
-          import('./features/compras/compras').then((m) => m.Compras),
+        loadComponent: () => import('./features/compras/compras').then((m) => m.Compras),
       },
       {
         // CU13 - Formulario de Adquisición Transaccional
@@ -260,7 +256,9 @@ export const routes: Routes = [
       {
         // CU17 - Atención de Reservas en Sucursal y Probadores Físicos
         path: 'reservas-atencion',
-        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal', 'Cajero'], 'Atención de Reservas')],
+        canActivate: [
+          rolGuard(['Administrador', 'Encargado de Sucursal', 'Cajero'], 'Atención de Reservas'),
+        ],
         title: 'Atención de Reservas · FashionStore',
         loadComponent: () =>
           import('./features/reservas-atencion/reservas-atencion').then((m) => m.ReservasAtencion),
@@ -272,10 +270,11 @@ export const routes: Routes = [
       {
         // CU19 - Terminal POS de Ventas Presenciales y Caja
         path: 'pos',
-        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal', 'Cajero'], 'Terminal POS')],
+        canActivate: [
+          rolGuard(['Administrador', 'Encargado de Sucursal', 'Cajero'], 'Terminal POS'),
+        ],
         title: 'Terminal POS · FashionStore',
-        loadComponent: () =>
-          import('./features/pos/pos').then((m) => m.Pos),
+        loadComponent: () => import('./features/pos/pos').then((m) => m.Pos),
       },
       {
         path: 'caja',
@@ -296,15 +295,13 @@ export const routes: Routes = [
     // autenticarse. El endpoint /api/catalogo no exige token.
     path: 'catalogo',
     title: 'Catálogo · FashionStore',
-    loadComponent: () =>
-      import('./features/catalogo/catalogo').then((m) => m.Catalogo),
+    loadComponent: () => import('./features/catalogo/catalogo').then((m) => m.Catalogo),
   },
   {
     // CU15 - Checkout Digital (carrito → reserva → pago → comprobante)
     path: 'checkout',
     title: 'Checkout · FashionStore',
-    loadComponent: () =>
-      import('./features/checkout/checkout').then((m) => m.Checkout),
+    loadComponent: () => import('./features/checkout/checkout').then((m) => m.Checkout),
   },
   {
     // CU20 - Retorno exitoso de Stripe

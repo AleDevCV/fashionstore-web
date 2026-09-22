@@ -25,7 +25,7 @@ export interface QRConfirmarPeticion {
 @Injectable({ providedIn: 'root' })
 export class PagoService {
   private readonly http = inject(HttpClient);
-  private readonly base = `${environment.apiUrl}/pagos`;
+  private readonly base = `${environment.apiUrl}/api/pagos`;
 
   crearSesionStripe(datos: StripeCheckoutPeticion): Observable<StripeCheckoutRespuesta> {
     return this.http.post<StripeCheckoutRespuesta>(`${this.base}/stripe/crear-sesion`, datos);

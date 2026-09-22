@@ -65,6 +65,7 @@ export interface ReservaRespuesta {
   estado: string;
   total: number;
   items: DetalleReservaRespuesta[];
+  id_venta?: number;
 }
 
 export type EstadoReservaProbador = 'Pendiente' | 'Preparado' | 'Atendido' | 'Cancelado';
@@ -153,6 +154,9 @@ export interface StripeCheckoutPeticion {
   id_cliente: number;
   url_exito?: string;
   url_cancelacion?: string;
+  nit_ci?: string;
+  razon_social?: string;
+  enviar_email?: boolean;
 }
 
 export interface StripeCheckoutRespuesta {
