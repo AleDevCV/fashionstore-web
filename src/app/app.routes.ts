@@ -284,6 +284,13 @@ export const routes: Routes = [
     ],
   },
   {
+    // CU26 / Innovación AR - Probador Virtual en Vivo con Google MediaPipe
+    path: 'probador-ar',
+    title: 'Probador Virtual AR · FashionStore',
+    loadComponent: () =>
+      import('./features/probador-ar/probador-ar').then((m) => m.ProbadorArComponent),
+  },
+  {
     // CU14 - Catálogo público. Vive FUERA del layout administrativo y sin
     // guardián de sesión: un visitante puede explorar la vitrina antes de
     // autenticarse. El endpoint /api/catalogo no exige token.
