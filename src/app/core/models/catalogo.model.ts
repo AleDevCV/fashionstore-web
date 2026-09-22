@@ -191,6 +191,11 @@ export type PrendaActualizar = Partial<Omit<PrendaCrear, 'variantes'>> & {
   estado?: EstadoPrenda;
 };
 
+/** Respuesta de POST /api/prendas/imagenes. */
+export interface ImagenPrendaSubida {
+  url_imagen: string;
+}
+
 // =============================================================================
 // CU14 - CATÁLOGO PÚBLICO
 // =============================================================================
