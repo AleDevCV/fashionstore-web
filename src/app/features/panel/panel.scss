@@ -1,0 +1,93 @@
+/* =============================================================================
+   FASHIONSTORE - ESTILOS DE LA PANTALLA DE INICIO DEL PANEL
+   ========================================================================== */
+
+.panel {
+  max-width: 780px;
+}
+
+.panel__title {
+  margin-top: var(--fs-space-2);
+  font-size: 32px;
+}
+
+.panel__lead {
+  margin-top: var(--fs-space-3);
+  max-width: 60ch;
+  font-size: 13.5px;
+  color: var(--fs-ink-soft);
+}
+
+/* --- Ficha de datos --- */
+.panel__card {
+  margin-top: var(--fs-space-6);
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+}
+
+.panel__card-title {
+  padding: var(--fs-space-4) var(--fs-space-5);
+  font-size: 16px;
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.panel__data {
+  margin: 0;
+}
+
+/* Filas compactas separadas por filetes de 1px */
+.panel__row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: var(--fs-space-4);
+  align-items: center;
+  padding: 11px var(--fs-space-5);
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.panel__row:last-child {
+  border-bottom: none;
+}
+
+.panel__row dt {
+  margin: 0;
+}
+
+.panel__row dd {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--fs-ink);
+}
+
+@media (max-width: 720px) {
+  .panel__row {
+    grid-template-columns: 1fr;
+    gap: var(--fs-space-1);
+    align-items: start;
+  }
+}
+
+.panel__quick-actions {
+  margin-top: var(--fs-space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-3);
+}
+
+.panel__buttons-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fs-space-3);
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+}
+

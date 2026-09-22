@@ -1,0 +1,170 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - ADMINISTRACIÓN DE PRENDAS (CU08)
+  -----------------------------------------------------------------------------
+  Cabecera, buscador y tabla compacta con foto, código, precio, categoría,
+  stock y acciones de alta/edición/baja lógica.
+  =============================================================================
+-->
+<section class="prendas">
+  <!-- ========================= CABECERA ========================= -->
+  <header class="prendas__head">
+    <div>
+      <span class="fs-eyebrow">Módulo de inventarios · CU08</span>
+      <h1 class="prendas__titulo">Prendas del Catálogo</h1>
+      <p class="prendas__lead">
+        Administre el catálogo maestro: diseños, precios, categorías y la matriz
+        de variantes de talla y color que se reparte por sucursal.
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--primary" (click)="abrirAlta()">
+      + Nueva prenda
+    </button>
+  </header>
+
+  <!-- ================= BUSCADOR ================= -->
+  <div class="prendas__barra">
+    <div class="prendas__buscador">
+      <input
+        type="search"
+        class="fs-input"
+        placeholder="Buscar por SKU o nombre…"
+        [value]="busqueda()"
+        (input)="alBuscar($event)"
+        aria-label="Buscar prendas"
+      />
+    </div>
+  </div>
+
+  <!-- ========================= CONTENIDO ========================= -->
+
+  @if (cargando()) {
+    <div class="prendas__estado-carga">
+      <span class="fs-spinner" aria-hidden="true"></span>
+      <span>Cargando prendas…</span>
+    </div>
+  } @else if (errorCarga()) {
+    <div class="fs-alert fs-alert--error" role="alert">
+      <span class="prendas__alert-mark" aria-hidden="true"></span>
+      <span>{{ errorCarga() }}</span>
+      <button type="button" class="fs-accion" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th class="prendas__col-foto">Foto</th>
+            <th>SKU</th>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Género</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Estado</th>
+            <th class="prendas__col-acciones">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (prenda of prendas(); track prenda.id_prenda) {
+            <tr [class.fs-fila--inactiva]="prenda.estado === 'Inactivo'">
+              <td class="prendas__celda-foto">
+                @if (prenda.url_imagen) {
+                  <img
+                    class="prendas__foto"
+                    [src]="prenda.url_imagen"
+                    [alt]="prenda.nombre"
+                    loading="lazy"
+                  />
+                } @else {
+                  <span class="prendas__sin-foto">—</span>
+                }
+              </td>
+              <td class="prendas__sku">{{ prenda.sku }}</td>
+              <td class="prendas__nombre">{{ prenda.nombre }}</td>
+              <td>{{ prenda.categoria || '—' }}</td>
+              <td>{{ prenda.genero || '—' }}</td>
+              <td class="prendas__precio">Bs {{ formatearPrecio(prenda.precio_base) }}</td>
+              <td class="fs-col-num">{{ prenda.stock_total }}</td>
+              <td>
+                <span
+                  class="fs-badge"
+                  [class.fs-badge--activo]="prenda.estado === 'Activo'"
+                  [class.fs-badge--inactivo]="prenda.estado === 'Inactivo'"
+                  [class.fs-badge--carbon]="prenda.estado === 'Borrador'"
+                >
+                  {{ prenda.estado }}
+                </span>
+              </td>
+              <td>
+                <div class="prendas__acciones">
+                  <button
+                    type="button"
+                    class="fs-accion"
+                    (click)="abrirEdicion(prenda)"
+                  >
+                    Editar
+                  </button>
+
+                  @if (prenda.estado === 'Activo' || prenda.estado === 'Borrador') {
+                    <button
+                      type="button"
+                      class="fs-accion fs-accion--peligro"
+                      (click)="inhabilitar(prenda)"
+                      [disabled]="inhabilitandoId() === prenda.id_prenda"
+                    >
+                      {{
+                        inhabilitandoId() === prenda.id_prenda
+                          ? 'Procesando…'
+                          : 'Inactivar'
+                      }}
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      class="fs-accion"
+                      (click)="reactivar(prenda)"
+                      [disabled]="inhabilitandoId() === prenda.id_prenda"
+                    >
+                      {{
+                        inhabilitandoId() === prenda.id_prenda
+                          ? 'Procesando…'
+                          : 'Reactivar'
+                      }}
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="fs-tabla-vacia">
+                @if (busqueda()) {
+                  No se encontraron prendas que coincidan con «{{ busqueda() }}».
+                } @else {
+                  Todavía no hay prendas registradas en el catálogo.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="prendas__pie">Mostrando {{ prendas().length }} prenda(s).</p>
+  }
+</section>
+
+<!-- ==================== MODAL DE ALTA / EDICIÓN ==================== -->
+@if (modalAbierto()) {
+  <app-prenda-modal
+    [prenda]="prendaEnEdicion()"
+    [categorias]="categorias()"
+    [tallas]="tallas()"
+    [colores]="colores()"
+    (cerrado)="cerrarModal()"
+    (guardado)="alGuardar($event)"
+  />
+}

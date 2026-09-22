@@ -1,0 +1,204 @@
+<!--
+  =============================================================================
+  MODAL DE ALTA Y EDICIÓN DE USUARIOS (CU02)
+  -----------------------------------------------------------------------------
+  El velo cierra el modal al pulsarse, pero el clic sobre la ventana detiene la
+  propagación para que no se cierre al interactuar con el formulario.
+  =============================================================================
+-->
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <!-- ========================= CABECERA ========================= -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">
+          {{ esEdicion() ? 'Editar registro' : 'Nuevo registro' }}
+        </span>
+        <h2 class="fs-modal__titulo modal__titulo">
+          {{ esEdicion() ? 'Editar usuario' : 'Registrar usuario' }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- ========================= FORMULARIO ========================= -->
+    <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      <div class="fs-modal__cuerpo modal__cuerpo">
+        <!-- Nombre y apellido comparten fila -->
+        <div class="modal__fila">
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="nombre">Nombre</label>
+            <input
+              id="nombre"
+              type="text"
+              class="fs-input"
+              formControlName="nombre"
+              placeholder="Camila"
+              [class.is-invalid]="campoInvalido('nombre')"
+            />
+            @if (campoInvalido('nombre')) {
+              <span class="fs-field-error">El nombre es obligatorio.</span>
+            }
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="apellido">Apellido</label>
+            <input
+              id="apellido"
+              type="text"
+              class="fs-input"
+              formControlName="apellido"
+              placeholder="Rojas"
+              [class.is-invalid]="campoInvalido('apellido')"
+            />
+            @if (campoInvalido('apellido')) {
+              <span class="fs-field-error">El apellido es obligatorio.</span>
+            }
+          </div>
+        </div>
+
+        <!-- Correo: bloqueado al editar, porque es la identidad de acceso -->
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="correo">Correo electrónico</label>
+          <input
+            id="correo"
+            type="email"
+            class="fs-input"
+            formControlName="correo"
+            placeholder="nombre@fashionstore.com"
+            autocomplete="off"
+            [class.is-invalid]="campoInvalido('correo')"
+          />
+          @if (campoInvalido('correo')) {
+            <span class="fs-field-error">
+              @if (errores('correo')?.['required']) {
+                El correo electrónico es obligatorio.
+              } @else if (errores('correo')?.['email']) {
+                Introduzca un correo con formato válido.
+              }
+            </span>
+          }
+          @if (esEdicion()) {
+            <span class="modal__nota">
+              El correo identifica la cuenta y no puede modificarse desde aquí.
+            </span>
+          }
+        </div>
+
+        <!-- Teléfono y rol comparten fila -->
+        <div class="modal__fila">
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="telefono">Teléfono</label>
+            <input
+              id="telefono"
+              type="text"
+              inputmode="numeric"
+              class="fs-input"
+              formControlName="telefono"
+              placeholder="77712345"
+              [class.is-invalid]="campoInvalido('telefono')"
+            />
+            @if (campoInvalido('telefono')) {
+              <span class="fs-field-error">
+                El teléfono debe contener solo números.
+              </span>
+            }
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="id_role">Rol</label>
+            <select
+              id="id_role"
+              class="fs-input fs-select"
+              formControlName="id_role"
+              [class.is-invalid]="campoInvalido('id_role')"
+            >
+              <option [ngValue]="null" disabled>Seleccione un rol</option>
+              <!-- Opciones alimentadas por GET /api/usuarios/roles -->
+              @for (rol of roles(); track rol.id_rol) {
+                <option [ngValue]="rol.id_rol">{{ rol.nombre }}</option>
+              }
+            </select>
+            @if (campoInvalido('id_role')) {
+              <span class="fs-field-error">Debe asignar un rol.</span>
+            }
+          </div>
+        </div>
+
+        <!-- Contraseña: solo existe en el modo alta -->
+        @if (!esEdicion()) {
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="password">Contraseña temporal</label>
+            <input
+              id="password"
+              type="password"
+              class="fs-input"
+              formControlName="password"
+              placeholder="Mínimo 6 caracteres"
+              autocomplete="new-password"
+              [class.is-invalid]="campoInvalido('password')"
+            />
+            @if (campoInvalido('password')) {
+              <span class="fs-field-error">
+                @if (errores('password')?.['required']) {
+                  La contraseña es obligatoria.
+                } @else if (errores('password')?.['minlength']) {
+                  La contraseña debe tener al menos 6 caracteres.
+                }
+              </span>
+            }
+            <span class="modal__nota">
+              Se almacena cifrada con bcrypt; el usuario podrá cambiarla después.
+            </span>
+          </div>
+        }
+
+        <!-- Banner de error del backend (excepción A del CU02: correo duplicado) -->
+        @if (mensajeError()) {
+          <div class="fs-alert fs-alert--error" role="alert">
+            <span class="modal__alert-mark" aria-hidden="true"></span>
+            <span>{{ mensajeError() }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- ========================= PIE ========================= -->
+      <div class="fs-modal__pie">
+        <button
+          type="button"
+          class="fs-btn fs-btn--ghost"
+          (click)="cerrar()"
+          [disabled]="cargando()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="fs-btn fs-btn--primary"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="fs-spinner" aria-hidden="true"></span>
+            <span>Guardando</span>
+          } @else {
+            <span>{{ esEdicion() ? 'Guardar cambios' : 'Registrar usuario' }}</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

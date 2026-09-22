@@ -1,0 +1,359 @@
+/* =============================================================================
+   FASHIONSTORE - ESTILOS DEL LAYOUT ADMINISTRATIVO
+   -----------------------------------------------------------------------------
+   Sidebar en negro carbón sobre área de trabajo en blanco hueso. Toda la
+   separación se resuelve con filetes de 1px; no se usa ni una sombra difusa.
+   ========================================================================== */
+
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.admin {
+  display: grid;
+  grid-template-columns: 232px 1fr;
+  height: 100%;
+}
+
+/* -----------------------------------------------------------------------------
+   SIDEBAR
+   -------------------------------------------------------------------------- */
+.admin__sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--fs-ink);
+  color: #FFFFFF;
+  overflow-y: auto;
+}
+
+/* --- Logotipo --- */
+.admin__brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-1);
+  padding: var(--fs-space-5) var(--fs-space-5) var(--fs-space-5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin__brand-name {
+  font-size: 15px;
+  color: #FFFFFF;
+}
+
+/* La segunda mitad del nombre en cursiva dorada, igual que en el login */
+.admin__brand-name em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--fs-gold);
+}
+
+.admin__brand-tag {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+/* --- Navegación --- */
+.admin__nav {
+  flex: 1;
+  padding: var(--fs-space-5) 0;
+}
+
+.admin__nav-title {
+  display: block;
+  padding: 0 var(--fs-space-5);
+  margin-bottom: var(--fs-space-3);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.32);
+}
+
+.admin__nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Enlace del menú: barra dorada de 2px a la izquierda al estar activo */
+.admin__link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--fs-space-3);
+  padding: 9px var(--fs-space-5);
+  border-left: 2px solid transparent;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.62);
+  transition: color var(--fs-transition), background-color var(--fs-transition),
+    border-color var(--fs-transition);
+}
+
+.admin__link:hover:not(.admin__link--pendiente) {
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.045);
+}
+
+.admin__link--activo {
+  color: #FFFFFF;
+  background-color: rgba(197, 168, 128, 0.09);
+  border-left-color: var(--fs-gold);
+}
+
+/* Sección todavía no implementada: se atenúa y se desactiva el cursor */
+.admin__link--pendiente {
+  color: rgba(255, 255, 255, 0.24);
+  cursor: not-allowed;
+}
+
+/* Referencia académica al caso de uso, en versalitas muy discretas */
+.admin__link-caso {
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.admin__link--activo .admin__link-caso {
+  color: var(--fs-gold);
+}
+
+/* --- Pie del sidebar --- */
+.admin__sidebar-foot {
+  padding: var(--fs-space-4) var(--fs-space-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin__version {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* -----------------------------------------------------------------------------
+   ÁREA PRINCIPAL
+   -------------------------------------------------------------------------- */
+.admin__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* permite que las tablas anchas hagan scroll horizontal */
+  background-color: var(--fs-bg);
+  overflow: hidden;
+}
+
+/* --- Cabecera --- */
+.admin__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: 57px;
+  padding: 0 var(--fs-space-6);
+  background-color: var(--fs-surface);
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.admin__header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-4);
+}
+
+/* Distintivo cuadrado con las iniciales; el cuadrado lee más editorial que
+   el círculo típico de los paneles genéricos. */
+.admin__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: var(--fs-ink);
+  color: var(--fs-gold);
+  border-radius: var(--fs-radius);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.admin__perfil {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.admin__perfil-nombre {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.admin__perfil-rol {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fs-gold-deep);
+}
+
+/* --- Contenido desplazable --- */
+.admin__contenido {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--fs-space-6);
+}
+
+/* -----------------------------------------------------------------------------
+   NOTIFICACIONES EMERGENTES
+   -------------------------------------------------------------------------- */
+.admin__avisos {
+  position: fixed;
+  right: var(--fs-space-5);
+  bottom: var(--fs-space-5);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+  max-width: 360px;
+}
+
+.admin__aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--fs-space-3);
+  padding: var(--fs-space-3) var(--fs-space-4);
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-left-width: 2px;
+  border-radius: var(--fs-radius);
+  font-size: 13px;
+  animation: aviso-entra 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* El acento del borde izquierdo comunica la naturaleza del aviso */
+.admin__aviso--exito {
+  border-left-color: var(--fs-emerald);
+}
+
+.admin__aviso--error {
+  border-left-color: var(--fs-danger);
+}
+
+.admin__aviso--aviso {
+  border-left-color: var(--fs-gold);
+}
+
+.admin__aviso-texto {
+  flex: 1;
+  color: var(--fs-ink);
+}
+
+.admin__aviso-cerrar {
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 17px;
+  line-height: 1;
+  color: var(--fs-ink-muted);
+  cursor: pointer;
+  transition: color var(--fs-transition);
+}
+
+.admin__aviso-cerrar:hover {
+  color: var(--fs-ink);
+}
+
+@keyframes aviso-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   ADAPTACIÓN RESPONSIVA (RNF05)
+   -------------------------------------------------------------------------- */
+
+/* Tablet: el sidebar se estrecha y oculta las etiquetas de caso de uso */
+@media (max-width: 1024px) {
+  .admin {
+    grid-template-columns: 190px 1fr;
+  }
+
+  .admin__link-caso {
+    display: none;
+  }
+
+  .admin__contenido {
+    padding: var(--fs-space-5);
+  }
+}
+
+/* Móvil: el sidebar pasa a ser una barra superior desplazable */
+@media (max-width: 760px) {
+  :host {
+    height: auto;
+    overflow: visible;
+  }
+
+  .admin {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .admin__sidebar {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--fs-space-4);
+    padding: 0 var(--fs-space-4);
+    overflow-x: auto;
+  }
+
+  .admin__brand,
+  .admin__sidebar-foot,
+  .admin__nav-title {
+    display: none;
+  }
+
+  .admin__nav {
+    padding: 0;
+  }
+
+  .admin__nav-list {
+    display: flex;
+    gap: var(--fs-space-1);
+  }
+
+  .admin__link {
+    padding: 14px var(--fs-space-3);
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+
+  .admin__link--activo {
+    border-left-color: transparent;
+    border-bottom-color: var(--fs-gold);
+  }
+
+  .admin__main {
+    overflow: visible;
+  }
+
+  .admin__header {
+    padding: 0 var(--fs-space-4);
+  }
+
+  .admin__header-left {
+    display: none;
+  }
+
+  .admin__contenido {
+    padding: var(--fs-space-4);
+  }
+}

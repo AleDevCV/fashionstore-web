@@ -1,0 +1,131 @@
+<section class="analitica">
+  <header class="analitica__head">
+    <span class="fs-eyebrow">Inteligencia Ejecutiva · CU23</span>
+    <h1 class="analitica__titulo">Consultas Analíticas por Voz</h1>
+    <p class="analitica__lead">
+      Dicta una consulta ejecutiva en lenguaje natural (ventas, inventario o compras) y la IA la
+      interpretará, ejecutará sobre datos reales de PostgreSQL y generará un resumen y reporte PDF.
+    </p>
+  </header>
+
+  <div class="analitica__panel">
+    @if (!soportaVoz()) {
+      <div class="fs-alert fs-alert--error" role="alert">
+        <span>
+          Tu navegador no soporta la Web Speech API. Puedes escribir la consulta manualmente.
+        </span>
+      </div>
+    }
+
+    <div class="analitica__entrada">
+      <button
+        type="button"
+        class="analitica__microfono"
+        [class.analitica__microfono--activo]="escuchando()"
+        [disabled]="!soportaVoz()"
+        (click)="alternarEscucha()"
+        [attr.aria-pressed]="escuchando()"
+        aria-label="Activar micrófono para dictar la consulta"
+      >
+        🎙
+      </button>
+
+      <div class="fs-field analitica__campo-texto">
+        <label class="fs-eyebrow" for="texto-voz">Consulta (transcrita o escrita)</label>
+        <input
+          id="texto-voz"
+          type="text"
+          class="fs-input"
+          placeholder="Ej: Total de ventas de la sucursal Central en verano 2026"
+          [value]="textoVoz()"
+          (input)="actualizarTexto($any($event.target).value)"
+        />
+      </div>
+    </div>
+
+    @if (escuchando()) {
+      <span class="analitica__escuchando">
+        <span class="fs-spinner" aria-hidden="true"></span>
+        Escuchando…
+      </span>
+    }
+
+    <label class="analitica__checkbox">
+      <input
+        type="checkbox"
+        [checked]="generarPdf()"
+        (change)="alternarGenerarPdf($any($event.target).checked)"
+      />
+      Generar reporte ejecutivo en PDF
+    </label>
+
+    <button
+      type="button"
+      class="fs-btn fs-btn--primary"
+      [disabled]="cargando()"
+      (click)="consultar()"
+    >
+      @if (cargando()) {
+        <span class="fs-spinner" aria-hidden="true"></span>
+        Analizando…
+      } @else {
+        Consultar
+      }
+    </button>
+
+    @if (error()) {
+      <div class="fs-alert fs-alert--error" role="alert">
+        <span>{{ error() }}</span>
+      </div>
+    }
+  </div>
+
+  @if (respuesta(); as resp) {
+    <div class="analitica__resultado">
+      <span class="fs-eyebrow">Resumen ejecutivo</span>
+      <p class="analitica__resumen">{{ resp.resumen_ejecutivo }}</p>
+
+      <div class="analitica__interpretacion">
+        <span class="fs-eyebrow">Interpretación de la IA</span>
+        <p>
+          Métrica: {{ resp.interpretacion.metrica || 'N/D' }}
+          @if (resp.interpretacion.sucursal) { · Sucursal: {{ resp.interpretacion.sucursal }} }
+          @if (resp.interpretacion.temporada) { · Temporada: {{ resp.interpretacion.temporada }} }
+        </p>
+      </div>
+
+      <span class="fs-eyebrow">Desglose estadístico</span>
+
+      @if (resp.resultados.length === 0) {
+        <p class="analitica__sin-datos">No se encontraron registros para esta consulta.</p>
+      } @else {
+        <div class="fs-tabla-wrap">
+          <table class="fs-tabla">
+            <thead>
+              <tr>
+                <th>Segmento</th>
+                <th class="fs-col-num">Valor</th>
+                <th class="fs-col-num">Operaciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fila of resp.resultados; track fila.etiqueta) {
+                <tr>
+                  <td>{{ fila.etiqueta }}</td>
+                  <td class="fs-col-num">{{ fila.valor }}</td>
+                  <td class="fs-col-num">{{ fila.cantidad_operaciones }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @if (resp.pdf_base64) {
+        <button type="button" class="fs-btn fs-btn--ghost analitica__descarga" (click)="descargarPdf()">
+          ↓ Descargar reporte PDF
+        </button>
+      }
+    </div>
+  }
+</section>

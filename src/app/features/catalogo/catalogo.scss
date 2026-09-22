@@ -1,0 +1,371 @@
+/* =============================================================================
+   FASHIONSTORE - ESTILOS DEL CATÁLOGO PÚBLICO (CU14)
+   Página de vitrina: barra superior, panel de filtros pegajoso y cuadrícula de
+   tarjetas. Reutiliza los tokens globales de marca.
+   ========================================================================== */
+
+.catalogo {
+  min-height: 100vh;
+  background-color: var(--fs-bg);
+}
+
+/* -----------------------------------------------------------------------------
+   BARRA SUPERIOR
+   -------------------------------------------------------------------------- */
+.catalogo__topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fs-space-4);
+  padding: var(--fs-space-4) var(--fs-space-6);
+  background-color: var(--fs-surface);
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.catalogo__brand {
+  font-size: 18px;
+}
+
+.catalogo__brand em {
+  font-style: normal;
+  color: var(--fs-gold-deep);
+}
+
+.catalogo__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-4);
+}
+
+.catalogo__tag {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+}
+
+.catalogo__staff-link {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+  border-bottom: 1px dashed var(--fs-border-dark);
+  padding-bottom: 1px;
+  transition: color var(--fs-transition), border-color var(--fs-transition);
+}
+
+.catalogo__staff-link:hover {
+  color: var(--fs-ink);
+  border-bottom-style: solid;
+}
+
+.catalogo__usuario-nombre {
+  max-width: 180px;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fs-ink-soft);
+}
+
+.catalogo__cerrar-sesion {
+  padding: 0 0 1px;
+  background: none;
+  border: 0;
+  border-bottom: 1px dashed var(--fs-border-dark);
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+  cursor: pointer;
+  transition: color var(--fs-transition), border-color var(--fs-transition);
+}
+
+.catalogo__cerrar-sesion:hover {
+  color: var(--fs-ink);
+  border-bottom-style: solid;
+}
+
+.catalogo__carrito-btn {
+  position: relative;
+  background: none;
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-sm, 6px);
+  padding: 6px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--fs-transition, 0.2s);
+
+  &:hover {
+    background: var(--fs-surface-alt, #f5f5f5);
+    border-color: var(--fs-border-strong, #333);
+  }
+}
+
+.carrito-badge {
+  background: var(--fs-ink, #1a1a1a);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 1px 7px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 16px;
+}
+
+.carrito-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--fs-ink, #1a1a1a);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--fs-radius-md, 8px);
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  animation: toastFadeIn 0.3s ease;
+}
+
+@keyframes toastFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* -----------------------------------------------------------------------------
+   ESTRUCTURA: FILTROS + RESULTADOS
+   -------------------------------------------------------------------------- */
+.catalogo__layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: var(--fs-space-6);
+  align-items: start;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--fs-space-6);
+}
+
+.catalogo__filtros {
+  position: sticky;
+  top: 76px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-4);
+  padding: var(--fs-space-5);
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+}
+
+.catalogo__filtros-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.catalogo__titulo {
+  font-size: 24px;
+}
+
+.catalogo__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+}
+
+.catalogo__rango {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-2);
+}
+
+.catalogo__rango-sep {
+  color: var(--fs-ink-muted);
+}
+
+/* -----------------------------------------------------------------------------
+   RESULTADOS
+   -------------------------------------------------------------------------- */
+.catalogo__resultados {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-4);
+  min-width: 0;
+}
+
+.catalogo__contador {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+}
+
+.catalogo__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: var(--fs-space-4);
+}
+
+/* -----------------------------------------------------------------------------
+   TARJETA DE PRENDA
+   -------------------------------------------------------------------------- */
+.catalogo__card {
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--fs-transition);
+}
+
+.catalogo__card:hover,
+.catalogo__card:focus-visible {
+  border-color: var(--fs-border-strong);
+  outline: none;
+}
+
+.catalogo__card-img {
+  aspect-ratio: 3 / 4;
+  background-color: var(--fs-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fs-space-3);
+  overflow: hidden;
+}
+
+.catalogo__card-img img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.catalogo__sin-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+}
+
+.catalogo__card-cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+  padding: var(--fs-space-3) var(--fs-space-4) var(--fs-space-4);
+}
+
+.catalogo__card-nombre {
+  font-size: 17px;
+}
+
+.catalogo__card-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--fs-space-1);
+}
+
+.catalogo__precio {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.catalogo__btn-carrito {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fs-space-2, 6px);
+  width: 100%;
+  margin-top: var(--fs-space-2, 8px);
+  padding: 8px 12px;
+  background-color: var(--fs-ink, #1a1a1a);
+  color: #fff;
+  border: none;
+  border-radius: var(--fs-radius-sm, 6px);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--fs-transition, 0.2s), transform 0.1s ease;
+
+  &:hover {
+    background-color: var(--fs-ink-soft, #333);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   ESTADOS DE CARGA, ERROR Y VACÍO
+   -------------------------------------------------------------------------- */
+.catalogo__estado {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-3);
+  padding: var(--fs-space-7);
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+  font-size: 13px;
+  color: var(--fs-ink-soft);
+}
+
+.catalogo__vacio {
+  grid-column: 1 / -1;
+  padding: var(--fs-space-7);
+  text-align: center;
+  color: var(--fs-ink-muted);
+  background-color: var(--fs-surface);
+  border: 1px dashed var(--fs-border);
+  border-radius: var(--fs-radius-md);
+}
+
+/* -----------------------------------------------------------------------------
+   PAGINADOR
+   -------------------------------------------------------------------------- */
+.catalogo__paginador {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fs-space-4);
+  padding-top: var(--fs-space-2);
+}
+
+.catalogo__rango {
+  font-size: 12px;
+  color: var(--fs-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* -----------------------------------------------------------------------------
+   ADAPTACIÓN RESPONSIVA
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .catalogo__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .catalogo__filtros {
+    position: static;
+  }
+}

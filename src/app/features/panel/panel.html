@@ -1,0 +1,59 @@
+<!--
+  Pantalla de inicio del panel: confirma que el token JWT se guardó y se
+  decodificó correctamente tras completar el CU01.
+-->
+<section class="panel">
+  <span class="fs-eyebrow">Sesión verificada</span>
+  <h1 class="panel__title">Bienvenido al panel</h1>
+  <p class="panel__lead">
+    El token JWT se almacenó correctamente y su contenido fue decodificado por
+    el servicio de autenticación. Use el menú lateral para acceder a los módulos
+    de la Iteración 1.
+  </p>
+
+  @if (usuario(); as u) {
+    <!-- Ficha con los datos extraídos del token -->
+    <div class="panel__card">
+      <h2 class="panel__card-title">Carga útil del token</h2>
+      <dl class="panel__data">
+        <div class="panel__row">
+          <dt class="fs-eyebrow">ID de usuario</dt>
+          <dd>{{ u.id_usuario }}</dd>
+        </div>
+        <div class="panel__row">
+          <dt class="fs-eyebrow">Nombre</dt>
+          <dd>{{ u.nombre }}</dd>
+        </div>
+        <div class="panel__row">
+          <dt class="fs-eyebrow">Correo</dt>
+          <dd>{{ u.correo }}</dd>
+        </div>
+        <div class="panel__row">
+          <dt class="fs-eyebrow">Rol jerárquico</dt>
+          <dd>{{ u.rol }}</dd>
+        </div>
+        <div class="panel__row">
+          <dt class="fs-eyebrow">Expira</dt>
+          <dd>{{ formatearExpiracion(u.exp) }}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Accesos rápidos para el Administrador -->
+    @if (u.rol === 'Administrador') {
+      <div class="panel__quick-actions">
+        <h3 class="fs-eyebrow">Acciones Rápidas del Administrador</h3>
+        <div class="panel__buttons-group">
+          <a routerLink="/panel/bitacora" class="btn btn--primary btn-action">
+            <span class="material-symbols-outlined">security</span>
+            Ver Bitácora de Auditoría del Sistema (CU25)
+          </a>
+          <a routerLink="/panel/dashboard" class="btn btn--outline btn-action">
+            <span class="material-symbols-outlined">analytics</span>
+            Ver Dashboard de KPIs (CU24)
+          </a>
+        </div>
+      </div>
+    }
+  }
+</section>

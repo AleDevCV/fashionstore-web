@@ -1,0 +1,144 @@
+<!--
+  =============================================================================
+  MODAL DE ALTA Y EDICIÓN DE SUCURSALES (CU06)
+  -----------------------------------------------------------------------------
+  El velo cierra el modal al pulsarse; el clic sobre la ventana detiene la
+  propagación para no cerrarla al interactuar con el formulario.
+  =============================================================================
+-->
+<div class="fs-modal-velo" (click)="cerrar()">
+  <div
+    class="fs-modal"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <!-- ========================= CABECERA ========================= -->
+    <div class="fs-modal__head">
+      <div>
+        <span class="fs-eyebrow">
+          {{ esEdicion() ? 'Editar registro' : 'Nuevo registro' }}
+        </span>
+        <h2 class="fs-modal__titulo modal__titulo">
+          {{ esEdicion() ? 'Editar sucursal' : 'Registrar sucursal' }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="fs-modal__cerrar"
+        (click)="cerrar()"
+        aria-label="Cerrar"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- ========================= FORMULARIO ========================= -->
+    <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      <div class="fs-modal__cuerpo modal__cuerpo">
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            type="text"
+            class="fs-input"
+            formControlName="nombre"
+            placeholder="Sucursal Norte"
+            [class.is-invalid]="campoInvalido('nombre')"
+          />
+          @if (campoInvalido('nombre')) {
+            <span class="fs-field-error">El nombre es obligatorio.</span>
+          }
+        </div>
+
+        <div class="fs-field">
+          <label class="fs-eyebrow" for="direccion">Dirección</label>
+          <input
+            id="direccion"
+            type="text"
+            class="fs-input"
+            formControlName="direccion"
+            placeholder="Calle Bolívar #100"
+            [class.is-invalid]="campoInvalido('direccion')"
+          />
+          @if (campoInvalido('direccion')) {
+            <span class="fs-field-error">La dirección es obligatoria.</span>
+          }
+        </div>
+
+        <!-- Teléfono y ciudad comparten fila -->
+        <div class="modal__fila">
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="telefono">Teléfono</label>
+            <input
+              id="telefono"
+              type="text"
+              inputmode="numeric"
+              class="fs-input"
+              formControlName="telefono"
+              placeholder="46612345"
+              [class.is-invalid]="campoInvalido('telefono')"
+            />
+            @if (campoInvalido('telefono')) {
+              <span class="fs-field-error">
+                El teléfono debe contener solo números.
+              </span>
+            }
+          </div>
+
+          <div class="fs-field">
+            <label class="fs-eyebrow" for="id_ciudad">Ciudad</label>
+            <select
+              id="id_ciudad"
+              class="fs-input fs-select"
+              formControlName="id_ciudad"
+              [class.is-invalid]="campoInvalido('id_ciudad')"
+            >
+              <option [ngValue]="null" disabled>Seleccione una ciudad</option>
+              @for (ciudad of ciudades(); track ciudad.id_ciudad) {
+                <option [ngValue]="ciudad.id_ciudad">{{ ciudad.nombre }}</option>
+              }
+            </select>
+            @if (campoInvalido('id_ciudad')) {
+              <span class="fs-field-error">Debe asignar una ciudad.</span>
+            }
+          </div>
+        </div>
+
+        <!-- Banner de error del backend (ciudad inexistente, etc.) -->
+        @if (mensajeError()) {
+          <div class="fs-alert fs-alert--error" role="alert">
+            <span class="modal__alert-mark" aria-hidden="true"></span>
+            <span>{{ mensajeError() }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- ========================= PIE ========================= -->
+      <div class="fs-modal__pie">
+        <button
+          type="button"
+          class="fs-btn fs-btn--ghost"
+          (click)="cerrar()"
+          [disabled]="cargando()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="fs-btn fs-btn--primary"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) {
+            <span class="fs-spinner" aria-hidden="true"></span>
+            <span>Guardando</span>
+          } @else {
+            <span>{{ esEdicion() ? 'Guardar cambios' : 'Registrar sucursal' }}</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

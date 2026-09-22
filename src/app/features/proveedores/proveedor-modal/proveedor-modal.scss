@@ -1,0 +1,22 @@
+.proveedor-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-3);
+}
+
+.proveedor-form__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fs-space-3);
+}
+
+.fs-campo-req {
+  color: var(--fs-danger);
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .proveedor-form__fila {
+    grid-template-columns: 1fr;
+  }
+}

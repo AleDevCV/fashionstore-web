@@ -1,0 +1,238 @@
+<!-- Checkout Wizard - FashionStore -->
+<div class="checkout-wrapper">
+  <!-- Barra de progreso -->
+  <nav class="checkout-steps">
+    @for (paso of pasos; track paso.numero) {
+      <div
+        class="checkout-steps__item"
+        [class.activo]="pasoActual() === paso.numero"
+        [class.completado]="pasoActual() > paso.numero"
+        (click)="irAPaso(paso.numero)"
+      >
+        <span class="checkout-steps__num">
+          @if (pasoActual() > paso.numero) { ✓ } @else { {{ paso.numero }} }
+        </span>
+        <span class="checkout-steps__label">{{ paso.label }}</span>
+      </div>
+    }
+  </nav>
+
+  <!-- Mensajes de error globales -->
+  @if (error()) {
+    <div class="checkout-error">
+      ⚠️ {{ error() }}
+    </div>
+  }
+
+  <!-- ================================================================
+       PASO 1: RESUMEN DEL CARRITO
+       ================================================================ -->
+  @if (pasoActual() === 1) {
+    <section class="checkout-card">
+      <h2 class="checkout-card__titulo">🛍️ Resumen del pedido</h2>
+
+      <ul class="resumen-lista">
+        @for (item of carrito.items; track item.id_variante_prenda) {
+          <li class="resumen-item">
+            <div class="resumen-item__info">
+              <strong>{{ item.prenda_nombre }}</strong>
+              <span>{{ item.talla }} · {{ item.color }}</span>
+            </div>
+            <div class="resumen-item__qty">× {{ item.cantidad }}</div>
+            <div class="resumen-item__precio">
+              Bs {{ (item.precio_unitario * item.cantidad) | number:'1.2-2' }}
+            </div>
+          </li>
+        }
+      </ul>
+
+      <div class="resumen-total">
+        <span>Total estimado</span>
+        <strong>Bs {{ subtotal | number:'1.2-2' }}</strong>
+      </div>
+
+      <div class="checkout-actions">
+        <button class="btn-secundario" routerLink="/catalogo">
+          ← Seguir comprando
+        </button>
+        <button
+          class="btn-primario"
+          (click)="confirmarResumen()"
+          [disabled]="cargando()"
+        >
+          @if (cargando()) { Procesando... } @else { Continuar →  }
+        </button>
+      </div>
+    </section>
+  }
+
+  <!-- ================================================================
+       PASO 2: DATOS FISCALES
+       ================================================================ -->
+  @if (pasoActual() === 2) {
+    <section class="checkout-card">
+      <h2 class="checkout-card__titulo">📄 Datos para el comprobante</h2>
+      <p class="checkout-card__subtitulo">
+        Estos datos aparecerán en tu comprobante digital (PDF).
+      </p>
+
+      @if (reserva()) {
+        <div class="reserva-badge">
+          ✅ Reserva #{{ reserva()!.id_reserva }} creada — válida hasta
+          {{ reserva()!.fecha_limite | date: 'dd/MM/yyyy HH:mm' }}
+        </div>
+      }
+
+      <form [formGroup]="formFiscal" class="form-fiscal" novalidate>
+        <div class="form-group">
+          <label for="nit_ci">NIT / Cédula de Identidad</label>
+          <input
+            id="nit_ci"
+            type="text"
+            formControlName="nit_ci"
+            placeholder="Ej: 9876543"
+            class="form-input"
+            [class.error]="formFiscal.get('nit_ci')?.touched && formFiscal.get('nit_ci')?.invalid"
+          />
+          @if (formFiscal.get('nit_ci')?.touched && formFiscal.get('nit_ci')?.invalid) {
+            <span class="form-error">Ingresa tu NIT o CI (mínimo 4 caracteres)</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="razon_social">Razón Social / Nombre completo</label>
+          <input
+            id="razon_social"
+            type="text"
+            formControlName="razon_social"
+            placeholder="Ej: Juan Pérez o Mi Empresa S.R.L."
+            class="form-input"
+            [class.error]="formFiscal.get('razon_social')?.touched && formFiscal.get('razon_social')?.invalid"
+          />
+          @if (formFiscal.get('razon_social')?.touched && formFiscal.get('razon_social')?.invalid) {
+            <span class="form-error">Ingresa tu nombre completo o razón social</span>
+          }
+        </div>
+
+        <label class="check-email">
+          <input type="checkbox" formControlName="enviar_email" />
+          Enviarme el comprobante por correo electrónico
+        </label>
+      </form>
+
+      <div class="checkout-actions">
+        <button class="btn-secundario" (click)="irAPaso(1)">← Volver</button>
+        <button class="btn-primario" (click)="confirmarDatos()">
+          Elegir método de pago →
+        </button>
+      </div>
+    </section>
+  }
+
+  <!-- ================================================================
+       PASO 3: SELECCIÓN Y PAGO
+       ================================================================ -->
+  @if (pasoActual() === 3) {
+    <section class="checkout-card">
+      <h2 class="checkout-card__titulo">💳 Método de pago</h2>
+      <p class="checkout-card__subtitulo">Total a pagar: <strong>Bs {{ reserva()?.total | number:'1.2-2' }}</strong></p>
+
+      <!-- Selector de método -->
+      <div class="metodo-selector">
+        <button
+          class="metodo-btn"
+          [class.seleccionado]="metodoPagoSeleccionado() === 'QR'"
+          (click)="seleccionarMetodo('QR')"
+        >
+          <span class="metodo-icono">📱</span>
+          <span>QR Bolivia</span>
+          <small>Pago local</small>
+        </button>
+        <button
+          class="metodo-btn"
+          [class.seleccionado]="metodoPagoSeleccionado() === 'Stripe'"
+          (click)="seleccionarMetodo('Stripe')"
+        >
+          <span class="metodo-icono">💳</span>
+          <span>Tarjeta / Stripe</span>
+          <small>Internacional</small>
+        </button>
+      </div>
+
+      <!-- Mostrar QR si ya fue generado -->
+      @if (qrBase64()) {
+        <div class="qr-container">
+          <h3>Escanea este código QR para pagar</h3>
+          <img
+            [src]="'data:image/png;base64,' + qrBase64()"
+            alt="Código QR de pago"
+            class="qr-imagen"
+          />
+          <p class="qr-ref">Referencia: <strong>{{ qrReferencia() }}</strong></p>
+          <p class="qr-nota">⏱ Válido por 15 minutos. Una vez pagado, haz clic en "Confirmar pago".</p>
+
+          <button
+            class="btn-confirmar-qr"
+            (click)="confirmarPagoQR()"
+            [disabled]="cargando()"
+          >
+            @if (cargando()) { Verificando pago... } @else { ✅ Confirmar pago QR }
+          </button>
+        </div>
+      }
+
+      <div class="checkout-actions">
+        <button class="btn-secundario" (click)="irAPaso(2)">← Volver</button>
+        @if (!qrBase64()) {
+          <button
+            class="btn-primario"
+            (click)="iniciarPago()"
+            [disabled]="cargando()"
+          >
+            @if (cargando()) {
+              @if (metodoPagoSeleccionado() === 'Stripe') { Redirigiendo a Stripe... }
+              @else { Generando QR... }
+            } @else {
+              @if (metodoPagoSeleccionado() === 'Stripe') { Pagar con Stripe → }
+              @else { Generar QR de pago → }
+            }
+          </button>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- ================================================================
+       PASO 4: CONFIRMACIÓN EXITOSA
+       ================================================================ -->
+  @if (pasoActual() === 4) {
+    <section class="checkout-card checkout-card--exito">
+      <div class="exito-icono">🎉</div>
+      <h2>¡Pago confirmado!</h2>
+      <p>Tu pedido ha sido procesado exitosamente.</p>
+
+      @if (venta_confirmada()) {
+        <div class="exito-detalles">
+          <p>N° de venta: <strong>#{{ venta_confirmada()!.id_venta }}</strong></p>
+          <p>Total pagado: <strong>Bs {{ venta_confirmada()!.total | number:'1.2-2' }}</strong></p>
+          <p>Método: <strong>{{ venta_confirmada()!.metodo_pago }}</strong></p>
+        </div>
+      }
+
+      @if (comprobante_generado()) {
+        <div class="comprobante-info">
+          <p>📄 Comprobante: <strong>{{ comprobante_generado()!.numero_comprobante }}</strong></p>
+          @if (comprobante_generado()!.url_pdf) {
+            <button class="btn-pdf" (click)="descargarComprobante()">
+              ⬇️ Descargar comprobante PDF
+            </button>
+          }
+        </div>
+      }
+
+      <button class="btn-primario" (click)="volverAlCatalogo()">
+        Continuar explorando →
+      </button>
+    </section>
+  }
+</div>

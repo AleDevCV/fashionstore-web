@@ -1,0 +1,155 @@
+<!--
+  =============================================================================
+  FASHIONSTORE - CIUDADES Y SUCURSALES (CU06)
+  -----------------------------------------------------------------------------
+  Cabecera, tabla de ciudades (con alta rápida) y tabla de sucursales con
+  modal de alta/edición.
+  =============================================================================
+-->
+<section class="sucursales">
+  <!-- ========================= CABECERA ========================= -->
+  <header class="sucursales__head">
+    <div>
+      <span class="fs-eyebrow">Módulo geográfico · CU06</span>
+      <h1 class="sucursales__titulo">Ciudades y Sucursales</h1>
+      <p class="sucursales__lead">
+        Defina la cobertura geográfica de la cadena y asigne cada sucursal a su
+        ciudad de operación.
+      </p>
+    </div>
+
+    <button type="button" class="fs-btn fs-btn--primary" (click)="abrirAlta()">
+      + Nueva sucursal
+    </button>
+  </header>
+
+  <!-- ========================= CIUDADES ========================= -->
+  <section class="sucursales__bloque">
+    <div class="sucursales__bloque-head">
+      <h2 class="sucursales__subtitulo">Ciudades</h2>
+
+      <!-- Alta rápida de ciudad: se resuelve sin abrir un modal -->
+      <div class="sucursales__alta-ciudad">
+        <input
+          type="text"
+          class="fs-input"
+          placeholder="Nombre de la ciudad…"
+          [value]="nuevaCiudad()"
+          (input)="alCambiarCiudad($event)"
+          (keyup.enter)="agregarCiudad()"
+          aria-label="Nombre de la ciudad"
+        />
+        <button
+          type="button"
+          class="fs-btn fs-btn--ghost"
+          (click)="agregarCiudad()"
+          [disabled]="agregandoCiudad() || !nuevaCiudad().trim()"
+        >
+          {{ agregandoCiudad() ? 'Agregando…' : 'Agregar ciudad' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="fs-tabla-wrap">
+      <table class="fs-tabla">
+        <thead>
+          <tr>
+            <th class="sucursales__col-id">ID</th>
+            <th>Ciudad</th>
+            <th>Sucursales</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ciudad of ciudades(); track ciudad.id_ciudad) {
+            <tr>
+              <td class="fs-col-num">{{ ciudad.id_ciudad }}</td>
+              <td class="sucursales__nombre">{{ ciudad.nombre }}</td>
+              <td class="fs-col-num">{{ ciudad.total_sucursales }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="3" class="fs-tabla-vacia">
+                Todavía no hay ciudades registradas.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========================= SUCURSALES ========================= -->
+  <section class="sucursales__bloque">
+    <div class="sucursales__bloque-head">
+      <h2 class="sucursales__subtitulo">Sucursales</h2>
+    </div>
+
+    @if (cargando()) {
+      <div class="sucursales__estado">
+        <span class="fs-spinner" aria-hidden="true"></span>
+        <span>Cargando sucursales…</span>
+      </div>
+    } @else if (errorCarga()) {
+      <div class="fs-alert fs-alert--error" role="alert">
+        <span class="sucursales__alert-mark" aria-hidden="true"></span>
+        <span>{{ errorCarga() }}</span>
+        <button type="button" class="fs-accion" (click)="cargarSucursales()">
+          Reintentar
+        </button>
+      </div>
+    } @else {
+      <div class="fs-tabla-wrap">
+        <table class="fs-tabla">
+          <thead>
+            <tr>
+              <th class="sucursales__col-id">ID</th>
+              <th>Nombre</th>
+              <th>Ciudad</th>
+              <th>Dirección</th>
+              <th>Teléfono</th>
+              <th>Encargado</th>
+              <th class="sucursales__col-acciones">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (sucursal of sucursales(); track sucursal.id_sucursal) {
+              <tr>
+                <td class="fs-col-num">{{ sucursal.id_sucursal }}</td>
+                <td class="sucursales__nombre">{{ sucursal.nombre }}</td>
+                <td>{{ sucursal.ciudad || '—' }}</td>
+                <td class="sucursales__direccion">{{ sucursal.direccion }}</td>
+                <td class="fs-col-num">{{ sucursal.telefono || '—' }}</td>
+                <td>{{ sucursal.encargado || '—' }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="fs-accion"
+                    (click)="abrirEdicion(sucursal)"
+                  >
+                    Editar
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="fs-tabla-vacia">
+                  Todavía no hay sucursales registradas.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</section>
+
+<!-- ==================== MODAL DE ALTA / EDICIÓN ==================== -->
+@if (modalAbierto()) {
+  <app-sucursal-modal
+    [sucursal]="sucursalEnEdicion()"
+    [ciudades]="ciudades()"
+    (cerrado)="cerrarModal()"
+    (guardado)="alGuardar($event)"
+  />
+}

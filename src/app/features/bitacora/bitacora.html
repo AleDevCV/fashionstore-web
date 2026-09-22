@@ -1,0 +1,177 @@
+<section class="bitacora-view">
+  <!-- Cabecera -->
+  <header class="bitacora-header">
+    <div>
+      <span class="fs-eyebrow">Auditoría y Trazabilidad Forense · CU25</span>
+      <h1 class="bitacora-title">Bitácora del Sistema</h1>
+      <p class="bitacora-subtitle">
+        Registro inmutable de todas las operaciones sensibles, accesos autorizados, fallos de seguridad y mutaciones transaccionales en PostgreSQL.
+      </p>
+    </div>
+    <div class="bitacora-actions">
+      <span class="badge-total">
+        <strong>{{ total() }}</strong> eventos registrados
+      </span>
+      <button class="btn btn--outline" (click)="cargarBitacora()" [disabled]="cargando()">
+        <span class="material-symbols-outlined" [class.spin]="cargando()">refresh</span>
+        Refrescar
+      </button>
+    </div>
+  </header>
+
+  <!-- Filtros de Auditoría -->
+  <div class="filters-card">
+    <div class="filters-grid">
+      <!-- Búsqueda libre -->
+      <div class="filter-field">
+        <label for="busqueda" class="fs-eyebrow">Buscar en Detalle o IP</label>
+        <div class="input-with-icon">
+          <span class="material-symbols-outlined">search</span>
+          <input
+            id="busqueda"
+            type="text"
+            [(ngModel)]="busqueda"
+            (keyup.enter)="paginaActual = 1; cargarBitacora()"
+            placeholder="Ej: admin, 127.0.0.1, venta #3..."
+          />
+        </div>
+      </div>
+
+      <!-- Filtro por Acción -->
+      <div class="filter-field">
+        <label for="filtroAccion" class="fs-eyebrow">Tipo de Acción</label>
+        <select id="filtroAccion" [(ngModel)]="accionSeleccionada" (change)="paginaActual = 1; cargarBitacora()">
+          <option value="">Todas las acciones</option>
+          @for (acc of accionesDisponibles; track acc) {
+            <option [value]="acc">{{ acc }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Filtro por Tabla -->
+      <div class="filter-field">
+        <label for="filtroTabla" class="fs-eyebrow">Tabla Afectada</label>
+        <select id="filtroTabla" [(ngModel)]="tablaSeleccionada" (change)="paginaActual = 1; cargarBitacora()">
+          <option value="">Todas las tablas</option>
+          @for (tab of tablasDisponibles; track tab) {
+            <option [value]="tab">{{ tab }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Botón Filtrar -->
+      <div class="filter-field filter-field--btn">
+        <button class="btn btn--primary" (click)="paginaActual = 1; cargarBitacora()">
+          Aplicar Filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado de Carga -->
+  @if (cargando()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Consultando bitácora inmutable...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error() && !cargando()) {
+    <div class="alert alert--error">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ error() }}</span>
+      <button class="btn btn--sm" (click)="cargarBitacora()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Tabla de Bitácora -->
+  @if (!cargando() && items().length > 0) {
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha y Hora</th>
+              <th>Acción</th>
+              <th>Tabla</th>
+              <th>Usuario Autor</th>
+              <th>Dirección IP</th>
+              <th>Detalle del Evento</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of items(); track log.id_bitacora) {
+              <tr>
+                <td class="col-id">#{{ log.id_bitacora }}</td>
+                <td class="col-date">
+                  <span class="date-main">{{ log.fecha | date:'dd/MM/yyyy' }}</span>
+                  <span class="date-time">{{ log.fecha | date:'HH:mm:ss' }}</span>
+                </td>
+                <td>
+                  <span class="action-badge" [ngClass]="obtenerClaseBadgeAccion(log.accion)">
+                    {{ log.accion }}
+                  </span>
+                </td>
+                <td>
+                  @if (log.tabla_afectada) {
+                    <code class="table-tag">{{ log.tabla_afectada }}</code>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td class="col-user">
+                  @if (log.nombre_usuario) {
+                    <strong>{{ log.nombre_usuario }}</strong>
+                    <span class="user-sub">{{ log.correo_usuario }} ({{ log.rol_usuario || 'Usuario' }})</span>
+                  } @else {
+                    <span class="text-muted">Sistema / No identificado</span>
+                  }
+                </td>
+                <td class="col-ip">
+                  <span class="ip-pill">{{ log.ip_address || '127.0.0.1' }}</span>
+                </td>
+                <td class="col-desc">
+                  <p class="log-detail">{{ log.detalle }}</p>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <footer class="pagination-footer">
+        <span class="page-info">
+          Página {{ paginaActual }} de {{ totalPaginas }} ({{ total() }} eventos totales)
+        </span>
+        <div class="page-buttons">
+          <button
+            class="btn btn--sm btn--outline"
+            [disabled]="paginaActual <= 1"
+            (click)="cambiarPagina(paginaActual - 1)"
+          >
+            ← Anterior
+          </button>
+          <button
+            class="btn btn--sm btn--outline"
+            [disabled]="paginaActual >= totalPaginas"
+            (click)="cambiarPagina(paginaActual + 1)"
+          >
+            Siguiente →
+          </button>
+        </div>
+      </footer>
+    </div>
+  }
+
+  <!-- Vacío -->
+  @if (!cargando() && items().length === 0 && !error()) {
+    <div class="empty-card">
+      <span class="material-symbols-outlined icon--empty">assignment_late</span>
+      <h3>No se encontraron registros en la bitácora</h3>
+      <p>Pruebe ajustando los filtros de búsqueda o eliminando los criterios actuales.</p>
+    </div>
+  }
+</section>

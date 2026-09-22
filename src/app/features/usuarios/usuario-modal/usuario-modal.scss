@@ -1,0 +1,45 @@
+/* =============================================================================
+   ESTILOS DEL MODAL DE USUARIOS (CU02)
+   La estructura del modal (velo, marco, cabecera, pie) vive en styles.scss para
+   ser reutilizable; aquí solo van los detalles propios de este formulario.
+   ========================================================================== */
+
+.modal__titulo {
+  margin-top: var(--fs-space-2);
+}
+
+.modal__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-4);
+}
+
+/* Dos campos por fila para acortar el formulario sin apretarlo */
+.modal__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fs-space-4);
+}
+
+/* Nota explicativa bajo un campo */
+.modal__nota {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--fs-ink-muted);
+}
+
+/* Rombo diminuto que precede al texto de error, en lugar de un icono genérico */
+.modal__alert-mark {
+  flex-shrink: 0;
+  width: 3px;
+  height: 3px;
+  margin-top: 8px;
+  background-color: var(--fs-danger);
+  transform: rotate(45deg);
+}
+
+@media (max-width: 520px) {
+  .modal__fila {
+    grid-template-columns: 1fr;
+  }
+}

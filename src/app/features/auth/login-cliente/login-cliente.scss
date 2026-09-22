@@ -1,0 +1,320 @@
+﻿/* =============================================================================
+   FASHIONSTORE - ESTILOS DE INICIO DE SESIÓN PARA CLIENTES
+   -----------------------------------------------------------------------------
+   Rejilla asimétrica 50/50 con enfoque en la experiencia de compra de lujo.
+   ========================================================================== */
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.login-cli {
+  display: grid;
+  grid-template-columns: 50fr 50fr;
+  min-height: 100vh;
+  background-color: var(--fs-bg);
+}
+
+/* -----------------------------------------------------------------------------
+   COLUMNA IZQUIERDA — LIENZO EDITORIAL
+   -------------------------------------------------------------------------- */
+.login-cli__canvas {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1A1A18 0%, #101010 55%, #080808 100%);
+}
+
+.login-cli__photo {
+  position: absolute;
+  inset: 0;
+  background-image: url("https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center 30%;
+  filter: grayscale(20%) contrast(1.06);
+}
+
+.login-cli__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(12, 12, 12, 0.52) 0%,
+    rgba(12, 12, 12, 0.28) 40%,
+    rgba(12, 12, 12, 0.85) 100%
+  );
+}
+
+.login-cli__canvas-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: var(--fs-space-7) var(--fs-space-7) var(--fs-space-6);
+  color: #FFFFFF;
+}
+
+.login-cli__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-4);
+}
+
+.login-cli__brand-name {
+  font-size: 17px;
+  color: #FFFFFF;
+}
+
+.login-cli__brand-name em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--fs-gold);
+}
+
+.login-cli__brand-rule {
+  width: 34px;
+  height: 1px;
+  background-color: rgba(197, 168, 128, 0.7);
+}
+
+.login-cli__brand-tag {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.login-cli__canvas-foot {
+  max-width: 32ch;
+}
+
+.login-cli__index {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fs-gold);
+  margin-bottom: var(--fs-space-4);
+}
+
+.login-cli__quote {
+  font-family: var(--fs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+}
+
+.login-cli__caption {
+  display: block;
+  margin-top: var(--fs-space-4);
+  padding-top: var(--fs-space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+/* -----------------------------------------------------------------------------
+   COLUMNA DERECHA — FORMULARIO
+   -------------------------------------------------------------------------- */
+.login-cli__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fs-space-6);
+  background-color: var(--fs-surface);
+  border-left: 1px solid var(--fs-border);
+  overflow-y: auto;
+}
+
+.login-cli__form-wrap {
+  width: 100%;
+  max-width: 380px;
+}
+
+.login-cli__head {
+  margin-bottom: var(--fs-space-6);
+}
+
+.login-cli__title {
+  margin-top: var(--fs-space-3);
+  font-size: 38px;
+}
+
+.login-cli__subtitle {
+  margin-top: var(--fs-space-2);
+  font-size: 13.5px;
+  color: var(--fs-ink-soft);
+  max-width: 34ch;
+}
+
+.login-cli__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-5);
+}
+
+.login-cli__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.login-cli__toggle {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--fs-font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+  transition: color var(--fs-transition);
+}
+
+.login-cli__toggle:hover {
+  color: var(--fs-gold-deep);
+}
+
+.login-cli__alert-mark {
+  flex-shrink: 0;
+  width: 3px;
+  height: 3px;
+  margin-top: 8px;
+  background-color: var(--fs-danger);
+  transform: rotate(45deg);
+}
+
+.login-cli__submit {
+  width: 100%;
+  margin-top: var(--fs-space-1);
+  padding: 13px 20px;
+}
+
+.login-cli__links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fs-space-2);
+}
+
+.login-cli__links-text {
+  font-size: 13px;
+  color: var(--fs-ink-muted);
+}
+
+.login-cli__link {
+  font-size: 13px;
+  color: var(--fs-ink-soft);
+  border-bottom: 1px solid transparent;
+  transition: color var(--fs-transition), border-color var(--fs-transition);
+}
+
+.login-cli__link:hover {
+  color: var(--fs-ink);
+  border-bottom-color: var(--fs-gold);
+}
+
+.login-cli__link--highlight {
+  font-weight: 600;
+  color: var(--fs-gold-deep);
+}
+
+.login-cli__link--highlight:hover {
+  border-bottom-color: var(--fs-gold-deep);
+}
+
+.login-cli__links--reg {
+  margin-top: calc(-1 * var(--fs-space-2));
+}
+
+.login-cli__links--sub {
+  margin-top: var(--fs-space-1);
+}
+
+.login-cli__link-back {
+  font-size: 12px;
+  color: var(--fs-ink-muted);
+  text-decoration: none;
+  transition: color var(--fs-transition);
+}
+
+.login-cli__link-back:hover {
+  color: var(--fs-ink);
+}
+
+/* --- Pie legal y enlace staff --- */
+.login-cli__foot {
+  margin-top: var(--fs-space-7);
+}
+
+.login-cli__foot-rule {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: var(--fs-border);
+  margin-bottom: var(--fs-space-4);
+}
+
+.login-cli__foot-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-2);
+}
+
+.login-cli__foot-text {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--fs-ink-muted);
+}
+
+.login-cli__staff-link {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--fs-ink-muted);
+  text-decoration: underline;
+  transition: color var(--fs-transition);
+}
+
+.login-cli__staff-link:hover {
+  color: var(--fs-ink);
+}
+
+/* -----------------------------------------------------------------------------
+   RESPONSIVIDAD
+   -------------------------------------------------------------------------- */
+@media (max-width: 1180px) {
+  .login-cli {
+    grid-template-columns: 46fr 54fr;
+  }
+}
+
+@media (max-width: 980px) {
+  :host {
+    height: auto;
+  }
+
+  .login-cli {
+    grid-template-columns: 1fr;
+  }
+
+  .login-cli__canvas {
+    display: none;
+  }
+
+  .login-cli__panel {
+    border-left: none;
+    padding: var(--fs-space-6) var(--fs-space-5);
+    background-color: var(--fs-bg);
+  }
+
+  .login-cli__title {
+    font-size: 32px;
+  }
+}

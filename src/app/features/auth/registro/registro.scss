@@ -1,0 +1,367 @@
+﻿/* =============================================================================
+   FASHIONSTORE - ESTILOS DE AUTO-REGISTRO DE CLIENTES (CU05 / CU01)
+   -----------------------------------------------------------------------------
+   Rejilla asimétrica 50/50. Estilo editorial consistente con la pantalla de Login.
+   ========================================================================== */
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.registro {
+  display: grid;
+  grid-template-columns: 50fr 50fr;
+  min-height: 100vh;
+  background-color: var(--fs-bg);
+}
+
+/* -----------------------------------------------------------------------------
+   COLUMNA IZQUIERDA — LIENZO EDITORIAL
+   -------------------------------------------------------------------------- */
+.registro__canvas {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1C1B19 0%, #111111 55%, #0B0B0B 100%);
+}
+
+.registro__photo {
+  position: absolute;
+  inset: 0;
+  background-image: url("https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center 25%;
+  filter: grayscale(25%) contrast(1.05);
+}
+
+.registro__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0.55) 0%,
+    rgba(10, 10, 10, 0.32) 45%,
+    rgba(10, 10, 10, 0.85) 100%
+  );
+}
+
+.registro__canvas-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: var(--fs-space-7) var(--fs-space-7) var(--fs-space-6);
+  color: #FFFFFF;
+}
+
+.registro__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-4);
+}
+
+.registro__brand-name {
+  font-size: 17px;
+  color: #FFFFFF;
+}
+
+.registro__brand-name em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--fs-gold);
+}
+
+.registro__brand-rule {
+  width: 34px;
+  height: 1px;
+  background-color: rgba(197, 168, 128, 0.7);
+}
+
+.registro__brand-tag {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.registro__canvas-foot {
+  max-width: 32ch;
+}
+
+.registro__index {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fs-gold);
+  margin-bottom: var(--fs-space-4);
+}
+
+.registro__quote {
+  font-family: var(--fs-font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+}
+
+.registro__caption {
+  display: block;
+  margin-top: var(--fs-space-4);
+  padding-top: var(--fs-space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+/* -----------------------------------------------------------------------------
+   COLUMNA DERECHA — FORMULARIO
+   -------------------------------------------------------------------------- */
+.registro__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fs-space-6) var(--fs-space-6);
+  background-color: var(--fs-surface);
+  border-left: 1px solid var(--fs-border);
+  overflow-y: auto;
+}
+
+.registro__form-wrap {
+  width: 100%;
+  max-width: 440px;
+  padding: var(--fs-space-3) 0;
+}
+
+.registro__head {
+  margin-bottom: var(--fs-space-5);
+}
+
+.registro__title {
+  margin-top: var(--fs-space-2);
+  font-size: 36px;
+  line-height: 1.15;
+}
+
+.registro__subtitle {
+  margin-top: var(--fs-space-2);
+  font-size: 13.5px;
+  color: var(--fs-ink-soft);
+  max-width: 38ch;
+}
+
+.registro__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-4);
+}
+
+.registro__grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fs-space-3);
+}
+
+.registro__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.registro__toggle {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--fs-font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fs-ink-muted);
+  transition: color var(--fs-transition);
+}
+
+.registro__toggle:hover {
+  color: var(--fs-gold-deep);
+}
+
+.registro__alert-mark {
+  flex-shrink: 0;
+  width: 3px;
+  height: 3px;
+  margin-top: 8px;
+  background-color: var(--fs-danger);
+  transform: rotate(45deg);
+}
+
+.registro__submit {
+  width: 100%;
+  margin-top: var(--fs-space-2);
+  padding: 13px 20px;
+}
+
+.registro__links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fs-space-2);
+  margin-top: var(--fs-space-2);
+}
+
+.registro__links-text {
+  font-size: 13px;
+  color: var(--fs-ink-muted);
+}
+
+.registro__link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fs-gold-deep);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--fs-transition), color var(--fs-transition);
+}
+
+.registro__link:hover {
+  color: var(--fs-ink);
+  border-bottom-color: var(--fs-gold-deep);
+}
+
+.registro__links--sub {
+  margin-top: var(--fs-space-1);
+}
+
+.registro__link-back {
+  font-size: 12.5px;
+  color: var(--fs-ink-soft);
+  text-decoration: none;
+  transition: color var(--fs-transition);
+}
+
+.registro__link-back:hover {
+  color: var(--fs-ink);
+}
+
+/* --- Estado de éxito --- */
+.registro__exito-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--fs-space-6) var(--fs-space-5);
+  background-color: var(--fs-bg);
+  border: 1px solid var(--fs-border);
+  border-radius: 4px;
+}
+
+.registro__exito-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: rgba(46, 125, 50, 0.12);
+  color: #2E7D32;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--fs-space-4);
+}
+
+.registro__exito-title {
+  font-size: 24px;
+  margin-bottom: var(--fs-space-3);
+  color: var(--fs-ink);
+}
+
+.registro__exito-desc {
+  font-size: 14px;
+  color: var(--fs-ink-soft);
+  line-height: 1.5;
+  margin-bottom: var(--fs-space-5);
+}
+
+.registro__exito-aviso {
+  background-color: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  padding: var(--fs-space-4);
+  border-radius: 4px;
+  margin-bottom: var(--fs-space-6);
+  text-align: left;
+}
+
+.registro__exito-aviso p {
+  font-size: 12.5px;
+  color: var(--fs-ink-soft);
+  margin-top: var(--fs-space-2);
+  line-height: 1.5;
+}
+
+.registro__exito-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-3);
+  width: 100%;
+}
+
+.registro__exito-acciones .fs-btn {
+  width: 100%;
+}
+
+/* --- Pie legal --- */
+.registro__foot {
+  margin-top: var(--fs-space-6);
+}
+
+.registro__foot-rule {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: var(--fs-border);
+  margin-bottom: var(--fs-space-4);
+}
+
+.registro__foot-text {
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--fs-ink-muted);
+}
+
+/* -----------------------------------------------------------------------------
+   RESPONSIVIDAD
+   -------------------------------------------------------------------------- */
+@media (max-width: 1180px) {
+  .registro {
+    grid-template-columns: 44fr 56fr;
+  }
+}
+
+@media (max-width: 980px) {
+  :host {
+    height: auto;
+  }
+
+  .registro {
+    grid-template-columns: 1fr;
+  }
+
+  .registro__canvas {
+    display: none;
+  }
+
+  .registro__panel {
+    border-left: none;
+    padding: var(--fs-space-6) var(--fs-space-4);
+    background-color: var(--fs-bg);
+  }
+}
+
+@media (max-width: 540px) {
+  .registro__grid-2 {
+    grid-template-columns: 1fr;
+    gap: var(--fs-space-4);
+  }
+}

@@ -1,0 +1,1280 @@
+/**
+ * =============================================================================
+ * FASHIONSTORE - ESTILOS DE TERMINAL POS (CU19)
+ * =============================================================================
+ */
+
+.pos-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 70px);
+  background-color: #0f172a;
+  color: #f8fafc;
+  font-family: inherit;
+  overflow: hidden;
+}
+
+/* ── BARRA SUPERIOR ──────────────────────────────────────────────────────── */
+.pos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: #1e293b;
+  border-bottom: 1px solid #334155;
+  flex-shrink: 0;
+
+  .pos-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    .pos-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      h1 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+        color: #f8fafc;
+      }
+
+      .pos-badge {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+    }
+
+    .sucursal-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+
+      label {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        margin: 0;
+      }
+
+      .form-select {
+        background: transparent;
+        color: #f8fafc;
+        border: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        outline: none;
+        cursor: pointer;
+
+        option {
+          background: #1e293b;
+          color: white;
+        }
+      }
+    }
+  }
+
+  .pos-header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .btn-outline-reserva {
+      background: rgba(236, 72, 153, 0.15);
+      border: 1px solid #ec4899;
+      color: #f472b6;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+
+      &:hover {
+        background: rgba(236, 72, 153, 0.3);
+        transform: translateY(-1px);
+      }
+    }
+
+    .cajero-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+
+      .cajero-badge {
+        background: #10b981;
+        color: #064e3b;
+        font-size: 0.7rem;
+        font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+      }
+
+      .cajero-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #e2e8f0;
+      }
+    }
+  }
+}
+
+/* ── ALERTAS FLOTANTES ───────────────────────────────────────────────────── */
+.pos-alert {
+  padding: 8px 24px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.alert-info {
+    background: #0369a1;
+    color: white;
+  }
+  &.alert-danger {
+    background: #be123c;
+    color: white;
+  }
+}
+
+/* ── LAYOUT 2 COLUMNAS ───────────────────────────────────────────────────── */
+.pos-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── COLUMNA IZQUIERDA: CATÁLOGO ─────────────────────────────────────────── */
+.pos-catalogo-section {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+  overflow: hidden;
+  border-right: 1px solid #334155;
+
+  .search-toolbar {
+    display: flex;
+    gap: 10px;
+
+    .search-input-wrap {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .search-icon {
+        position: absolute;
+        left: 12px;
+        font-size: 1rem;
+        color: #94a3b8;
+      }
+
+      .pos-search-input {
+        width: 100%;
+        background: #1e293b;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        padding: 10px 36px 10px 38px;
+        color: #f8fafc;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.2s;
+
+        &:focus {
+          border-color: #6366f1;
+          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        }
+      }
+
+      .btn-clear-search {
+        position: absolute;
+        right: 10px;
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+    }
+
+    .btn-search {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 0 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover {
+        background: #4338ca;
+      }
+    }
+  }
+
+  .categorias-pills {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    .pill-btn {
+      white-space: nowrap;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #334155;
+        color: white;
+      }
+
+      &.active {
+        background: #4f46e5;
+        color: white;
+        border-color: #6366f1;
+      }
+    }
+  }
+
+  .product-grid-container {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+
+      .product-card {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+
+        &:hover:not(.out-of-stock) {
+          transform: translateY(-2px);
+          border-color: #6366f1;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        &.out-of-stock {
+          opacity: 0.55;
+          cursor: not-allowed;
+        }
+
+        .product-card-img {
+          position: relative;
+          height: 110px;
+          background: #0f172a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          .img-placeholder {
+            font-size: 2.5rem;
+          }
+
+          .stock-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+
+            &.stock-high {
+              background: #059669;
+              color: white;
+            }
+            &.stock-low {
+              background: #d97706;
+              color: white;
+            }
+            &.stock-none {
+              background: #dc2626;
+              color: white;
+            }
+          }
+        }
+
+        .product-card-info {
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          flex: 1;
+
+          .product-sku {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-family: monospace;
+          }
+
+          .product-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #f8fafc;
+            margin: 0;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+
+          .product-meta {
+            display: flex;
+            gap: 6px;
+            margin-top: 2px;
+
+            .tag-talla,
+            .tag-color {
+              background: #0f172a;
+              color: #cbd5e1;
+              font-size: 0.68rem;
+              padding: 2px 5px;
+              border-radius: 4px;
+            }
+          }
+
+          .product-card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 6px;
+
+            .product-price {
+              font-size: 0.95rem;
+              font-weight: 800;
+              color: #38bdf8;
+            }
+
+            .btn-add-item {
+              background: #4f46e5;
+              color: white;
+              border: none;
+              width: 26px;
+              height: 26px;
+              border-radius: 6px;
+              font-weight: 800;
+              font-size: 1rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+
+              &:hover:not(:disabled) {
+                background: #4338ca;
+              }
+              &:disabled {
+                background: #475569;
+                cursor: not-allowed;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ── COLUMNA DERECHA: TICKET DE CAJA ─────────────────────────────────────── */
+.pos-ticket-section {
+  display: flex;
+  flex-direction: column;
+  background: #1e293b;
+  overflow: hidden;
+
+  .ticket-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #334155;
+      background: #0f172a;
+
+      .ticket-header-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        h2 {
+          font-size: 1.05rem;
+          font-weight: 700;
+          margin: 0;
+          color: #f8fafc;
+        }
+
+        .badge-reserva {
+          background: rgba(236, 72, 153, 0.2);
+          color: #f472b6;
+          border: 1px solid #ec4899;
+          font-size: 0.72rem;
+          font-weight: 700;
+          padding: 2px 6px;
+          border-radius: 4px;
+        }
+      }
+
+      .btn-clear-ticket {
+        background: transparent;
+        border: 1px solid #475569;
+        color: #94a3b8;
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.15);
+          color: #f87171;
+          border-color: #ef4444;
+        }
+      }
+    }
+
+    .ticket-cliente-box {
+      padding: 10px 14px;
+      background: #182234;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      .form-group-client {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+
+        label {
+          font-size: 0.72rem;
+          color: #94a3b8;
+          font-weight: 600;
+        }
+
+        .form-select-sm {
+          background: #0f172a;
+          color: #f8fafc;
+          border: 1px solid #334155;
+          border-radius: 6px;
+          padding: 5px 8px;
+          font-size: 0.8rem;
+          outline: none;
+        }
+      }
+
+      .billing-inputs-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+
+        .input-col {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+
+          label {
+            font-size: 0.68rem;
+            color: #94a3b8;
+          }
+
+          .form-input-sm {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            outline: none;
+          }
+        }
+      }
+    }
+
+    .ticket-items-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+      }
+
+      .empty-ticket {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #64748b;
+        text-align: center;
+
+        .empty-cart-icon {
+          font-size: 2.5rem;
+          margin-bottom: 6px;
+        }
+
+        p {
+          font-size: 0.95rem;
+          font-weight: 600;
+          margin: 0;
+        }
+
+        small {
+          font-size: 0.75rem;
+        }
+      }
+
+      .ticket-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .ticket-item-row {
+          background: #0f172a;
+          border: 1px solid #334155;
+          border-radius: 8px;
+          padding: 8px 10px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .item-main-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+
+            .item-name {
+              font-size: 0.82rem;
+              font-weight: 600;
+              color: #f8fafc;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            .item-sub {
+              font-size: 0.7rem;
+              color: #94a3b8;
+            }
+
+            .item-unit-price {
+              font-size: 0.72rem;
+              color: #38bdf8;
+            }
+          }
+
+          .item-quantity-controls {
+            display: flex;
+            align-items: center;
+            background: #1e293b;
+            border-radius: 6px;
+            border: 1px solid #334155;
+
+            .btn-qty {
+              background: transparent;
+              border: none;
+              color: #f8fafc;
+              width: 22px;
+              height: 22px;
+              font-weight: 700;
+              cursor: pointer;
+
+              &:hover {
+                background: #334155;
+              }
+            }
+
+            .qty-display {
+              font-size: 0.8rem;
+              font-weight: 700;
+              padding: 0 6px;
+              color: #f8fafc;
+            }
+          }
+
+          .item-total-col {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .item-total-val {
+              font-size: 0.85rem;
+              font-weight: 700;
+              color: #f8fafc;
+              min-width: 65px;
+              text-align: right;
+            }
+
+            .btn-remove-item {
+              background: transparent;
+              border: none;
+              color: #ef4444;
+              cursor: pointer;
+              font-size: 0.85rem;
+              padding: 2px 4px;
+              border-radius: 4px;
+
+              &:hover {
+                background: rgba(239, 68, 68, 0.2);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .ticket-summary-box {
+      padding: 10px 16px;
+      background: #182234;
+      border-top: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      .summary-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        color: #94a3b8;
+
+        &.discount-line {
+          .input-discount {
+            width: 75px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.82rem;
+            text-align: right;
+          }
+        }
+
+        &.total-line {
+          font-size: 1rem;
+          font-weight: 800;
+          color: #f8fafc;
+          padding-top: 4px;
+          border-top: 1px dashed #334155;
+
+          .total-highlight {
+            color: #10b981;
+            font-size: 1.25rem;
+          }
+        }
+      }
+    }
+
+    .ticket-actions {
+      padding: 12px 16px;
+      background: #0f172a;
+      border-top: 1px solid #334155;
+
+      .btn-cobrar {
+        width: 100%;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        transition: transform 0.15s, opacity 0.15s;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        &:disabled {
+          background: #475569;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+
+        .btn-cobrar-text {
+          font-size: 1.05rem;
+          letter-spacing: 0.5px;
+        }
+
+        .btn-cobrar-amount {
+          font-size: 1.15rem;
+          background: rgba(0, 0, 0, 0.2);
+          padding: 2px 8px;
+          border-radius: 6px;
+        }
+      }
+    }
+  }
+}
+
+/* ── MODALES ─────────────────────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 16px;
+
+  .modal-dialog {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0;
+        color: #f8fafc;
+      }
+
+      .btn-close-modal {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.2rem;
+        cursor: pointer;
+
+        &:hover {
+          color: white;
+        }
+      }
+    }
+
+    .modal-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 75vh;
+      overflow-y: auto;
+
+      .modal-desc {
+        font-size: 0.85rem;
+        color: #cbd5e1;
+        margin: 0;
+        line-height: 1.4;
+      }
+
+      .cobro-total-banner {
+        background: #0f172a;
+        border: 2px solid #10b981;
+        border-radius: 10px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+
+        .banner-label {
+          font-size: 0.8rem;
+          color: #94a3b8;
+          text-transform: uppercase;
+          font-weight: 700;
+        }
+
+        .banner-amount {
+          font-size: 1.8rem;
+          font-weight: 900;
+          color: #10b981;
+        }
+      }
+
+      .payment-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+
+        .pay-tab {
+          background: #0f172a;
+          border: 1px solid #334155;
+          color: #94a3b8;
+          padding: 8px 4px;
+          border-radius: 8px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.15s;
+
+          &:hover {
+            border-color: #6366f1;
+            color: white;
+          }
+
+          &.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #6366f1;
+          }
+        }
+      }
+
+      .efectivo-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        label {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #cbd5e1;
+        }
+
+        .input-recibido-wrap {
+          position: relative;
+          display: flex;
+          align-items: center;
+
+          .currency-symbol {
+            position: absolute;
+            left: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #94a3b8;
+          }
+
+          .input-recibido {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 10px 12px 10px 42px;
+            color: #f8fafc;
+            font-size: 1.3rem;
+            font-weight: 800;
+            outline: none;
+
+            &:focus {
+              border-color: #10b981;
+            }
+          }
+        }
+
+        .quick-cash-buttons {
+          display: flex;
+          gap: 6px;
+
+          .btn-cash-quick {
+            flex: 1;
+            background: #334155;
+            border: none;
+            color: #f8fafc;
+            padding: 6px 0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+
+            &:hover {
+              background: #475569;
+            }
+          }
+        }
+
+        .vuelto-display {
+          border-radius: 8px;
+          padding: 10px 14px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          &.vuelto-ok {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #34d399;
+
+            .vuelto-val {
+              font-size: 1.25rem;
+              font-weight: 800;
+            }
+          }
+
+          &.vuelto-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #f87171;
+
+            .vuelto-val {
+              font-size: 1rem;
+              font-weight: 700;
+            }
+          }
+        }
+      }
+
+      .qr-panel,
+      .card-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 14px;
+        background: #0f172a;
+        border-radius: 8px;
+        text-align: center;
+
+        .qr-mockup {
+          background: white;
+          padding: 14px;
+          border-radius: 8px;
+
+          .qr-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #0f172a;
+
+            .qr-icon {
+              font-size: 3rem;
+            }
+
+            .qr-amount-tag {
+              font-size: 0.9rem;
+              font-weight: 800;
+              margin-top: 4px;
+            }
+          }
+        }
+
+        .card-icon {
+          font-size: 2.5rem;
+        }
+
+        p {
+          font-size: 0.82rem;
+          color: #94a3b8;
+          margin: 0;
+        }
+      }
+
+      .factura-datos-box {
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        padding: 10px 14px;
+
+        h4 {
+          font-size: 0.8rem;
+          color: #94a3b8;
+          margin: 0 0 8px 0;
+          text-transform: uppercase;
+        }
+
+        .form-row-2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+
+          .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+
+            label {
+              font-size: 0.72rem;
+              color: #cbd5e1;
+            }
+
+            .form-control {
+              background: #1e293b;
+              border: 1px solid #475569;
+              color: #f8fafc;
+              border-radius: 6px;
+              padding: 6px 8px;
+              font-size: 0.82rem;
+              outline: none;
+            }
+          }
+        }
+      }
+
+      .error-msg-banner {
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid #ef4444;
+        color: #fca5a5;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 12px 20px;
+      background: #0f172a;
+      border-top: 1px solid #334155;
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        border: none;
+      }
+
+      .btn-secondary {
+        background: #334155;
+        color: #cbd5e1;
+
+        &:hover {
+          background: #475569;
+        }
+      }
+
+      .btn-primary {
+        background: #4f46e5;
+        color: white;
+
+        &:hover:not(:disabled) {
+          background: #4338ca;
+        }
+        &:disabled {
+          background: #475569;
+          cursor: not-allowed;
+        }
+      }
+
+      .btn-success-cobro {
+        background: #10b981;
+        color: #064e3b;
+        font-weight: 800;
+
+        &:hover:not(:disabled) {
+          background: #34d399;
+        }
+        &:disabled {
+          background: #475569;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  /* MODAL DE ÉXITO / COMPROBANTE */
+  .modal-exito {
+    max-width: 460px;
+    text-align: center;
+
+    .exito-header {
+      padding: 24px 20px 12px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+
+      .exito-icon {
+        width: 50px;
+        height: 50px;
+        background: #10b981;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 900;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin: 0;
+        color: #f8fafc;
+      }
+
+      .ticket-id-tag {
+        background: #0f172a;
+        color: #38bdf8;
+        font-family: monospace;
+        font-size: 0.85rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid #334155;
+      }
+    }
+
+    .exito-details-box {
+      margin: 12px 20px;
+      padding: 12px 16px;
+      background: #0f172a;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #94a3b8;
+
+        strong {
+          color: #f8fafc;
+        }
+
+        .total-big {
+          color: #10b981;
+          font-size: 1.05rem;
+        }
+
+        &.highlight-vuelto {
+          background: rgba(16, 185, 129, 0.1);
+          padding: 4px 6px;
+          border-radius: 4px;
+          strong {
+            color: #34d399;
+          }
+        }
+
+        &.comprobante-row {
+          padding-top: 4px;
+          border-top: 1px dashed #334155;
+
+          .comp-badge {
+            background: #4f46e5;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+
+    .exito-actions {
+      padding: 16px 20px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .btn-pdf-recibo {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+
+        &:hover {
+          background: #2563eb;
+        }
+      }
+
+      .btn-nueva-venta {
+        background: #10b981;
+        color: #064e3b;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+
+        &:hover {
+          background: #34d399;
+        }
+      }
+    }
+  }
+}

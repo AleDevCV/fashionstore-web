@@ -1,0 +1,329 @@
+<section class="dashboard">
+  <!-- Cabecera Ejecutiva -->
+  <header class="dashboard__header">
+    <div>
+      <span class="fs-eyebrow">Panel de Control Gerencial · CU24</span>
+      <h1 class="dashboard__title">Indicadores y KPIs en Tiempo Real</h1>
+      <p class="dashboard__subtitle">
+        Supervisión consolidada de ventas omnicanal, uso de probadores físicos y salud de inventario multisucursal.
+      </p>
+    </div>
+    <div class="dashboard__actions">
+      <span class="dashboard__timestamp">
+        <span class="material-symbols-outlined">schedule</span>
+        Actualizado: {{ ultimaActualizacion() | date:'HH:mm:ss' }}
+      </span>
+      <button class="btn btn--outline" (click)="cargarDatos()" [disabled]="cargando()">
+        <span class="material-symbols-outlined" [class.spin]="cargando()">refresh</span>
+        Refrescar
+      </button>
+    </div>
+  </header>
+
+  <!-- Estado de Carga -->
+  @if (cargando()) {
+    <div class="dashboard__loading">
+      <div class="spinner"></div>
+      <p>Cargando métricas ejecutivas...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error() && !cargando()) {
+    <div class="dashboard__alert dashboard__alert--error">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ error() }}</span>
+      <button class="btn btn--sm" (click)="cargarDatos()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Contenido Principal -->
+  @if (datos(); as d) {
+    <!-- 1. Tarjetas de KPIs Principales -->
+    <div class="kpi-grid">
+      <!-- KPI 1: Ingresos Totales -->
+      <article class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Ingresos Totales</span>
+          <span class="kpi-card__icon material-symbols-outlined">payments</span>
+        </div>
+        <div class="kpi-card__value">{{ formatearMoneda(d.resumen.ingresos_totales) }}</div>
+        <div class="kpi-card__footer">
+          <span class="material-symbols-outlined icon--sm text-emerald">trending_up</span>
+          <span><strong>{{ d.resumen.total_ventas }}</strong> ventas registradas</span>
+        </div>
+      </article>
+
+      <!-- KPI 2: Ticket Promedio -->
+      <article class="kpi-card">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Ticket Promedio</span>
+          <span class="kpi-card__icon material-symbols-outlined">receipt_long</span>
+        </div>
+        <div class="kpi-card__value">{{ formatearMoneda(d.resumen.ticket_promedio) }}</div>
+        <div class="kpi-card__footer text-muted">
+          <span>Promedio facturado por compra</span>
+        </div>
+      </article>
+
+      <!-- KPI 3: Conversión de Probadores (CU16/CU17) -->
+      <article class="kpi-card">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Conversión Probadores</span>
+          <span class="kpi-card__icon material-symbols-outlined">door_sliding</span>
+        </div>
+        <div class="kpi-card__value">{{ d.resumen.tasa_conversion_reservas }}%</div>
+        <div class="kpi-card__footer">
+          <span><strong>{{ d.resumen.reservas_atendidas }}</strong> de {{ d.resumen.total_reservas }} convertidas</span>
+        </div>
+      </article>
+
+      <!-- KPI 4: Stock Físico Total -->
+      <article class="kpi-card">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Inventario Total</span>
+          <span class="kpi-card__icon material-symbols-outlined">inventory_2</span>
+        </div>
+        <div class="kpi-card__value">{{ d.resumen.stock_total_piezas | number }} <span class="unit">unid.</span></div>
+        <div class="kpi-card__footer text-muted">
+          <span>Valor estimado: {{ formatearMoneda(d.resumen.valor_inventario_estimado) }}</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- 2. Gráficos y Distribución -->
+    <div class="dashboard__split">
+      <!-- Columna Izquierda: Tendencia y Canales -->
+      <div class="dashboard__column">
+        <!-- Gráfico de Ventas Recientes -->
+        <div class="card">
+          <div class="card__header">
+            <h2 class="card__title">
+              <span class="material-symbols-outlined">bar_chart</span>
+              Tendencia de Ventas e Ingresos
+            </h2>
+            <span class="card__hint">Últimos registros</span>
+          </div>
+          <div class="card__body">
+            @if (d.ventas_recientes.length === 0) {
+              <p class="empty-state">No hay ventas registradas en el período evaluado.</p>
+            } @else {
+              <div class="chart-bars">
+                @for (item of d.ventas_recientes; track item.fecha) {
+                  <div class="chart-bars__col">
+                    <div class="chart-bars__bar-wrap" [title]="item.fecha + ': ' + formatearMoneda(item.total_ingresos) + ' (' + item.cantidad_ventas + ' vts)'">
+                      <div class="chart-bars__bar" [style.height.%]="calcularAlturaBarra(item.total_ingresos)">
+                        <span class="chart-bars__tooltip">{{ formatearMoneda(item.total_ingresos) }}</span>
+                      </div>
+                    </div>
+                    <span class="chart-bars__label">{{ item.fecha | slice:5:10 }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Canales y Métodos de Pago -->
+        <div class="card-grid-2">
+          <!-- Canales -->
+          <div class="card">
+            <div class="card__header">
+              <h3 class="card__title">Canales de Venta</h3>
+            </div>
+            <div class="card__body">
+              @for (c of d.canales; track c.canal) {
+                <div class="progress-row">
+                  <div class="progress-row__header">
+                    <span class="progress-row__name">
+                      <span class="material-symbols-outlined icon--sm">
+                        {{ c.canal === 'Presencial' ? 'store' : 'language' }}
+                      </span>
+                      {{ c.canal }}
+                    </span>
+                    <span class="progress-row__val">{{ c.porcentaje }}% ({{ formatearMoneda(c.total_ingresos) }})</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill" [style.width.%]="c.porcentaje" [class.fill--alt]="c.canal === 'Online'"></div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Métodos de Pago -->
+          <div class="card">
+            <div class="card__header">
+              <h3 class="card__title">Métodos de Cobro</h3>
+            </div>
+            <div class="card__body">
+              @for (m of d.metodos_pago; track m.metodo_pago) {
+                <div class="progress-row">
+                  <div class="progress-row__header">
+                    <span class="progress-row__name">
+                      <span class="material-symbols-outlined icon--sm">{{ obtenerIconoMetodo(m.metodo_pago) }}</span>
+                      {{ m.metodo_pago }}
+                    </span>
+                    <span class="progress-row__val">{{ m.porcentaje }}%</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill fill--emerald" [style.width.%]="m.porcentaje"></div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Sucursales y Top Prendas -->
+      <div class="dashboard__column">
+        <!-- Rendimiento de Reservas por Sucursal (CU16/CU17) -->
+        <div class="card">
+          <div class="card__header">
+            <h2 class="card__title">
+              <span class="material-symbols-outlined">storefront</span>
+              Flujo de Probadores por Sucursal
+            </h2>
+            <span class="card__hint">Omnicanal</span>
+          </div>
+          <div class="card__body p-0">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Sucursal</th>
+                    <th class="text-center">Total</th>
+                    <th class="text-center">Atendidas</th>
+                    <th class="text-center">Pendientes</th>
+                    <th class="text-right">Efectividad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (s of d.rendimiento_sucursales; track s.id_sucursal) {
+                    <tr>
+                      <td>
+                        <strong>{{ s.sucursal }}</strong>
+                        @if (s.ciudad) {
+                          <span class="sub-text">{{ s.ciudad }}</span>
+                        }
+                      </td>
+                      <td class="text-center">{{ s.total_reservas }}</td>
+                      <td class="text-center">
+                        <span class="badge badge--success">{{ s.atendidas }}</span>
+                      </td>
+                      <td class="text-center">
+                        <span class="badge badge--warning">{{ s.pendientes }}</span>
+                      </td>
+                      <td class="text-right">
+                        <span class="rate-badge" [class.rate--high]="s.tasa_efectividad >= 70">
+                          {{ s.tasa_efectividad }}%
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top 5 Prendas Más Vendidas -->
+        <div class="card">
+          <div class="card__header">
+            <h2 class="card__title">
+              <span class="material-symbols-outlined">stars</span>
+              Top Prendas con Mayor Demanda
+            </h2>
+            <span class="card__hint">Más vendidas</span>
+          </div>
+          <div class="card__body p-0">
+            @if (d.top_prendas.length === 0) {
+              <p class="empty-state">No se han registrado ventas de prendas aún.</p>
+            } @else {
+              <ul class="top-list">
+                @for (p of d.top_prendas; track p.id_prenda; let idx = $index) {
+                  <li class="top-list__item">
+                    <span class="top-list__rank">#{{ idx + 1 }}</span>
+                    <div class="top-list__img-wrap">
+                      @if (p.url_imagen) {
+                        <img [src]="p.url_imagen" [alt]="p.nombre" class="top-list__img" />
+                      } @else {
+                        <span class="material-symbols-outlined top-list__img-placeholder">checkroom</span>
+                      }
+                    </div>
+                    <div class="top-list__info">
+                      <span class="top-list__name">{{ p.nombre }}</span>
+                      <span class="top-list__cat">{{ p.categoria || 'Moda' }}</span>
+                    </div>
+                    <div class="top-list__stats">
+                      <span class="top-list__units"><strong>{{ p.unidades_vendidas }}</strong> unid.</span>
+                      <span class="top-list__revenue">{{ formatearMoneda(p.total_ingresos) }}</span>
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Diagnóstico de Salud del Inventario Multisucursal -->
+    <div class="card mt-4">
+      <div class="card__header">
+        <h2 class="card__title">
+          <span class="material-symbols-outlined">warehouse</span>
+          Diagnóstico de Salud de Inventario por Sucursal
+        </h2>
+        <span class="card__hint">Monitoreo crítico</span>
+      </div>
+      <div class="card__body p-0">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Sucursal</th>
+                <th class="text-center">Stock Total</th>
+                <th class="text-center">Agotadas (0 u.)</th>
+                <th class="text-center">Bajo Stock (&lt;5 u.)</th>
+                <th class="text-center">Óptimas (&ge;5 u.)</th>
+                <th class="text-right">Estado General</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (inv of d.inventario_sucursales; track inv.id_sucursal) {
+                <tr>
+                  <td><strong>{{ inv.sucursal }}</strong></td>
+                  <td class="text-center font-bold">{{ inv.total_stock }} unid.</td>
+                  <td class="text-center">
+                    <span class="badge" [class.badge--danger]="inv.variantes_agotadas > 0">
+                      {{ inv.variantes_agotadas }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge" [class.badge--warning]="inv.variantes_bajo_stock > 0">
+                      {{ inv.variantes_bajo_stock }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge badge--success">{{ inv.variantes_optimas }}</span>
+                  </td>
+                  <td class="text-right">
+                    @if (inv.variantes_agotadas > 0) {
+                      <span class="status-pill status-pill--danger">Atención requerida</span>
+                    } @else if (inv.variantes_bajo_stock > 0) {
+                      <span class="status-pill status-pill--warning">Reabastecer</span>
+                    } @else {
+                      <span class="status-pill status-pill--success">Saludable</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</section>
