@@ -144,16 +144,63 @@
           </div>
         </div>
 
-        <div class="fs-field">
-          <label class="fs-eyebrow" for="url_imagen">URL de imagen principal</label>
-          <input
-            id="url_imagen"
-            type="text"
-            class="fs-input"
-            formControlName="url_imagen"
-            placeholder="https://…"
-          />
-        </div>
+        <section class="prenda-modal__imagen" aria-labelledby="imagen-principal-titulo">
+          <div class="prenda-modal__imagen-encabezado">
+            <span id="imagen-principal-titulo" class="fs-eyebrow">
+              Imagen principal del producto
+            </span>
+            <span class="modal__nota">Seleccione una fotografía desde su computadora.</span>
+          </div>
+
+          <div class="prenda-modal__preview">
+            @if (imagenPreview()) {
+              <img [src]="imagenPreview()" alt="Vista previa de la prenda" />
+            } @else {
+              <span>Sin imagen seleccionada</span>
+            }
+          </div>
+
+          <div class="prenda-modal__imagen-controles">
+            <label class="prenda-modal__file-label" for="archivo_imagen">
+              Seleccionar imagen desde mi computadora
+            </label>
+            <input
+              #selectorImagen
+              id="archivo_imagen"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              class="prenda-modal__file-input"
+              (change)="seleccionarImagen($event)"
+              [disabled]="cargando()"
+            />
+            @if (archivoSeleccionado()) {
+              <button
+                type="button"
+                class="fs-btn fs-btn--ghost"
+                (click)="selectorImagen.click()"
+                [disabled]="cargando()"
+              >
+                Cambiar imagen
+              </button>
+              <button
+                type="button"
+                class="fs-accion fs-accion--peligro"
+                (click)="cancelarImagenSeleccionada()"
+                [disabled]="cargando()"
+              >
+                Cancelar selección
+              </button>
+              <span class="modal__nota">{{ archivoSeleccionado()?.name }}</span>
+            } @else {
+              <span class="modal__nota">Ningún archivo seleccionado.</span>
+            }
+            <span class="modal__nota">JPG, PNG o WebP. Máximo 5 MB.</span>
+          </div>
+        </section>
+
+        @if (mensajeImagen()) {
+          <span class="fs-field-error" role="alert">{{ mensajeImagen() }}</span>
+        }
 
         <!-- Estado: solo se gestiona en edición -->
         @if (esEdicion()) {
@@ -280,7 +327,7 @@
         >
           @if (cargando()) {
             <span class="fs-spinner" aria-hidden="true"></span>
-            <span>Guardando</span>
+            <span>{{ subiendoImagen() ? 'Subiendo imagen' : 'Guardando' }}</span>
           } @else {
             <span>{{ esEdicion() ? 'Guardar cambios' : 'Registrar prenda' }}</span>
           }

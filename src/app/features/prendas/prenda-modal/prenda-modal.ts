@@ -14,7 +14,7 @@
  * =============================================================================
  */
 
-import { Component, OnInit, inject, input, output, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input, output, signal } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -46,7 +46,7 @@ interface FilaVariante {
   templateUrl: './prenda-modal.html',
   styleUrl: './prenda-modal.scss',
 })
-export class PrendaModal implements OnInit {
+export class PrendaModal implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly prendaService = inject(PrendaService);
 
@@ -74,6 +74,14 @@ export class PrendaModal implements OnInit {
 
   /** true mientras la petición HTTP está en curso. */
   readonly cargando = signal(false);
+  readonly subiendoImagen = signal(false);
+  readonly archivoSeleccionado = signal<File | null>(null);
+  readonly imagenPreview = signal<string | null>(null);
+  readonly mensajeImagen = signal<string | null>(null);
+
+  private urlPreviewLocal: string | null = null;
+  private readonly tiposImagenPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+  private readonly tamanoMaximoImagen = 5 * 1024 * 1024;
 
   /** Mensaje de error devuelto por el backend; null si no hay ninguno. */
   readonly mensajeError = signal<string | null>(null);
@@ -113,11 +121,16 @@ export class PrendaModal implements OnInit {
       estado: [prendaActual?.estado ?? 'Activo'],
       variantes: this.fb.array([]),
     });
+    this.imagenPreview.set(prendaActual?.url_imagen ?? null);
 
     // En modo alta se parte con una fila vacía para guiar al usuario.
     if (!this.esEdicion()) {
       this.agregarVariante();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.liberarPreviewLocal();
   }
 
   // ---------------------------------------------------------------------------
@@ -200,6 +213,42 @@ export class PrendaModal implements OnInit {
     }
   }
 
+  seleccionarImagen(evento: Event): void {
+    const entrada = evento.target as HTMLInputElement;
+    const archivo = entrada.files?.[0];
+    entrada.value = '';
+    this.mensajeImagen.set(null);
+    if (!archivo) return;
+
+    if (!this.tiposImagenPermitidos.includes(archivo.type)) {
+      this.mensajeImagen.set('Formato no permitido. Seleccione una imagen JPG, PNG o WebP.');
+      return;
+    }
+    if (archivo.size > this.tamanoMaximoImagen) {
+      this.mensajeImagen.set('La imagen supera el tamaño máximo permitido de 5 MB.');
+      return;
+    }
+
+    this.liberarPreviewLocal();
+    this.urlPreviewLocal = URL.createObjectURL(archivo);
+    this.archivoSeleccionado.set(archivo);
+    this.imagenPreview.set(this.urlPreviewLocal);
+  }
+
+  cancelarImagenSeleccionada(): void {
+    this.liberarPreviewLocal();
+    this.archivoSeleccionado.set(null);
+    this.mensajeImagen.set(null);
+    this.imagenPreview.set(this.formulario.controls['url_imagen'].value || null);
+  }
+
+  private liberarPreviewLocal(): void {
+    if (this.urlPreviewLocal) {
+      URL.revokeObjectURL(this.urlPreviewLocal);
+      this.urlPreviewLocal = null;
+    }
+  }
+
   /**
    * Valida y envía el formulario al backend.
    *
@@ -211,16 +260,38 @@ export class PrendaModal implements OnInit {
       return;
     }
 
-    this.cargando.set(true);
     this.mensajeError.set(null);
+    this.mensajeImagen.set(null);
+    this.cargando.set(true);
+
+    const archivo = this.archivoSeleccionado();
+    if (archivo) {
+      this.subiendoImagen.set(true);
+      this.prendaService.subirImagen(archivo).subscribe({
+        next: ({ url_imagen }) => {
+          this.subiendoImagen.set(false);
+          this.guardarDatos(url_imagen);
+        },
+        error: (error: Error) => {
+          this.subiendoImagen.set(false);
+          this.cargando.set(false);
+          this.mensajeImagen.set(error.message);
+        },
+      });
+      return;
+    }
+
+    this.guardarDatos(this.formulario.controls['url_imagen'].value || null);
+  }
+
+  private guardarDatos(urlImagen: string | null): void {
 
     const valores = this.formulario.value;
     const prendaActual = this.prenda();
 
     if (prendaActual) {
       // ----- MODO EDICIÓN: datos maestros sin variantes -----
-      this.prendaService
-        .actualizar(prendaActual.id_prenda, {
+      const cambios = {
           sku: valores.sku,
           nombre: valores.nombre,
           descripcion: valores.descripcion || null,
@@ -228,9 +299,11 @@ export class PrendaModal implements OnInit {
           genero: valores.genero,
           precio_base: Number(valores.precio_base),
           id_categoria: Number(valores.id_categoria),
-          url_imagen: valores.url_imagen || null,
           estado: valores.estado,
-        })
+          ...(urlImagen !== prendaActual.url_imagen ? { url_imagen: urlImagen } : {}),
+        };
+      this.prendaService
+        .actualizar(prendaActual.id_prenda, cambios)
         .subscribe({
           next: (actualizada) => {
             this.cargando.set(false);
@@ -261,7 +334,7 @@ export class PrendaModal implements OnInit {
           genero: valores.genero,
           precio_base: Number(valores.precio_base),
           id_categoria: Number(valores.id_categoria),
-          url_imagen: valores.url_imagen || null,
+          url_imagen: urlImagen,
           variantes,
         })
         .subscribe({

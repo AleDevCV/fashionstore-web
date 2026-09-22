@@ -6,7 +6,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { traducirErrorApi } from '../utils/api-error';
-import { Prenda, PrendaCrear, PrendaActualizar, Talla, Color, MensajeRespuesta } from '../models/catalogo.model';
+import {
+  Color,
+  ImagenPrendaSubida,
+  MensajeRespuesta,
+  Prenda,
+  PrendaActualizar,
+  PrendaCrear,
+  Talla,
+} from '../models/catalogo.model';
 
 @Injectable({ providedIn: 'root' })
 export class PrendaService {
@@ -34,6 +42,14 @@ export class PrendaService {
   crear(datos: PrendaCrear): Observable<Prenda> {
     return this.http
       .post<Prenda>(`${this.baseUrl}/`, datos)
+      .pipe(catchError(traducirErrorApi));
+  }
+
+  subirImagen(archivo: File): Observable<ImagenPrendaSubida> {
+    const formulario = new FormData();
+    formulario.append('archivo', archivo);
+    return this.http
+      .post<ImagenPrendaSubida>(`${this.baseUrl}/imagenes`, formulario)
       .pipe(catchError(traducirErrorApi));
   }
 
