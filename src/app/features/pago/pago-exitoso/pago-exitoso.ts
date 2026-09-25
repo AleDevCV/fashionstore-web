@@ -119,8 +119,14 @@ export class PagoExitoso implements OnInit, OnDestroy {
   ngOnInit(): void {
     const reserva = this.route.snapshot.queryParamMap.get('reserva');
     if (reserva) {
-      this.idReserva.set(parseInt(reserva));
-      this.verificarPago();
+      const match = reserva.match(/\d+/);
+      const parsed = match ? parseInt(match[0], 10) : parseInt(reserva, 10);
+      if (!isNaN(parsed)) {
+        this.idReserva.set(parsed);
+        this.verificarPago();
+      } else {
+        this.estado.set('error');
+      }
     } else {
       this.estado.set('error');
     }
