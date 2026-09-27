@@ -76,10 +76,15 @@ export class ProbadorIa implements OnDestroy {
         return new originalWorker(url, options);
       } as any;
 
+      let imageUrl = `${environment.apiUrl}/api/ia/proxy-image?url=${encodeURIComponent(this.prenda().url_imagen || '')}`;
+      if (imageUrl.startsWith('/')) {
+        imageUrl = window.location.origin + imageUrl;
+      }
+
       this.rtClient = await client.realtime.connect(this.localStream, {
         model: rtModel,
         initialState: {
-          image: this.prenda().url_imagen ? `${environment.apiUrl}/api/ia/proxy-image?url=${encodeURIComponent(this.prenda().url_imagen || '')}` : '',
+          image: this.prenda().url_imagen ? imageUrl : '',
           prompt: {
             text: "Change the person's clothing to match the outfit in the reference image",
             enhance: true
