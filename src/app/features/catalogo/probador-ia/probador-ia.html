@@ -11,25 +11,17 @@
       }
 
       <div class="decart-container">
-        <!-- Columna Izquierda: Cámara Local -->
-        <div class="decart-panel panel-local" [class.pip-mode]="conectado() || conectando()">
+        <!-- Columna Izquierda: Cámara Local (Siempre PiP en móvil) -->
+        <div class="decart-panel panel-local">
           <div class="panel-header">
             <span class="icon">■</span>
             TU CÁMARA
           </div>
           <div class="video-wrapper">
             <video #localVideo autoplay muted playsinline></video>
-            @if (!conectado() && !conectando()) {
-              <div class="video-overlay">
-                <p>Conecta tu cámara para empezar</p>
-                <button class="fs-btn fs-btn--primary" (click)="iniciarExperiencia()">
-                  ▶ Iniciar Experiencia
-                </button>
-              </div>
-            }
             @if (conectando()) {
               <div class="video-overlay">
-                <p>Iniciando cámara...</p>
+                <p>...</p>
               </div>
             }
           </div>
@@ -37,9 +29,16 @@
 
         <!-- Columna Derecha: Resultado AI -->
         <div class="decart-panel panel-remote">
-          <div class="panel-header">
-            <span class="icon">âž¤</span>
-            RESULTADO AI
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div>
+              <span class="icon">➤</span>
+              RESULTADO AI
+            </div>
+            @if (!conectado() && !conectando()) {
+              <button class="fs-btn fs-btn--primary" style="padding: 6px 12px; font-size: 0.8rem;" (click)="iniciarExperiencia()">
+                ▶ INICIAR EXPERIENCIA
+              </button>
+            }
           </div>
           <div class="video-wrapper">
             <video #remoteVideo autoplay playsinline muted></video>

@@ -44,31 +44,28 @@
   .panel-remote {
     width: 100%;
     aspect-ratio: 3/4;
-    order: 2;
+    order: 1; /* Remote is the main background */
   }
   
   .panel-local {
-    width: 100%;
-    order: 1;
-  }
-
-  /* Cuando el usuario presiona "Iniciar Experiencia", entra en modo Picture-in-Picture */
-  .panel-local.pip-mode {
     position: absolute;
     bottom: 12px;
     right: 12px;
-    width: 110px;
+    width: 140px;
     height: auto;
     z-index: 10;
     border: 2px solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    order: 2;
   }
   
-  .panel-local.pip-mode .panel-header {
-    display: none;
+  /* Make the header font smaller for the tiny pip window */
+  .panel-local .panel-header {
+    font-size: 0.65rem;
+    padding: 6px 8px;
   }
 
-  .panel-local.pip-mode .video-wrapper {
+  .panel-local .video-wrapper {
     aspect-ratio: 3/4;
   }
 }
