@@ -43,19 +43,19 @@
   
   .panel-remote {
     width: 100%;
-    aspect-ratio: 3/4;
-    order: 1; /* Remote is the main background */
+    aspect-ratio: 9/16; /* Más alto para móviles */
+    order: 1;
   }
   
   .panel-local {
     position: absolute;
-    bottom: 12px;
-    right: 12px;
-    width: 140px;
+    bottom: -35px; /* Desplazado hacia abajo para tapar menos la ropa */
+    right: -5px;   /* Pegado al borde derecho */
+    width: 110px;  /* Ligeramente más pequeño */
     height: auto;
     z-index: 10;
     border: 2px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8);
     order: 2;
   }
   
