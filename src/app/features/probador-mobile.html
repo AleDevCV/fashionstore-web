@@ -1,0 +1,7 @@
+﻿@if (prenda()) {
+  <app-probador-ia [prenda]="prenda()!" (cerrado)="onCerrado()"></app-probador-ia>
+} @else if (error()) {
+  <div style="color: white; text-align: center; margin-top: 50px;">{{ error() }}</div>
+} @else {
+  <div style="color: white; text-align: center; margin-top: 50px;">Cargando probador virtual...</div>
+}

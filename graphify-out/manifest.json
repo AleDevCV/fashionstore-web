@@ -1,0 +1,552 @@
+{
+  ".vscode/extensions.json": {
+    "mtime": 1788596283.1776419,
+    "ast_hash": "66fd9e60d4633b6099fe02e06a7075ea",
+    "semantic_hash": "66fd9e60d4633b6099fe02e06a7075ea"
+  },
+  ".vscode/launch.json": {
+    "mtime": 1788596283.1791553,
+    "ast_hash": "430386a2f03e9d559664c196344c121b",
+    "semantic_hash": "430386a2f03e9d559664c196344c121b"
+  },
+  ".vscode/tasks.json": {
+    "mtime": 1788596283.1811843,
+    "ast_hash": "d2fc2624d783980be281b4cf0acc2455",
+    "semantic_hash": "d2fc2624d783980be281b4cf0acc2455"
+  },
+  "angular.json": {
+    "mtime": 1790316055.5838165,
+    "ast_hash": "20f81eb271e871431796b456b2ff3eb0",
+    "semantic_hash": "20f81eb271e871431796b456b2ff3eb0"
+  },
+  "package.json": {
+    "mtime": 1790306371.3318925,
+    "ast_hash": "e97b4da5b421fd8d901222952f292bf8",
+    "semantic_hash": "e97b4da5b421fd8d901222952f292bf8"
+  },
+  "src/app/app.config.ts": {
+    "mtime": 1790316044.2258365,
+    "ast_hash": "fcec88bde88c3664eeb602865799d15b",
+    "semantic_hash": "fcec88bde88c3664eeb602865799d15b"
+  },
+  "src/app/app.routes.ts": {
+    "mtime": 1790058311.6693325,
+    "ast_hash": "82ead0e66a24c0bc970d9e28150d8839",
+    "semantic_hash": "82ead0e66a24c0bc970d9e28150d8839"
+  },
+  "src/app/app.spec.ts": {
+    "mtime": 1788596283.1940029,
+    "ast_hash": "5d09bc934ab5a35736b28ce543dc507d",
+    "semantic_hash": "5d09bc934ab5a35736b28ce543dc507d"
+  },
+  "src/app/app.ts": {
+    "mtime": 1788596283.195003,
+    "ast_hash": "00a906a34af189dd1795f4b905a18671",
+    "semantic_hash": "00a906a34af189dd1795f4b905a18671"
+  },
+  "src/app/core/guards/auth.guard.ts": {
+    "mtime": 1788596283.197006,
+    "ast_hash": "ce55c5e9a4f709720b4fb26470083898",
+    "semantic_hash": "ce55c5e9a4f709720b4fb26470083898"
+  },
+  "src/app/core/guards/rol.guard.ts": {
+    "mtime": 1788650605.0782993,
+    "ast_hash": "549d50197766eb256eb9de95cc5d233b",
+    "semantic_hash": "549d50197766eb256eb9de95cc5d233b"
+  },
+  "src/app/core/interceptors/auth.interceptor.ts": {
+    "mtime": 1790058302.8792412,
+    "ast_hash": "5abfb29c721ffa3e00a5341a2806d556",
+    "semantic_hash": "5abfb29c721ffa3e00a5341a2806d556"
+  },
+  "src/app/core/models/auth.model.ts": {
+    "mtime": 1790058302.88125,
+    "ast_hash": "35fb4c16d9b428f31add2e5897c1a743",
+    "semantic_hash": "35fb4c16d9b428f31add2e5897c1a743"
+  },
+  "src/app/core/models/bitacora.model.ts": {
+    "mtime": 1790058302.88125,
+    "ast_hash": "1603e3d10772d00a598e5f87c9f1502c",
+    "semantic_hash": "1603e3d10772d00a598e5f87c9f1502c"
+  },
+  "src/app/core/models/catalogo.model.ts": {
+    "mtime": 1790063444.6012948,
+    "ast_hash": "16535aba81e447c3ac2f30c265fd9d2a",
+    "semantic_hash": "16535aba81e447c3ac2f30c265fd9d2a"
+  },
+  "src/app/core/models/compra.model.ts": {
+    "mtime": 1790058302.8827565,
+    "ast_hash": "e8235be022826900dc291a1a0e853ea1",
+    "semantic_hash": "e8235be022826900dc291a1a0e853ea1"
+  },
+  "src/app/core/models/dashboard.model.ts": {
+    "mtime": 1790058302.8847644,
+    "ast_hash": "d44f8d5d103bacc2c243fbe4bb8aacce",
+    "semantic_hash": "d44f8d5d103bacc2c243fbe4bb8aacce"
+  },
+  "src/app/core/models/ia.model.ts": {
+    "mtime": 1790058302.8857634,
+    "ast_hash": "c6c7d4e68c60ae2a19d3fa4f81583a4c",
+    "semantic_hash": "c6c7d4e68c60ae2a19d3fa4f81583a4c"
+  },
+  "src/app/core/models/inventario-monitoreo.model.ts": {
+    "mtime": 1790058302.8877642,
+    "ast_hash": "a17b2dc4831dcc5f2f6990a50b67e549",
+    "semantic_hash": "a17b2dc4831dcc5f2f6990a50b67e549"
+  },
+  "src/app/core/models/movimiento.model.ts": {
+    "mtime": 1790058302.8877642,
+    "ast_hash": "ae68f83fed583c32373043acdc60d389",
+    "semantic_hash": "ae68f83fed583c32373043acdc60d389"
+  },
+  "src/app/core/models/permiso.model.ts": {
+    "mtime": 1790058302.890275,
+    "ast_hash": "f34cae5b972845f1d0b5757b2388a98c",
+    "semantic_hash": "f34cae5b972845f1d0b5757b2388a98c"
+  },
+  "src/app/core/models/pos.model.ts": {
+    "mtime": 1790058302.8912797,
+    "ast_hash": "a516374da1fccdc466a59cf684ee9f9c",
+    "semantic_hash": "a516374da1fccdc466a59cf684ee9f9c"
+  },
+  "src/app/core/models/proveedor.model.ts": {
+    "mtime": 1790058302.8922784,
+    "ast_hash": "c44dc8ab5376b0f3ab46db96fedff0fd",
+    "semantic_hash": "c44dc8ab5376b0f3ab46db96fedff0fd"
+  },
+  "src/app/core/models/temporada.model.ts": {
+    "mtime": 1790058302.894396,
+    "ast_hash": "22d0af0a40bb65239b85b093f22deeec",
+    "semantic_hash": "22d0af0a40bb65239b85b093f22deeec"
+  },
+  "src/app/core/models/usuario.model.ts": {
+    "mtime": 1788619786.3307536,
+    "ast_hash": "2a97b848f7e921d19dcdf5e9f0191996",
+    "semantic_hash": "2a97b848f7e921d19dcdf5e9f0191996"
+  },
+  "src/app/core/models/venta.model.ts": {
+    "mtime": 1790058311.670332,
+    "ast_hash": "8745feee1d00aa67cf85a3cc8f827508",
+    "semantic_hash": "8745feee1d00aa67cf85a3cc8f827508"
+  },
+  "src/app/core/services/auth.service.spec.ts": {
+    "mtime": 1790058302.8963966,
+    "ast_hash": "aa5dccda5377f97323df05ff47a19f1b",
+    "semantic_hash": "aa5dccda5377f97323df05ff47a19f1b"
+  },
+  "src/app/core/services/auth.service.ts": {
+    "mtime": 1790058311.6713314,
+    "ast_hash": "acc999ac7ace6f529fbea0fdefa9b0e4",
+    "semantic_hash": "acc999ac7ace6f529fbea0fdefa9b0e4"
+  },
+  "src/app/core/services/bitacora.service.ts": {
+    "mtime": 1790058302.8993971,
+    "ast_hash": "579f361493e4a6294edc044159b06cfa",
+    "semantic_hash": "579f361493e4a6294edc044159b06cfa"
+  },
+  "src/app/core/services/carrito.service.ts": {
+    "mtime": 1790058311.6723328,
+    "ast_hash": "df74044bf941bd896323ce2170f5788c",
+    "semantic_hash": "df74044bf941bd896323ce2170f5788c"
+  },
+  "src/app/core/services/catalogo.service.ts": {
+    "mtime": 1788650605.0802987,
+    "ast_hash": "b238f931e69b5a4b3a038f52af8f4d98",
+    "semantic_hash": "b238f931e69b5a4b3a038f52af8f4d98"
+  },
+  "src/app/core/services/categoria.service.ts": {
+    "mtime": 1788650605.0813062,
+    "ast_hash": "91c34da1325255da6ba0b7e9578dc11a",
+    "semantic_hash": "91c34da1325255da6ba0b7e9578dc11a"
+  },
+  "src/app/core/services/cliente.service.ts": {
+    "mtime": 1790058311.6741438,
+    "ast_hash": "5e168c947cfaeec530e29262222841f1",
+    "semantic_hash": "5e168c947cfaeec530e29262222841f1"
+  },
+  "src/app/core/services/compra.service.spec.ts": {
+    "mtime": 1790058302.9023957,
+    "ast_hash": "8ed0438f0a5cc320672c10f646f93d0e",
+    "semantic_hash": "8ed0438f0a5cc320672c10f646f93d0e"
+  },
+  "src/app/core/services/compra.service.ts": {
+    "mtime": 1790058302.904619,
+    "ast_hash": "4e1ccadd75bbe0b591698c1ec87aacb4",
+    "semantic_hash": "4e1ccadd75bbe0b591698c1ec87aacb4"
+  },
+  "src/app/core/services/comprobante.service.ts": {
+    "mtime": 1790058311.6751516,
+    "ast_hash": "42272255220e1623bd59d863fd9fc8bc",
+    "semantic_hash": "42272255220e1623bd59d863fd9fc8bc"
+  },
+  "src/app/core/services/dashboard.service.ts": {
+    "mtime": 1790058302.9056184,
+    "ast_hash": "17e90f62cb679b860eec56210d30ee64",
+    "semantic_hash": "17e90f62cb679b860eec56210d30ee64"
+  },
+  "src/app/core/services/geografia.service.ts": {
+    "mtime": 1788650605.083385,
+    "ast_hash": "1d2a0668dbc4806256829674d3765229",
+    "semantic_hash": "1d2a0668dbc4806256829674d3765229"
+  },
+  "src/app/core/services/ia.service.spec.ts": {
+    "mtime": 1790058302.906619,
+    "ast_hash": "cb7963c5841ecacb7a2a53aae29cb680",
+    "semantic_hash": "cb7963c5841ecacb7a2a53aae29cb680"
+  },
+  "src/app/core/services/ia.service.ts": {
+    "mtime": 1790058302.9086187,
+    "ast_hash": "f03debce6c83e569b1456b9858f88c13",
+    "semantic_hash": "f03debce6c83e569b1456b9858f88c13"
+  },
+  "src/app/core/services/inventario.service.spec.ts": {
+    "mtime": 1790058302.9096198,
+    "ast_hash": "6c39d8c5024cc5aeacc9c120bccd7568",
+    "semantic_hash": "6c39d8c5024cc5aeacc9c120bccd7568"
+  },
+  "src/app/core/services/inventario.service.ts": {
+    "mtime": 1790058302.9106183,
+    "ast_hash": "ba9edf1ebaba7e546b734b7af80205d1",
+    "semantic_hash": "ba9edf1ebaba7e546b734b7af80205d1"
+  },
+  "src/app/core/services/movimiento-inventario.service.spec.ts": {
+    "mtime": 1790058302.9116187,
+    "ast_hash": "badcf4730c63ccce3381c42d3c836fa7",
+    "semantic_hash": "badcf4730c63ccce3381c42d3c836fa7"
+  },
+  "src/app/core/services/movimiento-inventario.service.ts": {
+    "mtime": 1790058302.9126184,
+    "ast_hash": "113f90714f62c36568a4384985cb6227",
+    "semantic_hash": "113f90714f62c36568a4384985cb6227"
+  },
+  "src/app/core/services/notificacion.service.ts": {
+    "mtime": 1788619786.331567,
+    "ast_hash": "be74af6c637fbbf4ec5c40098120f652",
+    "semantic_hash": "be74af6c637fbbf4ec5c40098120f652"
+  },
+  "src/app/core/services/pago.service.ts": {
+    "mtime": 1790058311.6761534,
+    "ast_hash": "42fe776542479b52739d7af3f3abcbbb",
+    "semantic_hash": "42fe776542479b52739d7af3f3abcbbb"
+  },
+  "src/app/core/services/permiso.service.spec.ts": {
+    "mtime": 1790058302.9152088,
+    "ast_hash": "3f2e9b65e2185cee4ca56ed3fc9434b2",
+    "semantic_hash": "3f2e9b65e2185cee4ca56ed3fc9434b2"
+  },
+  "src/app/core/services/permiso.service.ts": {
+    "mtime": 1790058302.9172072,
+    "ast_hash": "09aff8d268bc08c5e8dfd033bd9602b2",
+    "semantic_hash": "09aff8d268bc08c5e8dfd033bd9602b2"
+  },
+  "src/app/core/services/pos.service.ts": {
+    "mtime": 1790058302.9182072,
+    "ast_hash": "5e2445f68a60d66fb270f1452ac78a00",
+    "semantic_hash": "5e2445f68a60d66fb270f1452ac78a00"
+  },
+  "src/app/core/services/prenda.service.ts": {
+    "mtime": 1790063444.6028016,
+    "ast_hash": "e1f87aa168e2820e7f6957c57548a200",
+    "semantic_hash": "e1f87aa168e2820e7f6957c57548a200"
+  },
+  "src/app/core/services/proveedor.service.spec.ts": {
+    "mtime": 1790058302.920213,
+    "ast_hash": "62d19b56e43318710b954a2acfaeab36",
+    "semantic_hash": "62d19b56e43318710b954a2acfaeab36"
+  },
+  "src/app/core/services/proveedor.service.ts": {
+    "mtime": 1790058302.921214,
+    "ast_hash": "f4a851003564a942091712e7aef02ed0",
+    "semantic_hash": "f4a851003564a942091712e7aef02ed0"
+  },
+  "src/app/core/services/temporada.service.spec.ts": {
+    "mtime": 1790058302.9227202,
+    "ast_hash": "2d9ce04afccf1d2a01ff9dfe6e2dfbd5",
+    "semantic_hash": "2d9ce04afccf1d2a01ff9dfe6e2dfbd5"
+  },
+  "src/app/core/services/temporada.service.ts": {
+    "mtime": 1790058302.923727,
+    "ast_hash": "e85bdb0874cb233ede0add38e4153a92",
+    "semantic_hash": "e85bdb0874cb233ede0add38e4153a92"
+  },
+  "src/app/core/services/usuario.service.ts": {
+    "mtime": 1788619786.332613,
+    "ast_hash": "aa186c5ac2e3e4144feceab711c90a40",
+    "semantic_hash": "aa186c5ac2e3e4144feceab711c90a40"
+  },
+  "src/app/core/services/venta.service.ts": {
+    "mtime": 1790058311.6771507,
+    "ast_hash": "7cb35ef129271b6053c317275eb88771",
+    "semantic_hash": "7cb35ef129271b6053c317275eb88771"
+  },
+  "src/app/core/utils/api-error.ts": {
+    "mtime": 1788650605.083925,
+    "ast_hash": "7b09281ac53eaf3895e0a3334ce61202",
+    "semantic_hash": "7b09281ac53eaf3895e0a3334ce61202"
+  },
+  "src/app/features/admin/roles-permisos/roles-permisos.spec.ts": {
+    "mtime": 1790058302.9292395,
+    "ast_hash": "4cc26f1a1120d624a98a2e850253ca81",
+    "semantic_hash": "4cc26f1a1120d624a98a2e850253ca81"
+  },
+  "src/app/features/admin/roles-permisos/roles-permisos.ts": {
+    "mtime": 1790058302.9302464,
+    "ast_hash": "5159d9ce93d4dc56d1181465ea3f79cf",
+    "semantic_hash": "5159d9ce93d4dc56d1181465ea3f79cf"
+  },
+  "src/app/features/auth/login-cliente/login-cliente.ts": {
+    "mtime": 1790058302.9373271,
+    "ast_hash": "f6e5838d94277693799ed263342dd94d",
+    "semantic_hash": "f6e5838d94277693799ed263342dd94d"
+  },
+  "src/app/features/auth/login/login.spec.ts": {
+    "mtime": 1788596283.2051978,
+    "ast_hash": "0651800db9ee87b5f44657722e2b94c7",
+    "semantic_hash": "0651800db9ee87b5f44657722e2b94c7"
+  },
+  "src/app/features/auth/login/login.ts": {
+    "mtime": 1790058302.943445,
+    "ast_hash": "229de216e668f288343d1939c0096175",
+    "semantic_hash": "229de216e668f288343d1939c0096175"
+  },
+  "src/app/features/auth/registro/registro.ts": {
+    "mtime": 1790058311.679673,
+    "ast_hash": "76828d2e5d96c40fa81a323ef5a8efa2",
+    "semantic_hash": "76828d2e5d96c40fa81a323ef5a8efa2"
+  },
+  "src/app/features/bitacora/bitacora.ts": {
+    "mtime": 1790058302.9695213,
+    "ast_hash": "1b734dd6b28869f39b3e925c038614e1",
+    "semantic_hash": "1b734dd6b28869f39b3e925c038614e1"
+  },
+  "src/app/features/carrito/carrito-sidebar/carrito-sidebar.ts": {
+    "mtime": 1790058302.973034,
+    "ast_hash": "2d42664a905abcf5a9c65a6f095c195f",
+    "semantic_hash": "2d42664a905abcf5a9c65a6f095c195f"
+  },
+  "src/app/features/catalogo/catalogo.ts": {
+    "mtime": 1790058311.6827896,
+    "ast_hash": "690e4285a3f236d3f48d24d60dc0e267",
+    "semantic_hash": "690e4285a3f236d3f48d24d60dc0e267"
+  },
+  "src/app/features/catalogo/prenda-detalle/prenda-detalle.component.ts": {
+    "mtime": 1790058302.978577,
+    "ast_hash": "cdf857f61860a138856e72bbb714ddeb",
+    "semantic_hash": "cdf857f61860a138856e72bbb714ddeb"
+  },
+  "src/app/features/catalogo/prenda-detalle/prenda-detalle.ts": {
+    "mtime": 1790058302.9840965,
+    "ast_hash": "611d816cd8cb54b66e285edfe9c31362",
+    "semantic_hash": "611d816cd8cb54b66e285edfe9c31362"
+  },
+  "src/app/features/catalogo/probador-ia/probador-ia.spec.ts": {
+    "mtime": 1790058302.9906943,
+    "ast_hash": "b7ed9c4b0d4e5999f02784f91cac7e38",
+    "semantic_hash": "b7ed9c4b0d4e5999f02784f91cac7e38"
+  },
+  "src/app/features/catalogo/probador-ia/probador-ia.ts": {
+    "mtime": 1790058302.9916954,
+    "ast_hash": "e729cfe94cbdb62215609d9f28388520",
+    "semantic_hash": "e729cfe94cbdb62215609d9f28388520"
+  },
+  "src/app/features/categorias/categoria-modal/categoria-modal.ts": {
+    "mtime": 1788650605.096603,
+    "ast_hash": "da71e86f689af15f36ea35785643f3f4",
+    "semantic_hash": "da71e86f689af15f36ea35785643f3f4"
+  },
+  "src/app/features/categorias/categorias.ts": {
+    "mtime": 1788650605.0995443,
+    "ast_hash": "3bf39cda02f9db44e41337431fc633b2",
+    "semantic_hash": "3bf39cda02f9db44e41337431fc633b2"
+  },
+  "src/app/features/checkout/checkout.ts": {
+    "mtime": 1790058311.684797,
+    "ast_hash": "8d36d2a9790826e16b901ef24bd360b6",
+    "semantic_hash": "8d36d2a9790826e16b901ef24bd360b6"
+  },
+  "src/app/features/cliente/mis-pedidos/mis-pedidos.ts": {
+    "mtime": 1790058302.9982073,
+    "ast_hash": "6fa7ac7b9309929f1629de61ded5798f",
+    "semantic_hash": "6fa7ac7b9309929f1629de61ded5798f"
+  },
+  "src/app/features/clientes/cliente-modal/cliente-modal.ts": {
+    "mtime": 1790058311.687454,
+    "ast_hash": "dfab3f4e98888c1330e6c6c7083c861b",
+    "semantic_hash": "dfab3f4e98888c1330e6c6c7083c861b"
+  },
+  "src/app/features/clientes/clientes.ts": {
+    "mtime": 1790058311.6918423,
+    "ast_hash": "42ec4c6506dc77742e5cf96097b69692",
+    "semantic_hash": "42ec4c6506dc77742e5cf96097b69692"
+  },
+  "src/app/features/compras/compra-detalle-modal/compra-detalle-modal.ts": {
+    "mtime": 1790058303.0127528,
+    "ast_hash": "167fe48df307e7e3c6da37125efd9c18",
+    "semantic_hash": "167fe48df307e7e3c6da37125efd9c18"
+  },
+  "src/app/features/compras/compra-nueva/compra-nueva.ts": {
+    "mtime": 1790058303.0182908,
+    "ast_hash": "57f69c4c3c8c99d70df6fafad701fd2d",
+    "semantic_hash": "57f69c4c3c8c99d70df6fafad701fd2d"
+  },
+  "src/app/features/compras/compras.ts": {
+    "mtime": 1790058303.0222964,
+    "ast_hash": "6d0059387458705b5b65a69c272e4b03",
+    "semantic_hash": "6d0059387458705b5b65a69c272e4b03"
+  },
+  "src/app/features/dashboard/dashboard.ts": {
+    "mtime": 1790058303.0275617,
+    "ast_hash": "3f1835ac45b54bd52c10fa5848208d44",
+    "semantic_hash": "3f1835ac45b54bd52c10fa5848208d44"
+  },
+  "src/app/features/ia/analitica-voz/analitica-voz.ts": {
+    "mtime": 1790058303.0326092,
+    "ast_hash": "a5a06d1def22ae96ec99865ad065a589",
+    "semantic_hash": "a5a06d1def22ae96ec99865ad065a589"
+  },
+  "src/app/features/ia/asistente-moda/asistente-moda.ts": {
+    "mtime": 1790058303.0371861,
+    "ast_hash": "81ae925f2352f90a53cf83c25a3ba550",
+    "semantic_hash": "81ae925f2352f90a53cf83c25a3ba550"
+  },
+  "src/app/features/inventario-monitoreo/inventario-monitoreo.ts": {
+    "mtime": 1790058303.0427012,
+    "ast_hash": "3d6d5514771c749ecf739a6c703dbe2f",
+    "semantic_hash": "3d6d5514771c749ecf739a6c703dbe2f"
+  },
+  "src/app/features/inventario-movimientos/movimiento-modal/movimiento-modal.ts": {
+    "mtime": 1790058303.0467644,
+    "ast_hash": "4a97350a4daecaf690a07d13f0e02dff",
+    "semantic_hash": "4a97350a4daecaf690a07d13f0e02dff"
+  },
+  "src/app/features/inventario-movimientos/movimientos.ts": {
+    "mtime": 1790058303.0512757,
+    "ast_hash": "eaddc153dc1e353f76ff91c32ae884cb",
+    "semantic_hash": "eaddc153dc1e353f76ff91c32ae884cb"
+  },
+  "src/app/features/pago/pago-cancelado/pago-cancelado.ts": {
+    "mtime": 1790058303.0533428,
+    "ast_hash": "f8f44c045bbcbe5e4eecefce8354363f",
+    "semantic_hash": "f8f44c045bbcbe5e4eecefce8354363f"
+  },
+  "src/app/features/pago/pago-exitoso/pago-exitoso.ts": {
+    "mtime": 1790063444.8045385,
+    "ast_hash": "83b5234e10691a56d33288c7d6136886",
+    "semantic_hash": "83b5234e10691a56d33288c7d6136886"
+  },
+  "src/app/features/panel/panel.ts": {
+    "mtime": 1790058303.0603483,
+    "ast_hash": "0195a39635c53d7d4c251efb2f898c08",
+    "semantic_hash": "0195a39635c53d7d4c251efb2f898c08"
+  },
+  "src/app/features/pos/pos.ts": {
+    "mtime": 1790058303.0658584,
+    "ast_hash": "ddfeb9017167513f7e95b32d57bdc77d",
+    "semantic_hash": "ddfeb9017167513f7e95b32d57bdc77d"
+  },
+  "src/app/features/prendas/prenda-modal/prenda-modal.ts": {
+    "mtime": 1790063444.6079628,
+    "ast_hash": "5aabd263daf25216ae5203d4022667ae",
+    "semantic_hash": "5aabd263daf25216ae5203d4022667ae"
+  },
+  "src/app/features/prendas/prendas.ts": {
+    "mtime": 1788650605.105621,
+    "ast_hash": "e417384b3e5b6dfcb693227386e956dd",
+    "semantic_hash": "e417384b3e5b6dfcb693227386e956dd"
+  },
+  "src/app/features/probador-ar/probador-ar.ts": {
+    "mtime": 1790317645.718309,
+    "ast_hash": "0ea97fdc65dacee79d925a2554068a0e",
+    "semantic_hash": "0ea97fdc65dacee79d925a2554068a0e"
+  },
+  "src/app/features/proveedores/proveedor-eliminar-modal/proveedor-eliminar-modal.ts": {
+    "mtime": 1790058303.0728767,
+    "ast_hash": "c3f46aab02ee56db49500a73e8210bb6",
+    "semantic_hash": "c3f46aab02ee56db49500a73e8210bb6"
+  },
+  "src/app/features/proveedores/proveedor-modal/proveedor-modal.ts": {
+    "mtime": 1790058303.0768845,
+    "ast_hash": "3ad4a97368be118c699fa33614c730f2",
+    "semantic_hash": "3ad4a97368be118c699fa33614c730f2"
+  },
+  "src/app/features/proveedores/proveedores.ts": {
+    "mtime": 1790058303.0803957,
+    "ast_hash": "95e855915f995a711e4c8b72f0efdebf",
+    "semantic_hash": "95e855915f995a711e4c8b72f0efdebf"
+  },
+  "src/app/features/reservas-atencion/reservas-atencion.ts": {
+    "mtime": 1790058303.084585,
+    "ast_hash": "f82ef119b2f861021d0743d6d8592c41",
+    "semantic_hash": "f82ef119b2f861021d0743d6d8592c41"
+  },
+  "src/app/features/sucursales/sucursal-modal/sucursal-modal.ts": {
+    "mtime": 1788650605.105621,
+    "ast_hash": "09c2ceb4b41521a2721bf6f8d3554c6c",
+    "semantic_hash": "09c2ceb4b41521a2721bf6f8d3554c6c"
+  },
+  "src/app/features/sucursales/sucursales.ts": {
+    "mtime": 1788650605.105621,
+    "ast_hash": "8fcd70d1705e51b34731ab03fcd73c02",
+    "semantic_hash": "8fcd70d1705e51b34731ab03fcd73c02"
+  },
+  "src/app/features/temporadas/temporada-eliminar-modal/temporada-eliminar-modal.ts": {
+    "mtime": 1790058303.089592,
+    "ast_hash": "7a8ace5d8a9a6da60d33d438ab21a760",
+    "semantic_hash": "7a8ace5d8a9a6da60d33d438ab21a760"
+  },
+  "src/app/features/temporadas/temporada-modal/temporada-modal.ts": {
+    "mtime": 1790058303.0941029,
+    "ast_hash": "95f57ddb73402126c03b55f6fb402949",
+    "semantic_hash": "95f57ddb73402126c03b55f6fb402949"
+  },
+  "src/app/features/temporadas/temporadas.ts": {
+    "mtime": 1790058303.0986736,
+    "ast_hash": "b370198ab5636d69bab90d25601c1e0b",
+    "semantic_hash": "b370198ab5636d69bab90d25601c1e0b"
+  },
+  "src/app/features/usuarios/usuario-modal/usuario-modal.ts": {
+    "mtime": 1788619786.340225,
+    "ast_hash": "494453c519a97124ad83677c4a811dd4",
+    "semantic_hash": "494453c519a97124ad83677c4a811dd4"
+  },
+  "src/app/features/usuarios/usuarios.ts": {
+    "mtime": 1788619786.340225,
+    "ast_hash": "f07a3fb4462121141d2d954de36b763d",
+    "semantic_hash": "f07a3fb4462121141d2d954de36b763d"
+  },
+  "src/app/layout/layout.ts": {
+    "mtime": 1790058311.6950333,
+    "ast_hash": "0da233876b3f247d77093d655227b31f",
+    "semantic_hash": "0da233876b3f247d77093d655227b31f"
+  },
+  "src/environments/environment.development.ts": {
+    "mtime": 1790314163.3160286,
+    "ast_hash": "baf7cf1925a3abcb916e07ddeb89701e",
+    "semantic_hash": "baf7cf1925a3abcb916e07ddeb89701e"
+  },
+  "src/environments/environment.ts": {
+    "mtime": 1790314590.6720521,
+    "ast_hash": "8e358c77bbb26ff23cc365e43dd3959d",
+    "semantic_hash": "8e358c77bbb26ff23cc365e43dd3959d"
+  },
+  "src/main.ts": {
+    "mtime": 1788596283.2148552,
+    "ast_hash": "1289536d6d8f94242a4ffc598d094633",
+    "semantic_hash": "1289536d6d8f94242a4ffc598d094633"
+  },
+  "tsconfig.app.json": {
+    "mtime": 1788596283.2169604,
+    "ast_hash": "f0ed6c81d0a374939052cff4567f713f",
+    "semantic_hash": "f0ed6c81d0a374939052cff4567f713f"
+  },
+  "tsconfig.json": {
+    "mtime": 1788596283.2169604,
+    "ast_hash": "481934fa92ea3deadda691e7aa66ff31",
+    "semantic_hash": "481934fa92ea3deadda691e7aa66ff31"
+  },
+  "tsconfig.spec.json": {
+    "mtime": 1788596283.2189686,
+    "ast_hash": "09ccc14eae54035b93ae8f1768ca2506",
+    "semantic_hash": "09ccc14eae54035b93ae8f1768ca2506"
+  }
+}

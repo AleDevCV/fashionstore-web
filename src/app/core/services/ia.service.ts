@@ -58,11 +58,11 @@ export class IaService {
   }
 
   /**
-   * Genera la prueba virtual fotorealista de una prenda sobre la fotografía del usuario (Fase 2).
+   * Genera la prueba virtual fotorealista de una prenda sobre la fotografÃ­a del usuario (Fase 2).
    * Endpoint: POST /api/ia/try-on
    *
    * @param peticion Payload con foto_usuario en Base64, id_prenda o url_prenda, y opciones.
-   * @returns Observable con la imagen compuesta resultante, tiempo de cómputo y metadatos de calce.
+   * @returns Observable con la imagen compuesta resultante, tiempo de cÃ³mputo y metadatos de calce.
    */
   generarTryOn(peticion: TryOnPeticion): Observable<TryOnRespuesta> {
     return this.http
@@ -76,5 +76,16 @@ export class IaService {
   procesarTryOn(peticion: TryOnPeticion): Observable<TryOnRespuesta> {
     return this.generarTryOn(peticion);
   }
+
+  /**
+   * Obtiene el token efímero de Decart AI para la sesión WebRTC.
+   */
+  obtenerRealtimeToken(): Observable<{ apiKey: string; expiresAt: number }> {
+    return this.http
+      .post<{ apiKey: string; expiresAt: number }>(`${this.baseUrl}/realtime-token`, {})
+      .pipe(catchError(traducirErrorApi));
+  }
 }
+
+
 

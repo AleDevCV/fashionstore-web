@@ -1,0 +1,1 @@
+{"nodes": [{"id": "compras_cu13", "label": "Historial de Adquisiciones (CU13)", "file_type": "code", "source_file": "src/app/features/compras/compras.html"}], "edges": [{"source": "compras_cu13", "target": "compra_nueva_cu13", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/app/features/compras/compras.html"}], "hyperedges": []}

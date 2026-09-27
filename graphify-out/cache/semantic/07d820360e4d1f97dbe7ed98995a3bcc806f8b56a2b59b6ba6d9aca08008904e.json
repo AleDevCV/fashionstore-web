@@ -1,0 +1,1 @@
+{"nodes": [{"id": "index_app_root", "label": "app-root", "file_type": "code", "source_file": "src/index.html"}], "edges": [{"source": "index_app_root", "target": "app_router_outlet", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/index.html"}], "hyperedges": []}

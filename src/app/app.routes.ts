@@ -1,15 +1,15 @@
-/**
+﻿/**
  * =============================================================================
- * FASHIONSTORE - TABLA DE RUTAS DE LA APLICACIÓN
+ * FASHIONSTORE - TABLA DE RUTAS DE LA APLICACIÃ“N
  * -----------------------------------------------------------------------------
  * Todas las vistas se cargan de forma diferida (`loadComponent`) para que el
- * paquete inicial que descarga el navegador sea lo más liviano posible (RNF02).
+ * paquete inicial que descarga el navegador sea lo mÃ¡s liviano posible (RNF02).
  *
  * Estructura:
  *   /login              -> pantalla de acceso (CU01)
  *   /panel              -> layout administrativo, protegido por authGuard
  *     /panel/inicio     -> bienvenida
- *     /panel/usuarios   -> gestión de usuarios y roles (CU02), solo Administrador
+ *     /panel/usuarios   -> gestiÃ³n de usuarios y roles (CU02), solo Administrador
  * =============================================================================
  */
 
@@ -20,45 +20,49 @@ import { rolGuard } from './core/guards/rol.guard';
 import { ROLES } from './core/models/auth.model';
 
 export const routes: Routes = [
+    {
+      path: 'probador-mobile/:id',
+      loadComponent: () => import('./features/probador-mobile').then(m => m.ProbadorMobile)
+    },
   {
-    // Ruta por defecto: envía al login, que a su vez redirige al panel si ya
-    // existe una sesión activa (gracias a invitadoGuard).
+    // Ruta por defecto: envÃ­a al login, que a su vez redirige al panel si ya
+    // existe una sesiÃ³n activa (gracias a invitadoGuard).
     path: '',
     pathMatch: 'full',
     redirectTo: 'login',
   },
   {
-    // CU01 - Pantalla de inicio de sesión
+    // CU01 - Pantalla de inicio de sesiÃ³n
     path: 'login',
     canActivate: [invitadoGuard],
-    title: 'Iniciar sesión · FashionStore',
+    title: 'Iniciar sesiÃ³n Â· FashionStore',
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
   },
   {
-    // CU04 - Solicitud de recuperación de contraseña ("Olvidé mi contraseña")
+    // CU04 - Solicitud de recuperaciÃ³n de contraseÃ±a ("OlvidÃ© mi contraseÃ±a")
     path: 'recuperar-password',
     canActivate: [invitadoGuard],
-    title: 'Recuperar contraseña · FashionStore',
+    title: 'Recuperar contraseÃ±a Â· FashionStore',
     loadComponent: () =>
       import('./features/auth/recuperar-password/recuperar-password').then(
         (m) => m.RecuperarPassword,
       ),
   },
   {
-    // CU04 - Restablecimiento de contraseña mediante token temporal
+    // CU04 - Restablecimiento de contraseÃ±a mediante token temporal
     path: 'restablecer-password',
     canActivate: [invitadoGuard],
-    title: 'Restablecer contraseña · FashionStore',
+    title: 'Restablecer contraseÃ±a Â· FashionStore',
     loadComponent: () =>
       import('./features/auth/restablecer-password/restablecer-password').then(
         (m) => m.RestablecerPassword,
       ),
   },
   {
-    // CU05 / CU01 - Registro de nuevo cliente (auto-registro público)
+    // CU05 / CU01 - Registro de nuevo cliente (auto-registro pÃºblico)
     path: 'registro',
     canActivate: [invitadoGuard],
-    title: 'Crear cuenta · FashionStore',
+    title: 'Crear cuenta Â· FashionStore',
     loadComponent: () => import('./features/auth/registro/registro').then((m) => m.Registro),
   },
   {
@@ -67,15 +71,15 @@ export const routes: Routes = [
     redirectTo: 'registro',
   },
   {
-    // CU01 / CU14 - Inicio de sesión exclusivo para clientes
+    // CU01 / CU14 - Inicio de sesiÃ³n exclusivo para clientes
     path: 'login-cliente',
     canActivate: [invitadoGuard],
-    title: 'Iniciar sesión · FashionStore Clientes',
+    title: 'Iniciar sesiÃ³n Â· FashionStore Clientes',
     loadComponent: () =>
       import('./features/auth/login-cliente/login-cliente').then((m) => m.LoginCliente),
   },
   {
-    // Alias alternativo para inicio de sesión de clientes
+    // Alias alternativo para inicio de sesiÃ³n de clientes
     path: 'cliente-login',
     redirectTo: 'login-cliente',
   },
@@ -93,14 +97,14 @@ export const routes: Routes = [
       },
       {
         path: 'inicio',
-        title: 'Panel · FashionStore',
+        title: 'Panel Â· FashionStore',
         loadComponent: () => import('./features/panel/panel').then((m) => m.Panel),
       },
       {
         // CU24 - Dashboard de Indicadores y KPIs Gerenciales
         path: 'dashboard',
         canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Dashboard Gerencial')],
-        title: 'Dashboard de Indicadores y KPIs · FashionStore',
+        title: 'Dashboard de Indicadores y KPIs Â· FashionStore',
         loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
       },
       {
@@ -108,21 +112,21 @@ export const routes: Routes = [
         redirectTo: 'dashboard',
       },
       {
-        // CU25 - Bitácora de Auditoría del Sistema (Trazabilidad Forense)
+        // CU25 - BitÃ¡cora de AuditorÃ­a del Sistema (Trazabilidad Forense)
         path: 'bitacora',
-        canActivate: [rolGuard(['Administrador'], 'Bitácora de Auditoría')],
-        title: 'Bitácora de Auditoría · FashionStore',
+        canActivate: [rolGuard(['Administrador'], 'BitÃ¡cora de AuditorÃ­a')],
+        title: 'BitÃ¡cora de AuditorÃ­a Â· FashionStore',
         loadComponent: () => import('./features/bitacora/bitacora').then((m) => m.Bitacora),
       },
       {
         // CU02 - Administrar usuarios y asignar roles.
-        // Doble barrera: authGuard (heredado del padre) exige sesión, y
-        // rolGuard restringe la sección al rol "Administrador". El backend
+        // Doble barrera: authGuard (heredado del padre) exige sesiÃ³n, y
+        // rolGuard restringe la secciÃ³n al rol "Administrador". El backend
         // aplica la misma regla con `requiere_rol`, que es la que realmente
         // protege los datos.
         path: 'usuarios',
         canActivate: [rolGuard(['Administrador'], 'Usuarios y Roles')],
-        title: 'Usuarios y Roles · FashionStore',
+        title: 'Usuarios y Roles Â· FashionStore',
         loadComponent: () => import('./features/usuarios/usuarios').then((m) => m.Usuarios),
       },
       {
@@ -130,13 +134,13 @@ export const routes: Routes = [
         // Restringido exclusivamente al Administrador.
         path: 'roles-permisos',
         canActivate: [rolGuard(['Administrador'], 'Roles y Permisos')],
-        title: 'Roles y Permisos · FashionStore',
+        title: 'Roles y Permisos Â· FashionStore',
         loadComponent: () =>
           import('./features/admin/roles-permisos/roles-permisos').then((m) => m.RolesPermisos),
       },
       {
-        // CU05 - El personal autorizado usa la gestión administrativa y el
-        // Cliente accede a la misma ruta en modo de autogestión de su ficha.
+        // CU05 - El personal autorizado usa la gestiÃ³n administrativa y el
+        // Cliente accede a la misma ruta en modo de autogestiÃ³n de su ficha.
         path: 'clientes',
         canActivate: [
           rolGuard(
@@ -144,38 +148,38 @@ export const routes: Routes = [
             'Fichas de Clientes',
           ),
         ],
-        title: 'Clientes · FashionStore',
+        title: 'Clientes Â· FashionStore',
         loadComponent: () => import('./features/clientes/clientes').then((m) => m.Clientes),
       },
       {
-        // CU06 - Ciudades y sucursales. Solo el Administrador ve la sección:
+        // CU06 - Ciudades y sucursales. Solo el Administrador ve la secciÃ³n:
         // las altas y ediciones exigen ese rol en el backend.
         path: 'sucursales',
         canActivate: [rolGuard(['Administrador'], 'Sucursales')],
-        title: 'Sucursales · FashionStore',
+        title: 'Sucursales Â· FashionStore',
         loadComponent: () => import('./features/sucursales/sucursales').then((m) => m.Sucursales),
       },
       {
-        // CU07 - Gestión administrativa de categorías, exclusiva del Administrador.
-        // El catálogo público obtiene sus filtros desde /api/catalogo/filtros.
+        // CU07 - GestiÃ³n administrativa de categorÃ­as, exclusiva del Administrador.
+        // El catÃ¡logo pÃºblico obtiene sus filtros desde /api/catalogo/filtros.
         path: 'categorias',
-        canActivate: [rolGuard([ROLES.ADMINISTRADOR], 'Categorías de Prendas')],
-        title: 'Categorías · FashionStore',
+        canActivate: [rolGuard([ROLES.ADMINISTRADOR], 'CategorÃ­as de Prendas')],
+        title: 'CategorÃ­as Â· FashionStore',
         loadComponent: () => import('./features/categorias/categorias').then((m) => m.Categorias),
       },
       {
-        // CU08 - Prendas del catálogo. Solo el Administrador edita el catálogo
+        // CU08 - Prendas del catÃ¡logo. Solo el Administrador edita el catÃ¡logo
         // maestro y su matriz de variantes.
         path: 'prendas',
         canActivate: [rolGuard(['Administrador'], 'Prendas')],
-        title: 'Prendas · FashionStore',
+        title: 'Prendas Â· FashionStore',
         loadComponent: () => import('./features/prendas/prendas').then((m) => m.Prendas),
       },
       {
-        // CU09 - Gestión de Temporadas y Colecciones
+        // CU09 - GestiÃ³n de Temporadas y Colecciones
         path: 'temporadas',
         canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Temporadas')],
-        title: 'Temporadas y Colecciones · FashionStore',
+        title: 'Temporadas y Colecciones Â· FashionStore',
         loadComponent: () => import('./features/temporadas/temporadas').then((m) => m.Temporadas),
       },
       {
@@ -184,7 +188,7 @@ export const routes: Routes = [
         canActivate: [
           rolGuard(['Administrador', 'Encargado de Sucursal'], 'Monitoreo de Inventario'),
         ],
-        title: 'Monitoreo de Inventario · FashionStore',
+        title: 'Monitoreo de Inventario Â· FashionStore',
         loadComponent: () =>
           import('./features/inventario-monitoreo/inventario-monitoreo').then(
             (m) => m.InventarioMonitoreo,
@@ -199,7 +203,7 @@ export const routes: Routes = [
         // CU12 - Directorio de Proveedores
         path: 'proveedores',
         canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Proveedores')],
-        title: 'Proveedores · FashionStore',
+        title: 'Proveedores Â· FashionStore',
         loadComponent: () =>
           import('./features/proveedores/proveedores').then((m) => m.Proveedores),
       },
@@ -209,7 +213,7 @@ export const routes: Routes = [
         canActivate: [
           rolGuard(['Administrador', 'Encargado de Sucursal'], 'Movimientos de Inventario'),
         ],
-        title: 'Movimientos de Inventario · FashionStore',
+        title: 'Movimientos de Inventario Â· FashionStore',
         loadComponent: () =>
           import('./features/inventario-movimientos/movimientos').then((m) => m.Movimientos),
       },
@@ -222,21 +226,21 @@ export const routes: Routes = [
         // CU13 - Historial de Compras
         path: 'compras',
         canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Compras')],
-        title: 'Compras · FashionStore',
+        title: 'Compras Â· FashionStore',
         loadComponent: () => import('./features/compras/compras').then((m) => m.Compras),
       },
       {
-        // CU13 - Formulario de Adquisición Transaccional
+        // CU13 - Formulario de AdquisiciÃ³n Transaccional
         path: 'compras/nueva',
         canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Registro de Compras')],
-        title: 'Nueva Compra · FashionStore',
+        title: 'Nueva Compra Â· FashionStore',
         loadComponent: () =>
           import('./features/compras/compra-nueva/compra-nueva').then((m) => m.CompraNueva),
       },
       {
         // CU22 - Asistente y Recomendador Virtual de Moda con IA (Gemini)
         path: 'ia/asistente-moda',
-        title: 'Asistente de Moda IA · FashionStore',
+        title: 'Asistente de Moda IA Â· FashionStore',
         loadComponent: () =>
           import('./features/ia/asistente-moda/asistente-moda').then((m) => m.AsistenteModa),
       },
@@ -246,20 +250,20 @@ export const routes: Routes = [
         redirectTo: 'ia/asistente-moda',
       },
       {
-        // CU23 - Consultas Analíticas Ejecutivas por Voz con IA
+        // CU23 - Consultas AnalÃ­ticas Ejecutivas por Voz con IA
         path: 'ia/analitica-voz',
-        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'Analítica por Voz')],
-        title: 'Analítica por Voz · FashionStore',
+        canActivate: [rolGuard(['Administrador', 'Encargado de Sucursal'], 'AnalÃ­tica por Voz')],
+        title: 'AnalÃ­tica por Voz Â· FashionStore',
         loadComponent: () =>
           import('./features/ia/analitica-voz/analitica-voz').then((m) => m.AnaliticaVoz),
       },
       {
-        // CU17 - Atención de Reservas en Sucursal y Probadores Físicos
+        // CU17 - AtenciÃ³n de Reservas en Sucursal y Probadores FÃ­sicos
         path: 'reservas-atencion',
         canActivate: [
-          rolGuard(['Administrador', 'Encargado de Sucursal', 'Cajero'], 'Atención de Reservas'),
+          rolGuard(['Administrador', 'Encargado de Sucursal', 'Cajero'], 'AtenciÃ³n de Reservas'),
         ],
-        title: 'Atención de Reservas · FashionStore',
+        title: 'AtenciÃ³n de Reservas Â· FashionStore',
         loadComponent: () =>
           import('./features/reservas-atencion/reservas-atencion').then((m) => m.ReservasAtencion),
       },
@@ -273,7 +277,7 @@ export const routes: Routes = [
         canActivate: [
           rolGuard(['Administrador', 'Encargado de Sucursal', 'Cajero'], 'Terminal POS'),
         ],
-        title: 'Terminal POS · FashionStore',
+        title: 'Terminal POS Â· FashionStore',
         loadComponent: () => import('./features/pos/pos').then((m) => m.Pos),
       },
       {
@@ -283,44 +287,37 @@ export const routes: Routes = [
     ],
   },
   {
-    // CU26 / Innovación AR - Probador Virtual en Vivo con Google MediaPipe
-    path: 'probador-ar',
-    title: 'Probador Virtual AR · FashionStore',
-    loadComponent: () =>
-      import('./features/probador-ar/probador-ar').then((m) => m.ProbadorArComponent),
-  },
-  {
-    // CU14 - Catálogo público. Vive FUERA del layout administrativo y sin
-    // guardián de sesión: un visitante puede explorar la vitrina antes de
+    // CU14 - CatÃ¡logo pÃºblico. Vive FUERA del layout administrativo y sin
+    // guardiÃ¡n de sesiÃ³n: un visitante puede explorar la vitrina antes de
     // autenticarse. El endpoint /api/catalogo no exige token.
     path: 'catalogo',
-    title: 'Catálogo · FashionStore',
+    title: 'CatÃ¡logo Â· FashionStore',
     loadComponent: () => import('./features/catalogo/catalogo').then((m) => m.Catalogo),
   },
   {
-    // CU15 - Checkout Digital (carrito → reserva → pago → comprobante)
+    // CU15 - Checkout Digital (carrito â†’ reserva â†’ pago â†’ comprobante)
     path: 'checkout',
-    title: 'Checkout · FashionStore',
+    title: 'Checkout Â· FashionStore',
     loadComponent: () => import('./features/checkout/checkout').then((m) => m.Checkout),
   },
   {
     // CU20 - Retorno exitoso de Stripe
     path: 'pago/exitoso',
-    title: 'Pago Confirmado · FashionStore',
+    title: 'Pago Confirmado Â· FashionStore',
     loadComponent: () =>
       import('./features/pago/pago-exitoso/pago-exitoso').then((m) => m.PagoExitoso),
   },
   {
     // CU20 - Retorno cancelado de Stripe
     path: 'pago/cancelado',
-    title: 'Pago Cancelado · FashionStore',
+    title: 'Pago Cancelado Â· FashionStore',
     loadComponent: () =>
       import('./features/pago/pago-cancelado/pago-cancelado').then((m) => m.PagoCancelado),
   },
   {
     // CU15 - Historial de pedidos del cliente
     path: 'mi-cuenta/pedidos',
-    title: 'Mis Pedidos · FashionStore',
+    title: 'Mis Pedidos Â· FashionStore',
     loadComponent: () =>
       import('./features/cliente/mis-pedidos/mis-pedidos').then((m) => m.MisPedidos),
   },
@@ -330,3 +327,4 @@ export const routes: Routes = [
     redirectTo: '',
   },
 ];
+

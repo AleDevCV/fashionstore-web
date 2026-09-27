@@ -1,0 +1,1 @@
+{"nodes": [{"id": "catalogo_publico", "label": "Cat\u00e1logo P\u00fablico", "file_type": "code", "source_file": "src/app/features/catalogo/catalogo.html"}], "edges": [{"source": "catalogo_publico", "target": "prenda_detalle_cu14", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/app/features/catalogo/catalogo.html"}], "hyperedges": []}
