@@ -1,4 +1,4 @@
-﻿<div class="fs-modal-backdrop">
+<div class="fs-modal-backdrop">
   <div class="fs-modal fs-modal--wide">
     <div class="fs-modal__header">
       <h2 class="fs-modal__titulo">âš¡ Probador Virtual â€” {{ prenda().nombre }}</h2>
@@ -11,32 +11,32 @@
       }
 
       <div class="decart-container">
-        <!-- Columna Izquierda: CÃ¡mara Local -->
-        <div class="decart-panel">
+        <!-- Columna Izquierda: Cámara Local -->
+        <div class="decart-panel panel-local" [class.pip-mode]="conectado() || conectando()">
           <div class="panel-header">
-            <span class="icon">â–</span>
-            TU CÃ MARA
+            <span class="icon">■</span>
+            TU CÁMARA
           </div>
           <div class="video-wrapper">
             <video #localVideo autoplay muted playsinline></video>
             @if (!conectado() && !conectando()) {
               <div class="video-overlay">
-                <p>Conecta tu cÃ¡mara para empezar</p>
+                <p>Conecta tu cámara para empezar</p>
                 <button class="fs-btn fs-btn--primary" (click)="iniciarExperiencia()">
-                  â–¶ Iniciar Experiencia
+                  ▶ Iniciar Experiencia
                 </button>
               </div>
             }
             @if (conectando()) {
               <div class="video-overlay">
-                <p>Iniciando cÃ¡mara...</p>
+                <p>Iniciando cámara...</p>
               </div>
             }
           </div>
         </div>
 
         <!-- Columna Derecha: Resultado AI -->
-        <div class="decart-panel">
+        <div class="decart-panel panel-remote">
           <div class="panel-header">
             <span class="icon">âž¤</span>
             RESULTADO AI
