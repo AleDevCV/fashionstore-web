@@ -80,9 +80,9 @@ export class IaService {
   /**
    * Obtiene el token efímero de Decart AI para la sesión WebRTC.
    */
-  obtenerRealtimeToken(): Observable<{ apiKey: string; expiresAt: number }> {
+  obtenerRealtimeToken(usarRespaldo = false): Observable<{ apiKey: string; expiresAt: number; usandoRespaldo: boolean }> {
     return this.http
-      .post<{ apiKey: string; expiresAt: number }>(`${this.baseUrl}/realtime-token`, {})
+      .post<{ apiKey: string; expiresAt: number; usandoRespaldo: boolean }>(`${this.baseUrl}/realtime-token`, { usar_respaldo: usarRespaldo })
       .pipe(catchError(traducirErrorApi));
   }
 }
